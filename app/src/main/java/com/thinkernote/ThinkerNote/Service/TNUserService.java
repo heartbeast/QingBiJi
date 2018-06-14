@@ -242,11 +242,12 @@ public class TNUserService {
 			aAction.failed(outputs);
 		}
 	}
-	
+	//TODO
 	public void Logout(TNAction aAction) {
 		aAction.runChildAction(TNActionType.TNOpenUrl, "GET", "api/logout", null, TNActionType.Logout);
 		
 		JSONObject outputs = (JSONObject) aAction.childAction.outputs.get(0);
+
 		TNSettings settings = TNSettings.getInstance();
 		settings.isLogout = true;
 		settings.lockPattern = new LinkedList<Integer>();

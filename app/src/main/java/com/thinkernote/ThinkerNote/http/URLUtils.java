@@ -87,7 +87,12 @@ public class URLUtils {
         /**
          * 获取用户信息
          */
-        public static final String USER_INFO = "api/user/profilee";
+        public static final String USER_INFO = "api/user/profile";
+
+        /**
+         * logout
+         */
+        public static final String LOGOUT = "api/logout";
 
     }
 

@@ -274,7 +274,16 @@ public interface MyHttpService {
     @GET(URLUtils.Log.USER_INFO)
     Observable<CommonBean> getUserInfo();
 
-//-------------------------------------------------main相关----------------------------------------------------
+    /**
+     * 15 退出登录
+     *
+     * @return
+     */
+    @GET(URLUtils.Log.LOGOUT)
+    Observable<CommonBean> logout();
+
+
+    //-------------------------------------------------main相关----------------------------------------------------
 
     /**
      * 13 检查更新
