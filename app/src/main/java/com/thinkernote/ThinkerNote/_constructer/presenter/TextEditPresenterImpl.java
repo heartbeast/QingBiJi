@@ -32,12 +32,12 @@ public class TextEditPresenterImpl implements ITextEditPresener, OnTextEditListe
     //============================p层重写，用于调用m层方法============================
     @Override
     public void pFolderAdd(long parentID,String text) {
-        module.pFolderAdd(this,text);
+        module.pFolderAdd(this,parentID,text);
     }
 
     @Override
     public void pFolderRename(long parentID,String text) {
-        module.pFolderRename(this,text);
+        module.pFolderRename(this,parentID,text);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TextEditPresenterImpl implements ITextEditPresener, OnTextEditListe
 
     @Override
     public void pTagRename(long parentID,String text) {
-        module.pTagRename(this,text);
+        module.pTagRename(this,parentID,text);
     }
 
     //==========================结果回调==============================
@@ -64,8 +64,8 @@ public class TextEditPresenterImpl implements ITextEditPresener, OnTextEditListe
     }
 
     @Override
-    public void onFolderRenameSuccess(Object obj) {
-        onView.onFolderRenameSuccess(obj);
+    public void onFolderRenameSuccess(Object obj,String name,long pid) {
+        onView.onFolderRenameSuccess(obj,name,pid);
     }
 
     @Override
@@ -84,8 +84,8 @@ public class TextEditPresenterImpl implements ITextEditPresener, OnTextEditListe
     }
 
     @Override
-    public void onTagRenameSuccess(Object obj) {
-        onView.onTagRenameSuccess(obj);
+    public void onTagRenameSuccess(Object obj,String name,long pid) {
+        onView.onTagRenameSuccess(obj,name,pid);
     }
 
     @Override

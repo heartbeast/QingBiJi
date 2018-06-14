@@ -97,7 +97,7 @@ public class TextEditModuleImpl implements ITextEditModule {
     }
 
     @Override
-    public void pFolderRename(final OnTextEditListener listener, long pid, String text) {
+    public void pFolderRename(final OnTextEditListener listener, final long pid, final String text) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .folderRename(text,pid)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
@@ -121,7 +121,7 @@ public class TextEditModuleImpl implements ITextEditModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onFolderRenameSuccess(bean);
+                            listener.onFolderRenameSuccess(bean,text,pid);
                         } else {
                             listener.onFolderRenameFailed(bean.getMessage(), null);
                         }
@@ -165,7 +165,7 @@ public class TextEditModuleImpl implements ITextEditModule {
     }
 
     @Override
-    public void pTagRename(final OnTextEditListener listener, long pid, String text) {
+    public void pTagRename(final OnTextEditListener listener, final long pid, final String text) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .tagRename(text,pid)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
@@ -189,7 +189,7 @@ public class TextEditModuleImpl implements ITextEditModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onTagRenameSuccess(bean);
+                            listener.onTagRenameSuccess(bean,text,pid);
                         } else {
                             listener.onTagRenameFailed(bean.getMessage(), null);
                         }

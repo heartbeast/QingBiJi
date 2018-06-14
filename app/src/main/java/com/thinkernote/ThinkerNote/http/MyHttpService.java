@@ -359,6 +359,17 @@ public interface MyHttpService {
             @Field("name") String phone
             ,@Field("tag_id") long pid);
 
+    /**
+     * 同步数据
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.TAG)
+    Observable<CommonBean> getTagList();
+
+
+
+
 
 
 

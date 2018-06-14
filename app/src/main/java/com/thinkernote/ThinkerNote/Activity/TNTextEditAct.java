@@ -12,8 +12,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsTag;
@@ -359,7 +363,18 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     }
 
     @Override
-    public void onFolderRenameSuccess(Object obj) {
+    public void onFolderRenameSuccess(Object obj,String name,long pid) {
+        TNDb.beginTransaction();
+        try{
+            TNAction.runAction(TNActionType.Db_Execute,
+                    TNSQLString.CAT_RENAME,
+                    name,
+                    pid);
+
+            TNDb.setTransactionSuccessful();
+        } finally {
+            TNDb.endTransaction();
+        }
         TNUtilsUi.showToast("修改成功！");
         finish();
     }
@@ -381,7 +396,8 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     }
 
     @Override
-    public void onTagRenameSuccess(Object obj) {
+    public void onTagRenameSuccess(Object obj,String name,long pid ) {
+        TNDb.getInstance().execSQL(TNSQLString.TAG_RENAME, name, TNUtils.getPingYinIndex(name), pid);
         TNUtilsUi.showToast("修改成功！");
         finish();
     }

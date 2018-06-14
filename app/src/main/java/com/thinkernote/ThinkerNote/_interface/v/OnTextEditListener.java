@@ -8,7 +8,7 @@ public interface OnTextEditListener {
 
     void onFolderAddFailed(String msg, Exception e);
 
-    void onFolderRenameSuccess(Object obj);
+    void onFolderRenameSuccess(Object obj,String name,long pid);
 
     void onFolderRenameFailed(String msg, Exception e);
 
@@ -16,7 +16,7 @@ public interface OnTextEditListener {
 
     void onTagAddFailed(String msg, Exception e);
 
-    void onTagRenameSuccess(Object obj);
+    void onTagRenameSuccess(Object obj,String name,long pid);
 
     void onTagRenameFailed(String msg, Exception e);
 }

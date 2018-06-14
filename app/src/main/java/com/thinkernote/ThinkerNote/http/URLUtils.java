@@ -120,6 +120,10 @@ public class URLUtils {
          * 标签
          */
         public static final String TAG = "api/tags";
+        /**
+         * 标签
+         */
+        public static final String TAGLIST = "api/tags";
 
 
     }

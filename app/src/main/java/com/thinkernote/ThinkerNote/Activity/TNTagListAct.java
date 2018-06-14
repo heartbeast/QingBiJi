@@ -34,6 +34,9 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsTag;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote._constructer.presenter.TagListPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.ITagListPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 import org.json.JSONObject;
@@ -43,8 +46,7 @@ import java.util.Vector;
 /**
  * 选择标签/更换标签
  */
-public class TNTagListAct extends TNActBase
-		implements OnClickListener, OnItemClickListener, OnItemLongClickListener {
+public class TNTagListAct extends TNActBase implements OnClickListener, OnItemClickListener, OnItemLongClickListener,OnCommonListener {
 	
 	/* Bundle:
 	 * TagStrForEdit
@@ -56,6 +58,9 @@ public class TNTagListAct extends TNActBase
 	private TNNote mNote;
 	private Vector<TNTag> mTags;
 	private ProgressDialog mProgressDialog = null;
+
+	// p
+	private ITagListPresener presener;
 	
 	// Activity methods
 	//-------------------------------------------------------------------------------
@@ -65,8 +70,12 @@ public class TNTagListAct extends TNActBase
 		setContentView(R.layout.taglist);
 		setViews();
 		mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
-		mTags = new Vector<TNTag>(); 
+		mTags = new Vector<TNTag>();
+
+		//TODO
 		TNAction.regResponder(TNActionType.GetTagList, this, "respondGetTagList");
+
+		presener = new TagListPresenterImpl(this, this);
 		
 		findViewById(R.id.taglist_back).setOnClickListener(this);
 		findViewById(R.id.taglist_new).setOnClickListener(this);
@@ -108,7 +117,9 @@ public class TNTagListAct extends TNActBase
 	
 	protected void configView(){
 		((TextView)findViewById(R.id.taglist_tagstr)).setText(mTagStr);
-		TNAction.runActionAsync(TNActionType.GetTagList);
+		//
+		getTagList();
+
 	}
 	
 	@Override
@@ -235,10 +246,11 @@ public class TNTagListAct extends TNActBase
 	
 	//--
 	public void respondGetTagList(TNAction aAction) {
-		mTags = TNDbUtils.getTagList(TNSettings.getInstance().userId);
-		mAdapter.notifyDataSetChanged();
+
 	}
-	
+
+
+
 	// Class TNTagAdapter
 	//-------------------------------------------------------------------------------
 	private class TNTagAdapter extends BaseAdapter 
@@ -301,6 +313,25 @@ public class TNTagListAct extends TNActBase
 			}
 		}
 		
+	}
+
+	//---------------------------------------------------p层调用-------------------------------------------------
+	private void getTagList() {
+		presener.pTagList();
+		//TODO
+//		TNAction.runActionAsync(TNActionType.GetTagList);
+	}
+
+	//---------------------------------------------------接口结果回调-------------------------------------------------
+	@Override
+	public void onSuccess(Object obj) {
+		mTags = TNDbUtils.getTagList(TNSettings.getInstance().userId);
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onFailed(String msg, Exception e) {
+
 	}
 
 }
