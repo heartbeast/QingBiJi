@@ -107,6 +107,16 @@ public class URLUtils {
          */
         public static final String SYNCHRONIZE = "api/app/upgrade";
 
+        /**
+         * feedBack
+         */
+        public static final String FEEDBACK = "api/feedback";
+
+        /**
+         * pic 上传 （feedback，等）
+         */
+        public static final String UPLOAD_PIC = "api/attachment";
+
 
     }
 
@@ -130,7 +140,7 @@ public class URLUtils {
          */
         public static final String DEFAULT_FOLDER = "api/folders/default";
 
-  /**
+        /**
          * 设置默认路径
          */
         public static final String VERIFY_EMAIL = "api/user/verifyemail";

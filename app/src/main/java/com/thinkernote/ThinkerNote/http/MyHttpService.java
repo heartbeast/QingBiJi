@@ -304,6 +304,27 @@ public interface MyHttpService {
     @GET(URLUtils.Home.UPGRADE)
     Observable<CommonBean1<MainUpgradeBean>> synchronizeData();
 
+    /**
+     * feedBack
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Home.FEEDBACK)
+    Observable<CommonBean> feedBack(
+            @Field("content") String content
+            , @Field("pic_id") long pic
+            , @Field("email") String email);
+
+
+    /**
+     * 图片上传 TODO
+     *
+     * @return
+     */
+    @POST(URLUtils.Home.UPLOAD_PIC)
+    Observable<CommonBean> upLoadPic();
+
 
     //-------------------------------------------------写笔记相关----------------------------------------------------
 
@@ -394,14 +415,6 @@ public interface MyHttpService {
      */
     @POST(URLUtils.Note.VERIFY_EMAIL)
     Observable<CommonBean> verifyEmail();
-
-
-
-
-
-
-
-
 
 
     /**

@@ -623,7 +623,8 @@ public class TNNoteService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO 重要的类
 	public void Upload(TNAction aAction) {
 		long attLocalId = -1;
 		if (aAction.inputs.size() > 2) {//加这个判断是为了区分意见反馈过来的是没有attLocalId这个参数的 
