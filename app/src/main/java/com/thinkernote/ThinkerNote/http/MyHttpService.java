@@ -11,6 +11,7 @@ import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -254,6 +255,7 @@ public interface MyHttpService {
             @Field("phone") String phone
             , @Field("password") String password
             , @Field("vcode") String vcode);
+
     /**
      * 13 修改手机号
      *
@@ -294,7 +296,6 @@ public interface MyHttpService {
     Observable<CommonBean1<MainUpgradeBean>> upgrade();
 
 
-
     /**
      * 14 同步数据
      *
@@ -313,7 +314,7 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Note.TAG)
-    Observable<CommonBean> tagAdd( @Field("name") String phone);
+    Observable<CommonBean> tagAdd(@Field("name") String phone);
 
     /**
      * 新建 文件
@@ -322,7 +323,7 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Note.FOLDER)
-    Observable<CommonBean> folderAdd( @Field("name") String phone);
+    Observable<CommonBean> folderAdd(@Field("name") String phone);
 
 
     /**
@@ -334,11 +335,11 @@ public interface MyHttpService {
     @POST(URLUtils.Note.FOLDER)
     Observable<CommonBean> folderAdd(
             @Field("name") String phone
-            ,@Field("pid") long pid);
+            , @Field("pid") long pid);
 
 
     /**
-     *  文件rename
+     * 文件rename
      *
      * @return
      */
@@ -346,7 +347,7 @@ public interface MyHttpService {
     @PUT(URLUtils.Note.FOLDER)
     Observable<CommonBean> folderRename(
             @Field("name") String phone
-            ,@Field("folder_id") long pid);
+            , @Field("folder_id") long pid);
 
     /**
      * 标签rename
@@ -357,20 +358,42 @@ public interface MyHttpService {
     @PUT(URLUtils.Note.TAG)
     Observable<CommonBean> tagRename(
             @Field("name") String phone
-            ,@Field("tag_id") long pid);
+            , @Field("tag_id") long pid);
 
     /**
-     * 同步数据
+     * TagList
      *
      * @return
      */
-    @GET(URLUtils.Note.TAG)
+    @GET(URLUtils.Note.TAGLIST)
     Observable<CommonBean> getTagList();
 
 
+    /**
+     * deleteTag
+     *
+     * @return
+     */
+    @DELETE(URLUtils.Note.TAG)
+    Observable<CommonBean> deleteTag(@Field("tag_id") long tag_id);
 
 
+    /**
+     * 设置默认文件路径
+     *
+     * @return
+     */
+    @PUT(URLUtils.Note.DEFAULT_FOLDER)
+    Observable<CommonBean> setDefaultFolder(@Field("folder_id") long pid);
 
+
+    /**
+     * verifyEmail
+     *
+     * @return
+     */
+    @POST(URLUtils.Note.VERIFY_EMAIL)
+    Observable<CommonBean> verifyEmail();
 
 
 

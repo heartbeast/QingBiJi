@@ -8,7 +8,7 @@ import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNUtils;
-
+//TODO delete
 public class TNTagService {
 	private static final String TAG = "TNTagService";
 			
@@ -48,7 +48,7 @@ public class TNTagService {
 			aAction.failed(outputs);
 		}
 	}
-	
+	//TODO
 	public void TagDelete(TNAction aAction) {
 		Object tagId = aAction.inputs.get(0);
 		JSONObject jsonData = TNUtils.makeJSON(

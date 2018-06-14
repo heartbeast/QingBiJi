@@ -72,9 +72,6 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
 		mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
 		mTags = new Vector<TNTag>();
 
-		//TODO
-		TNAction.regResponder(TNActionType.GetTagList, this, "respondGetTagList");
-
 		presener = new TagListPresenterImpl(this, this);
 		
 		findViewById(R.id.taglist_back).setOnClickListener(this);
@@ -243,12 +240,6 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
 			finish();
 		}
 	}
-	
-	//--
-	public void respondGetTagList(TNAction aAction) {
-
-	}
-
 
 
 	// Class TNTagAdapter

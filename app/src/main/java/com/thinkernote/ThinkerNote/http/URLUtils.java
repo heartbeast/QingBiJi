@@ -125,6 +125,16 @@ public class URLUtils {
          */
         public static final String TAGLIST = "api/tags";
 
+        /**
+         * 设置默认路径
+         */
+        public static final String DEFAULT_FOLDER = "api/folders/default";
+
+  /**
+         * 设置默认路径
+         */
+        public static final String VERIFY_EMAIL = "api/user/verifyemail";
+
 
     }
 
