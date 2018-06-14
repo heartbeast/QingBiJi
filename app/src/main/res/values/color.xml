@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="menu_pressed">#F5F5F5</color>
+    <color name="divider">#dddddd</color>
+    <color name="red">#E56B6B</color>
+    <color name="gray">#808080</color>
+    <color name="black">#ff000000</color>
+    <color name="ak_text_title">#FF333333</color>
+    <color name="blue">#309AF2</color>
+    <color name="ak_text_info">#FFAAAAAA</color>
+    <color name="ak_item_bg_white_pressed">#FFF0F0F0</color>
+    <color name="ak_transparent">#00000000</color>
+    
+</resources>

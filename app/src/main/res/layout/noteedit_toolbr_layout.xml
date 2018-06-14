@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="44dip"
+    android:background="@drawable/bottom_toolbg"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/noteedit_camera"
+        style="@style/button_grey"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:text="@string/noteedit_btnname_camera"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/noteedit_record"
+        style="@style/button_grey"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:text="@string/noteedit_btnname_record"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/noteedit_doodle"
+        style="@style/button_grey"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:text="@string/noteedit_btnname_doodle"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/noteedit_speakinput"
+        style="@style/button_grey"
+        android:layout_width="0dip"
+        android:layout_weight="1.5"
+        android:text="@string/noteedit_btnname_speakinput"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/noteedit_other"
+        style="@style/button_grey"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:text="@string/noteedit_btnname_other"
+        android:textSize="14sp" />
+
+</LinearLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item android:title="@string/share_url_menu_copy" 
+		android:id="@+id/share_url_menu_copy">
+	</item>
+	
+	<item android:title="@string/share_url_menu_open" 
+		android:id="@+id/share_url_menu_open">
+	</item>
+	
+	<item android:title="@string/share_url_menu_send" 
+		android:id="@+id/share_url_menu_send">
+	</item>
+	
+	<item android:title="@string/share_url_menu_sms" 
+		android:id="@+id/share_url_menu_sms">
+	</item>
+	
+	<item android:title="@string/share_url_menu_other" 
+		android:id="@+id/share_url_menu_other">
+	</item>
+
+	<item android:title="@string/share_url_menu_cancel" 
+		android:id="@+id/share_url_menu_cancel">
+	</item>
+	
+</menu>

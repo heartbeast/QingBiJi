@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<item android:title="@string/folder_menu_view" 
+		android:id="@+id/folder_menu_view">
+	</item>
+
+	<item android:title="@string/folder_menu_sync" 
+		android:id="@+id/folder_menu_sync">
+	</item>
+	
+	<item android:title="@string/folder_menu_rename"
+	    android:id="@+id/folder_menu_rename"/>
+	
+	<item android:title="@string/folder_menu_moveto"
+	    android:id="@+id/folder_menu_moveto"/>
+	
+	<item android:title="@string/folder_menu_delete"
+	    android:id="@+id/folder_menu_delete"/>
+	
+	<item android:title="@string/folder_menu_setdefault"
+	    android:id="@+id/folder_menu_setdefault"/>
+	
+	<item android:title="@string/folder_menu_info" 
+		android:id="@+id/folder_menu_info">
+	</item>
+	    
+	<item android:title="@string/folder_menu_cancel" 
+		android:id="@+id/folder_menu_cancel">
+	</item>
+  
+</menu>

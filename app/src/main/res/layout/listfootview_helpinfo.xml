@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listfootview_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffe5e5e5"
+    android:orientation="vertical"
+    android:paddingBottom="20dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="15dip" >
+    
+    <LinearLayout 
+        android:id="@+id/listfootview_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone">
+        
+        <ProgressBar 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Small"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="正在加载..."
+            android:textColor="#ff656565"
+        	android:textSize="14sp"/>
+        
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/listfootview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/listfootview_title_notelist_allnote"
+        android:textColor="#ff000000"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/listfootview_info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:text="@string/boot_indo_attlist"
+        android:textColor="#ff656565"
+        android:textSize="12sp" />
+
+</LinearLayout>

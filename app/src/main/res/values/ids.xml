@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="noteview_binding_sina"></item>
+    <item type="id" name="weibosend_rebinding_sina"></item>
+    
+    <item type="id" name="noteview_actionitem_share"></item>
+    <item type="id" name="noteview_actionitem_tag"></item>
+    <item type="id" name="noteview_actionitem_selecttext"></item>
+    <item type="id" name="noteview_actionitem_move"></item>
+    <item type="id" name="noteview_actionitem_attribute"></item>
+    <item type="id" name="noteview_actionitem_delete"></item>
+    
+    <item type="id" name="noteedit_folders"></item>
+    <item type="id" name="noteedit_picture"></item>
+    <item type="id" name="noteedit_tag"></item>
+    <item type="id" name="noteedit_insertcurrenttime"></item>
+    <item type="id" name="noteedit_addatt"></item>
+    
+    <item type="id" name="noteedit_att_look"></item>
+    <item type="id" name="noteedit_att_delete"></item>
+    
+    <item type="id" name="page_notes"></item>
+    <item type="id" name="page_cats"></item>
+    <item type="id" name="page_tags"></item>
+    <item type="id" name="page_sharenotes"></item>
+    
+</resources>

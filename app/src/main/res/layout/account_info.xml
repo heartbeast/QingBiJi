@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/account_layout"
+    android:background="@drawable/password_snapshot"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/account_name"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dip"
+        android:text="@string/account_info_name"
+        android:textColor="@android:color/black"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/account_password"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dip"
+        android:text="@string/account_info_password"
+        android:textColor="@android:color/black"
+        android:textSize="12sp" />
+
+</FrameLayout>

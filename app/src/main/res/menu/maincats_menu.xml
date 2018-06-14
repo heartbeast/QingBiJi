@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item android:id="@+id/maincats_menu_syncall"
+	    android:title="@string/maincats_menu_syncall"
+	    android:icon="@drawable/ic_menu_refresh"/>
+	
+	<item android:title="@string/notelist_menu_clear_recycle" 
+		android:id="@+id/maincats_menu_clearrecycler" 
+		android:icon="@drawable/ic_menu_clear">
+	</item>
+	 
+	<item android:title="@string/maincats_menu_catsort"
+	    android:id="@+id/maincats_menu_catsort"
+	    android:icon="@drawable/ic_menu_sort"/>
+</menu>

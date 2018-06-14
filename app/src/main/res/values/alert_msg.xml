@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Alert message -->
+	<string name="alert_Title">轻笔记</string>
+	<string name="alert_Cancel">取消</string>
+	<string name="alert_OK">确定</string>
+	<string name="alert_Save">保存</string>
+	<string name="alert_NoSave">不保存</string>
+	<string name="alert_Share">公开</string>
+	<string name="alert_Close">不公开</string>
+	<string name="alert_Alert">警告</string>
+	<string name="alert_Share1">分享</string>
+	<string name="alert_NoRemind">不再提醒</string>
+	
+	<string name="alert_NoNetWork_NoteSave">笔记未上传，网络错误</string>
+	
+	<string name="alert_cat_deep_wrong">您在其他轻笔记客户端使用了第三级文件夹，该版本不支持第三级，无法正常使用，请您下载新版本。</string>
+	
+	<string name="alert_Welcome_Title">欢迎您使用轻笔记</string>
+	<string name="alert_Welcome_Msg" formatted="false">您的用户名为:%s,密码为:%s,您可以到“设置”页面查看和修改用户名和密码。,强烈建议您补全邮箱地址，否则您有忘记密码无法找回资料的风险</string>
+	<string name="alert_Welcome_Change">立即修改</string>
+	<string name="alert_Welcome_Cancel">稍后修改</string>
+	<string name="alert_UserInfoNoteCompleted">您还未修改账户信息哦，为了保证您的数据安全，请立即修改您的密码，并保证邮箱有效，防止密码丢失</string>
+	
+	<string name="alert_UnknownError">未知错误。</string>
+	<string name="alert_Protocol_Mismatch">该应用程序版本太低。请下载最新版本再继续使用。</string>
+	<string name="alert_NoSDCard">没有发现存储卡，无法使用附件功能。请插入存储卡后，再重试</string>
+	<string name="alert_Synchronizeing">正在同步……</string>
+	<string name="alert_Synchronize_TooMuch">另一个同步过程正在进行，您可以等待其完成后再重试。</string>
+	<string name="alert_StopSync">中止</string>
+	<string name="alert_Synchronize_Stoped">同步中止</string>
+	<string name="alert_SynchronizeFailed">同步失败</string>
+	<string name="alert_SynchronizeCancell">同步取消</string>
+	<string name="alert_DBError">数据库错误。请重启轻笔记。</string>
+	<string name="alert_DBErrorHint">发生了严重错误，您的本地数据库已损坏。您保存在云端的笔记未受到影响，您需要重新同步以获取您的笔记。\n对您造成的困扰我们深表歉意!</string>
+	<string name="alert_Uninstall">确定</string>
+	
+	<string name="alert_AppComment_Go">支持我们</string>
+	<string name="alert_AppComment_Msg">您的支持会帮助我们把产品做得完美，去应用商店给我们一个好评吧！记得+1哦!</string>
+	<string name="alert_pictureCompression_Yes">是</string>
+	<string name="alert_pictureCompression_No">否</string>
+	<string name="alert_pictureCompression_Msg">您是否选择默认对大图片上传时进行压缩以节省流量？</string>
+		
+	<string name="alert_MainCats_Synchronized">同步完成</string>
+	<string name="alert_MainCats_SynchronizeAll">此操作将同步个人所有内容到本地，包括笔记内容和附件。\n\n需要网络传输的数据可能较多，推荐在Wifi网络条件下进行。</string>
+	<string name="alert_MainCats_SynchronizeCatAll">此操作将同步该文件夹所有内容到本地，包括笔记内容和附件。\n\n需要网络传输的数据可能较多，推荐在Wifi网络条件下进行。</string>
+	<string name="alert_MainCats_SynchronizeNoteAll">此操作将同步该笔记所有内容到本地，包括笔记内容和附件。\n\n需要网络传输的数据可能较多，推荐在Wifi网络条件下进行。</string>  
+	<string name="alert_project_MainCats_SynchronizeAll">此操作将同步所有内容到本地，包括笔记内容和附件。\n\n需要网络传输的数据可能较多，推荐在Wifi网络条件下进行。</string>
+	<string name="alert_Projects_SynchronizeAll">此操作将同步个人和所有群组的文件夹、笔记标题到本地，不包括笔记内容和附件。</string>
+	    
+	<string name="alert_Net_UnknownError">未知网络错误。</string>
+	<string name="alert_Net_Timeout">网络通信超时错误。</string>
+	<string name="alert_Net_Unreachable">无法连接到服务器。请确认网络设置正确后，再重试。</string>
+	<string name="alert_Net_NotWork">该功能需要联网状态下进行。请确认网络设置正确后，再重试。</string>
+	<string name="alert_Net_TrialUserHinte">您现在使用的是体验用户，请注册成为正式用户，体验数据同步、笔记分享、群组笔记等更多功能。\n\n如果已有轻笔记账号，请点击登录。</string>
+	<string name="alert_CompleteInfo">注册</string>
+	
+	<string name="alert_Login_UsernameBlank">请输入用户名或邮箱。</string>
+	<string name="alert_Login_PasswordBlank">请输入密码。</string>
+	<string name="alert_Login_UsernameNotExist">错误的用户名。</string>
+	<string name="alert_Login_PasswordWrong">密码错误。</string>
+	<string name="alert_Login_LocalFailed">登录失败。请确认您的用户名和密码是否正确。如确认无误，请在网络设置正确后，再重试。</string>
+	<string name="alert_Login_ForgetPwdConfirm">此操作将发送一个新的密码到您的邮箱。该密码只有在有效期内激活后，才会生效，您确定要继续吗？</string>
+	<string name="alert_Login_ForgetPwdMsg">您的用户名和新密码已经发送到您的邮箱。该密码在有效期内激活后，才会生效，请尽快查收确认。</string>
+	<string name="alert_Login_PasswordChanged">您的密码已被修改。请重新登录。</string>
+	<string name="alert_Login_IsTrialUser">您使用的是体验用户，无法同步，请先注册，以保证数据不会丢失</string>
+	
+	<string name="alert_Auth_ResultError">绑定账号证书已失效，请重新登录</string>
+	
+	<string name="alert_Binding_ResultError">绑定失败，证书过期</string>
+	<string name="alert_Binding_Baidu_Ok">百度账号绑定成功，现在您新建笔记中的附件将同步到百度网盘</string> 
+	<string name="alert_Binding_sina_Ok">新浪账号绑定成功，您可以以该账号通过第三方账号登录使用轻笔记</string>
+	<string name="alert_Binding_QQ_Ok">腾讯QQ账号绑定成功，您可以以该账号通过第三方账号登录使用轻笔记</string> 
+	<string name="alert_Binding_Google_Ok">google账号绑定成功，您可以以该账号通过第三方账号登录使用轻笔记</string> 
+	<string name="alert_Binding_360_Ok">360账号绑定成功，您可以以该账号通过第三方账号登录使用轻笔记</string>  
+	<string name="alert_Binding_RenRen_Ok">人人网账号绑定成功，您可以以该账号通过第三方账号登录使用轻笔记</string> 
+	<string name="alert_Binding_189_Ok">天翼云账号绑定成功，现在您新建笔记中的附件将同步到天翼云盘</string> 
+	<string name="alert_Binding_Baidu">笔记保存成功!\r\n\r\n我们推荐您绑定百度网盘，绑定后附件将上传到百度网盘保存。并可额外享受15G存储空间</string>
+	<string name="alert_Binding_189">笔记保存成功!\r\n\r\n我们推荐您绑定电信天翼云盘，绑定后附件将上传到天翼云盘保存。并可额外享受15G存储空间</string>
+	<string name="alert_userinfo_already_binding">您已经绑定过百度网盘了，无法继续绑定</string>
+	<string name="alert_userinfo_already_binding_189">您已经绑定过天翼云盘了，无法继续绑定</string>
+	
+	<string name="alert_Reg_UsernameBlank">请输入用户名。</string>
+	<string name="alert_Reg_UsernameWrong">您输入的用户名不符合要求。</string>
+	<string name="alert_Reg_PhoneWrong">您输入的手机号不符合要求。</string>
+	<string name="alert_Reg_EmailBlank">请输入邮箱。</string>
+	<string name="alert_Reg_EmailWrong">您输入的邮箱不符合要求。</string>
+	<string name="alert_Reg_PasswordBlank">请输入密码。</string>
+	<string name="alert_Reg_ConfirmPwdBlank">请输入确认密码。</string>
+	<string name="alert_Reg_PasswordUnmatch">您输入的密码和确认密码不一致。</string>
+	<string name="alert_Reg_PhoneUnmatch">您输入的手机号和确认手机号不一致。</string>
+	<string name="alert_Reg_InvideCodeWrong">您输入邀请码不正确。</string>
+	<string name="alert_Reg_UsernameRegisted">您输入的用户名已被他人注册。</string>
+	<string name="alert_Reg_EmailRegisted">您输入的邮箱已被他人注册。</string>
+	<string name="alert_Reg_PasswordLong">您输入的密码太长了,不能超过20个字符</string>
+	
+	<string name="alert_SetInvite_AlreadySet">您已经设置过邀请码了</string>
+	<string name="alert_SetInvite_InviteCodeInvalid">无效的邀请码</string>
+	<string name="alert_SetInvite_Ok">设置成功</string>
+
+	<string name="alert_Tag_AlreadyExisted">您输入的标签已存在。</string>
+
+	<string name="alert_CatAdd_NameAlreadyExisted">这个文件夹已经存在,您要创建一个同名文件夹吗？</string>
+	<string name="alert_Cat_AlreadyExisted">您输入的文件夹已存在。</string>
+	<string name="alert_Cat_DeleteDefault">您不能删除默认文件夹。</string>
+	<string name="alert_Cat_MovTo_NoPriv">无法移动，对目标位置没有权限</string>
+	<string name="alert_Cat_Delete_NoPriv" formatted="false">失败，文件夹%s没有删除权限</string>
+	<string name="alert_Cat_Delete_Ok">文件夹已删除</string>
+
+	<string name="alert_Att_NoSpace">没有存储卡或存储空间不足。</string>
+	<string name="alert_Att_too_Much">添加附件失败，附件太多了</string>
+	<string name="alert_Att_Name_FormatWrong">文件名不符合要求</string>
+	<string name="alert_Att_NoteExist" formatted="false">附件%s丢失</string>
+	
+	<string name="alert_About_InputPwd">请输入您的密码：</string>
+	<string name="alert_About_ClearCacheHint">此操作将清空当前用户的手机缓存数据。操作之前请确保所有笔记已经上传。\n确定要清除？</string>
+	<string name="alert_About_CantSendEmail">没有应用能发送邮件。请下载相关程序后再试。</string>
+	<string name="alert_About_CantSendSMS">不能发送到短信，请检查短信设置后再重试。</string>
+	<string name="alert_About_CantOpenWeb">没有应用能打开网页。请下载相关程序后再试。</string>
+	<string name="alert_About_CantOpenComment">您没有安装市场，无法查看用户评论。</string>
+
+	<string name="alert_NoteView_NotCompleted">尚未获取笔记完整内容，无法进行编辑。</string>
+	<string name="alert_NoteView_DeleteNoteMsg">此操作将会把笔记移到回收站！您确定要继续吗？</string>
+	<string name="alert_NoteView_DeleteNoteMsg_InGroup">您确定要删除这篇笔记吗</string>
+	<string name="alert_NoteView_RealDeleteNoteMsg">此操作将彻底删除笔记并且无法恢复，您确定要继续吗？</string>
+	<string name="alert_NoteView_CantOpenMsg">没有应用能处理该操作。请下载相关程序后再试。</string>
+	<string name="alert_NoteView_CantOpenAttMsg">没有应用能查看该附件。请下载相关程序后再查看。</string>
+	<string name="alert_NoteView_CantSendAttMsg">没有发现应用能处理该附件。请下载相关程序后再发送。</string>
+	<string name="alert_NoteView_NetNotWork">无法获取最新笔记内容。请确认网络设置正确后，再重试。</string>
+	<string name="alert_NoteView_EmailNotSync">笔记尚未同步，无法通过邮件分享。请同步后，再重试。</string>
+	<string name="alert_NoteView_CommentNotSync">笔记尚未同步，无法评论</string>
+	<string name="alert_NoteView_AttMissing">文件下载失败</string>
+	<string name="alert_NoteView_Sync">同步</string>
+	<string name="alert_NoteView_Synchronizing">正在同步……</string>
+	<string name="alert_NoteView_ReadHint">语音朗读将使用网络流量。推荐在Wifi条件下使用。</string>
+	<string name="alert_NoteView_WeiboHint">微博分享将把这篇笔记设为公开状态。其他人可以通过链接访问。\n\n请确保这篇笔记不包含隐私内容。</string>
+	<string name="alert_NoteView_WeiboShare">微博分享</string>
+	<string name="alert_NoteView_RestoreHint">此操作将还原这篇笔记到原文件夹，您确定要继续吗？</string>
+	<string name="alert_NoteView_SaveAttHint" formatted="false">文件将保存到SD卡%s。\n\n是否保存？</string>
+	<string name="alert_NoteView_AttSaved">文件已保存</string>
+	<string name="alert_NoteView_Comment_Short">请输入评论内容，字数必须大于5</string>
+	<string name="alert_NoteView_Comment_Long">太长了!</string>
+	<string name="alert_NoteView_Comment_uploading">评论上传中</string>
+	<string name="alert_NoteView_Comment_uploadok">评论成功!</string>
+	<string name="alert_NoteView_Comment_faild_notallow">评论失败，该笔记不可评论!</string>
+	<string name="alert_NoteView_Comment_downloading">评论下载中</string>
+	<string name="alert_NoteView_collection">本篇笔记将被分享到个人默认文件夹，是否继续？</string>
+	<string name="alert_NoteView_Collection_OK">笔记已成功收藏到个人默认文件夹</string>
+	<string name="alert_NoteView_Collection_Faild">未能收藏成功，请重试!</string>
+	<string name="alert_NoteView_Collection_NotCompleted">尚未获取笔记完整内容，无法收藏！</string>
+	
+	<string name="alert_NoteList_ClearRecycle">此操作将彻底删除回收站中的所有笔记，并无法恢复，你确定要继续吗？</string>
+	<string name="alert_NoteList_NotCompleted_Edite">尚未获取笔记完整内容, 无法编辑</string>
+	<string name="alert_NoteList_NotCompleted_ChangTag">尚未获取笔记完整内容, 无法修改标签</string>
+	<string name="alert_NoteList_NotCompleted_Move">尚未获取笔记完整内容, 无法移动</string>
+	<string name="alert_NoteList_NotCompleted_Share">尚未获取笔记完整内容, 无法分享</string>
+	
+	<string name="alert_NoteEdit_SaveMsg">是否保存对该笔记的编辑？</string>
+	<string name="alert_NoteEdit_ContentTooLong">笔记的长度超出了限制。请删除部分内容后再保存。</string>
+	<string name="alert_NoteEdit_ContentEmpty">参数不足，笔记内容不能为空。</string>
+	<string name="alert_NoteEdit_AttTooLong">附件添加失败。\n\n附件最大不能超过20M。</string>
+	<string name="alert_NoteEdit_AttSizeWrong">无法添加空附件</string>
+	<string name="alert_NoteEdit_Record_Interrupt">录音中止，已达到最大附件长度。</string>
+	<string name="alert_NoteEdit_Record_Error">录音中止，录音设备故障!</string>
+	<string name="alert_NoteEdit_NoCamera">没有发现照相应用。请安装相关应用后，再重试。</string>
+	<string name="alert_NoteEdit_NoImage">没有发现相册应用。请安装相关应用后，再重试。</string>
+	<string name="alert_NoteEdit_NoRecord">没有发现录音应用。请安装相关应用后，再重试。</string>
+	<string name="alert_NoteSave_Pcat_NotExist">保存失败，父文件夹丢失</string>
+	<string name="alert_NoteSave_SaveOK">笔记已保存</string>
+
+	<string name="alert_TextEdit_CatNameWrong">您输入的文件夹名称不符合要求。要求长度不超过50。</string>
+	<string name="alert_TextEdit_CatGroupNameWrong">您输入的文件夹名称不符合要求。要求长度不超过50。</string>
+	<string name="alert_TextEdit_CatExist">您输入的文件夹已存在。</string>
+	<string name="alert_TextEdit_CatGroupExist">您输入的文件夹已存在。</string>
+	<string name="alert_TextEdit_TagNameWrong">您输入的标签名称不符合要求。标签要求不能包含逗号或分号，长度不超过50字符。</string>
+	<string name="alert_TextEdit_TagExist">您输入的标签已存在。</string>
+	<string name="alert_TextEdit_PrijectIdWrong">您输入的群组编号不正确</string>
+	
+	<string name="alert_TuYa_SaveMsg">您要保存这篇涂鸦吗？</string>
+
+	<string name="alert_CatInfo_DeleteMsg">此操作将会把该文件夹中的所有笔记删除到回收站中。您确定要继续吗？</string>
+	<string name="alert_CatInfo_DeleteEmptyMsg">该文件夹为空文件夹。您确定要删除吗？</string>
+	<string name="alert_CatInfo_Delete_HasChild">该操作将会把该文件夹及其子文件删除，文件夹及其子文件夹中的笔记将被删除到回收站中,文件夹无法恢复,您确定要继续吗？</string>
+	<string name="alert_CatInfo_Delete_Project">该操作将会把该文件夹及其子文件以及其中的笔记删除，并无法恢复，您确定要继续吗？</string>
+	<string name="alert_CatInfo_DeleteGroupMsg">此操作将会删除该文件夹。您确定要继续吗？</string>
+	<string name="alert_CatInfo_HasChildMsg">该文件夹无法删除。只有空文件夹才可以删除。</string>
+	<string name="alert_CatInfo_HasNoteMsg">该文件夹无法删除。群组中只有空文件夹才可以删除。</string>
+	<string name="alert_CatInfo_SetDefaultMsg">此操作将会把该文件夹设置为默认文件夹。您确定要继续吗？</string>
+	
+	<string name="alert_ProjectInfo_IdWrong">您输入的群组编号不合法</string>
+	<string name="alert_ProjectInfo_IdNotExist">没有该群组</string>
+	<string name="alert_JoinProject_Ok">您的请求已成功发送，请等待管理员回复</string>
+	<string name="alert_JoinProject_ProjectStatusWrong">失败:群组非正常状态</string>
+	<string name="alert_JoinProject_UnderReview">用户正在审核</string>
+	<string name="alert_JoinProject_UserExist">用户已是群组成员</string>
+	<string name="alert_JoinProject_UserIsCreator">用户是群组创建者</string>
+	<string name="alert_Approve_Approve">批准</string>
+	<string name="alert_Approve_Deny">拒绝</string>
+	<string name="alert_Approve_Approve_OK" formatted="false">%s 已加入 %s 群组</string>
+	<string name="alert_Approve_Deny_OK" formatted="false">您拒绝了 %s 加入 %s 的请求</string>
+	<string name="alert_Approve_Other_Approve" formatted="false">其他管理员已经批准了 %s 加入 %s 群组的请求</string>
+	<string name="alert_Approve_Other_Deny" formatted="false">其他管理员拒绝了 %s 加入 %s 群组 的请求</string>
+	
+	<string name="alert_Priv_NoPriv">权限不够</string>
+	<string name="alert_MoveTo_NoPriv">对目标位置没有权限</string>
+	<string name="alert_Project_UnableRead">您无法继续阅读该群组,可能的原因是：\n\n1.群组已经管理员被删除。\n2.管理员收回了您的权限。</string>
+	<string name="alert_note_UnableRead">您无法继续阅读笔记,可能的原因是：\n\n1.笔记已经管理员被删除。\n2.管理员收回了您的权限。</string>
+	<string name="alert_comment_UnableRead">您无法继续阅读评论,可能的原因是：\n\n1.笔记已被管理员删除。\n2.管理员收回了您的权限。</string>
+	<string name="alert_NoteView_Deleted">笔记被删除!</string>
+	<string name="alert_NoteView_NoReadPriv">没有读权限</string>
+	<string name="alert_Note_IsNotExsit">该笔记不存在。</string>
+	<string name="alert_CreateTime_Format_Error">创建时间格式错误。</string>
+	
+	<string name="alert_Comment_CantReply_isSelf">不能邮件回复自己的评论</string>
+	<string name="alert_Comment_CantReply_NoEmail">该用户未设置邮箱，无法邮件恢复</string>
+	
+	<string name="alert_TagInfo_DeleteMsg">此操作将会去掉所有笔记上带有的该标签。您确定要继续吗？</string>
+	
+	<string name="alert_Report_SaveMsg">提交成功，非常感谢您对轻笔记的支持。</string>
+
+	<string name="alert_UserInfo_OldPwdBlank">请输入原密码。</string>
+	<string name="alert_UserInfo_NewPwdBlank">请输入新密码。</string>
+	<string name="alert_UserInfo_ConfirmPwdUnmatch">确认密码与新密码不一致。</string>
+	<string name="alert_UserInfo_PwdChanged">密码修改成功。</string>
+	<string name="alert_UserInfo_OldPwdWrong">原始密码错误。</string>
+	
+	<string name="alert_UserInfo_Password_Long">您输入的密码太长了,不能超过20个字符</string>
+	<string name="alert_UserInfo_NewUserNameBlank">请输入用户名。</string>
+	<string name="alert_UserInfo_ConfirmUserNameUnmatch">确认用户名与新用户名不一致。</string>
+	<string name="alert_UserInfo_UserPwdBlank">请输入用户密码。</string>
+	<string name="alert_UserInfo_NewPhoneBlank">请输入用户手机号。</string>
+	<string name="alert_UserInfo_VerifyCodeBlank">请输入验证码。</string>
+	<string name="alert_UserInfo_NewEmailBlank">请输入新邮箱。</string>
+	<string name="alert_UserInfo_EmailWrong">您输入的邮箱不符合要求。</string>
+	<string name="alert_UserInfo_ConfirmEmailUnmatch">确认邮箱与新邮箱不一致。</string>
+	<string name="alert_UserInfo_EmailChanged">邮箱修改成功。请登录您的邮箱，进行验证。</string>
+	<string name="alert_UserInfo_EmailToVerify">验证邮件已经发送到您的邮箱，请有空查收。</string>
+	<string name="alert_UserInfo_UserPwdWrong">用户密码错误。</string>
+	<string name="alert_UserInfo_EmailUsed">该邮箱已被注册使用。</string>
+	<string name="alert_UserInfo_EmailVerified">邮箱已经通过验证。</string>
+	<string name="alert_UserInfo_LatestVersion">已经是最新版本了。谢谢您的使用。</string>
+	<string name="alert_UserInfo_EmailVerify_EmailBlank">无法验证邮箱，请先修改邮箱，有效的邮箱能保护您的账号安全</string>
+	<string name="alert_UserInfo_Lockpattern_EmailBlank">无法设置密码锁，请先设置邮箱，防止密码丢失造成无法正常使用</string>
+	<string name="alert_UserInfo_remindLockGroup_opened">群组管理信息更新提醒功能已开启</string>
+	<string name="alert_UserInfo_remindLockGroup_closed">群组管理信息更新提醒功能已关闭</string>
+	<string name="alert_UserInfo_remindLockNote_opened">群组笔记更新提醒功能已开启</string>
+	<string name="alert_UserInfo_remindLockNote_closed">群组笔记更新提醒功能已关闭</string>
+	<string name="alert_UserInfo_invitecode_blank">请输入邀请码</string>
+	<string name="alert_UserInfo_NewNameBlank">请输入用户名</string>
+	<string name="alert_UserInfo_ConfirmNameUnmatch">确认用户名与新用户名不一致</string>
+	<string name="alert_UserInfo_UserNameUsed">失败，该用户名已经存在</string>
+	<string name="alert_UserInfo_UserNameFormatWrong">用户名需要包含数字和下划线</string>
+	<string name="alert_UserInfo_UserNameChanged">用户名修改成功</string>
+	
+	<string name="alert_UserInfo_DownloadApp">将使用浏览器下载该软件，您确定要继续吗?</string>
+	
+	<string name="alert_UserInfo_LogoutMsg">此操作会退出当前登录的用户，并且当程序下次启动时，用户不会自动登录。您确定要继续吗？</string>
+	<string name="alert_Logout_UnserInfo_EmailBlank">强烈建议您立即填写邮箱，注销可能会导致您未来忘记用户名／密码后无法通过邮箱找回，从而无法访问轻笔记资料。</string>
+	<string name="alert_Logout_Ok">确认退出</string>
+	<string name="alert_Logout_Change">立即修改</string>
+	    
+	<string name="alert_NoteInfo_SetShareMsg">要把这篇笔记设为公开状态？处于公开状态的笔记，任何人都可以通过链接访问。\n\n注意：请确保这篇笔记不包含隐私内容。</string>
+	<string name="alert_NoteInfo_LimitedShareMsg">带密码公开，他人需要正确输入您设置的密码才能查看笔记！</string>
+	<string name="alert_NoteInfo_UnsetShareMsg">要关闭这篇笔记的公开状态？关闭以后，原分享的链接将再也无法访问这篇笔记的内容。\n\n</string>
+	<string name="alert_NoteInfo_DateWrong">非法的设置</string>
+	
+	<string name="alert_TagList_BackMsg">是否保存对标签的修改？</string>
+	<string name="alert_CatList_BackMsg">是否保存对文件夹的修改？</string>
+	
+	<string name="alert_Share_Title">选择微博账号</string>
+	<string name="alert_Share_ByEmail">通过邮件分享</string>
+	<string name="alert_Share_NewUser">其他微博账号</string>
+	<string name="alert_Weibo_Failed">微博发送失败</string>
+	<string name="alert_Weibo_Finish">微博发送成功</string>
+	<string name="alert_Weibo_TooLong">输入的字数超出了限制</string>
+	<string name="alert_Weibo_Blank">您还没有输入任何内容</string>
+	<string name="alert_Share_BadToAddr">没有有效的收件人邮箱地址</string>
+	<string name="alert_Share_EmailSent">邮件已发送</string>
+	<string name="alert_Share_EmailNotVerify">您的邮箱未通过验证，不能邮件分享。请先验证邮箱。</string>
+	<string name="alert_Share_NotCompleted">尚未获取笔记完整内容，暂不能进行分享。</string>
+	<string name="alert_Share_EmailBlank">你还未设置您的邮箱,无法通过邮箱分享</string>
+	<string name="alert_Weibo_NotBinding">您还未绑定新浪微博哦，现在去绑定吧!</string>
+	<string name="alert_Weibo_Failed_unKwonError">微博发送失败:未知错误</string>
+	<string name="alert_Share_NoteUrl">笔记已公开\r\n笔记链接:%s\r\n您可以分享该链接给您的好友，您的朋友需要输入密码才能访问!</string>
+	
+	<string name="alert_Lock_PasswordWrong_First">密码输入错误一次，连续三次错误，系统将自动退出。</string>
+	<string name="alert_Lock_PasswordWrong_Second">密码输入错误二次，连续三次错误，系统将自动退出。</string>
+	<string name="alert_Lock_PasswordWrong_Third">密码输入错误三次，请重新登录。</string>
+	
+	<string name="alert_UpdateLog_AllReaded">此操作将清空该群组所有的更新提醒，并无法恢复，您确定要继续么</string>
+	
+	<string name="feedback_content_short">太短了哦</string>
+	<string name="alert_binding_regist_ok">此邮箱将作为请笔记账户，密码已发送至邮箱</string>
+	<string name="alert_binding_regist_emailexsit">次邮箱已被占用，请输入其他邮箱地址</string>
+	<string name="alert_useralreadybinding">绑定失败，一个轻笔记账号只能被一个合作方账号绑定</string>
+	<string name="alert_binding_binding">进行绑定</string>
+	<string name="alert_binding_reg">新用户一键使用</string>
+	<string name="alert_binding_reg1">一键使用</string>
+	<string name="alert_binding_msg">没有轻笔记账号请点击"一键使用"\r\n已有轻笔记账号请点击"进行绑定"</string>
+	<string name="alert_Auth_UserRepeatBinding">失败，一个第三方账号不能绑定多个轻笔记账号</string>
+	<string name="alert_Auth_UserAlreadyBinding">您已经绑定过该账号了</string>
+	
+	<string name="alert_UnBinding_ok">已解除绑定</string>
+	<string name="alert_UnBinding_CanNot">不能解除绑定</string>
+	<string name="alert_UnBinding_NotExist">不存在该绑定用户</string>
+	<string name="alert_UnBinding_CanNot_Baidu">您的网盘中可能有笔记附件，解绑将导致笔记附件丢失，暂不支持百度账号解绑</string>
+	<string name="alert_UnBinding_msg">该操作将解除该第三方账号与轻笔记账号的绑定关系，您确定要继续吗</string>
+	<string name="alert_UnBinding_CanNot_IsSelf">您当前使用的是该账号，无法解绑</string>
+	
+	<string name="alert_createGroup_Msg">将前往轻笔记官网（http://www.qingbiji.cn）创建群组，您需要用轻笔记用户名/密码登录 是否继续</string>
+	<string name="alert_createproject_name_blank">请输入群组名称</string>
+	<string name="alert_createproject_name_toolong">您输入的名称太长了，不能超过20个字</string>
+	<string name="alert_createproject_intro_blank">请输入群组简介</string>
+	
+	
+	<string name="alert_file_cantRead_system">该文件为系统文件，无法读取</string>
+	
+	<string name="alert_netsearch_id_blank">请输入群组ID</string>
+	<string name="alert_netsearch_id_wrong">您输入的ID有误</string>
+	<string name="alert_netsearch_name_blank">请输入群组名称</string>
+	<string name="alert_netsearch_name_notexist">没有该群组</string>
+	
+	<string name="alert_weibo_Content_Is_Illegal">内容不合法</string>
+	<string name="alert_weibo_UnKownError">未知网络错误，请重试</string>
+	<string name="alert_weibo_ExpiredToken">您的微博授权已经失效，需重新绑定才能使用，或重新使用新浪微博账号登录轻笔记。</string>
+	<string name="alert_weobo_Repeat_Content">失败，不能重复提交</string>
+	<string name="alert_weibo_ReBinding">重新绑定</string>
+	<string name="alert_weibo_unBindingSina_ok">新浪账号绑定已解除</string>
+	<string name="alert_user_invalid">用户无效</string>
+	<string name="alert_username_error">用户名或密码错误</string>
+	<string name="alert_phone_isexsit">手机号已存在</string>
+	<string name="alert_require_login">用户未登录</string>
+	<string name="alert_verifycode_isnotexsit">验证码不存在</string>
+	<string name="alert_verifycode_sendmore">验证码发送频繁</string>
+	<string name="alert_folder_isnotexsit">文件夹不存在</string>
+	<string name="alert_parentfolder_isnotexsit">父文件夹不存在</string>
+	<string name="alert_tag_isnotexsit">标签不存在</string>
+	
+	<string name="alert_createproject_samename" formatted="false">失败，您已创建过一个“%s”群组</string>
+	
+</resources>

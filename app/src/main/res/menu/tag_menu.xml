@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  	<item android:title="@string/tag_menu_display" 
+		android:id="@+id/tag_menu_display">
+	</item>
+	
+  	<item android:title="@string/tag_menu_info" 
+		android:id="@+id/tag_menu_info">
+	</item>
+	
+  	<item android:title="@string/tag_menu_delete" 
+		android:id="@+id/tag_menu_delete">
+	</item>
+	
+  	<item android:title="@string/tag_menu_cancel" 
+		android:id="@+id/tag_menu_cancel">
+	</item>
+  
+</menu>

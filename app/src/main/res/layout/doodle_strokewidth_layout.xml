@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/doodle_strokewidth_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/doodle_color_bg"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:contentDescription="@string/contentDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/doodle_stroke_small" />
+
+    <SeekBar android:id="@+id/doodle_strokewidth_seekbar"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:max="48"
+        android:progress="0"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:progressDrawable="@drawable/doodle_stroke_seekbar"
+        android:thumb="@drawable/doodle_stroke_cursor"/>
+
+    <ImageView
+        android:contentDescription="@string/contentDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/doodle_stroke_big" />
+
+</LinearLayout>

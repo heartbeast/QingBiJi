@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
+
+    <ImageButton
+        android:id="@+id/table_cats_newnote"
+        android:contentDescription="@string/contentDescription"
+        style="@style/image_button"
+        android:src="@drawable/newnote"/>
+
+    <ImageButton
+        android:id="@+id/table_cats_newfolder"
+        android:contentDescription="@string/contentDescription"
+        style="@style/image_button" 
+        android:src="@drawable/newfolder1"/>
+
+    <ImageButton
+        android:id="@+id/table_cats_serch"
+        android:contentDescription="@string/contentDescription"
+        style="@style/image_button"
+        android:src="@drawable/search">
+    </ImageButton>
+    
+    <ImageButton
+        android:id="@+id/table_cats_sort"
+        android:contentDescription="@string/contentDescription"
+        style="@style/image_button"
+        android:src="@drawable/sort">
+    </ImageButton>
+
+</LinearLayout>

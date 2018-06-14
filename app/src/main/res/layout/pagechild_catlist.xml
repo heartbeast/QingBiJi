@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/folderlist_foldername_bg"
+        android:layout_width="fill_parent"
+        android:background="@drawable/group_bg_gradientcolors"
+        android:layout_height="26dip" >
+
+        <Button
+            android:id="@+id/folderlist_folder_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="2dip"
+            android:background="@null"
+            android:maxWidth="280dip"
+            android:singleLine="true"
+            android:text="文件夹名字"
+            android:textColor="#ff262626" />
+    </FrameLayout>
+
+    <com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView
+        android:id="@+id/folder_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffe5e5e5"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:dividerHeight="0dip"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="true"
+        android:focusable="true"
+        android:groupIndicator="@null"
+        android:listSelector="@null" />
+
+</LinearLayout>

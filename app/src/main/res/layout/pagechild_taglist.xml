@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:background="@drawable/group_bg_gradientcolors"
+        android:clickable="false" >
+
+        <Button
+            android:id="@+id/taglist_allcount"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginLeft="4dip"
+            android:background="@null"
+            android:ellipsize="middle"
+            android:maxWidth="110dip"
+            android:singleLine="true"
+            android:textColor="#ff262626"
+            android:textSize="14sp" >
+        </Button>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView
+            android:id="@+id/taglist_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffe5e5e5"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:dividerHeight="0dip"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="true"
+            android:focusable="true"
+            android:groupIndicator="@null"
+            android:listSelector="@null" >
+        </com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView>
+
+        <LinearLayout
+            android:id="@+id/taglist_top_groupinfo"
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:background="@drawable/group_bg_gradientcolors"
+            android:clickable="false"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/taglist_top_strindex"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="TextView"
+                android:textColor="#ff292929"
+                android:textSize="14sp" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/taglist_top_count"
+                android:layout_width="20dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:singleLine="true"
+                android:text="TextView"
+                android:textColor="#ff292929"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/page_bg"
+    android:orientation="vertical" >
+    
+    <FrameLayout
+        android:id="@+id/regist_toolbg_framelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="46dip"
+        android:background="@drawable/toolbg" >
+
+        <TextView
+            android:id="@+id/change_userinfo_back"
+            style="@style/toolbar_back"
+            android:text="修改用户名" />
+    </FrameLayout>
+    
+    <LinearLayout 
+        android:id="@+id/ll_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+        
+        <EditText
+             android:id="@+id/old_password_username"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入用户密码"
+             android:password="true"
+             android:padding="12dp"
+             android:textSize="16sp" />
+
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+         
+         <EditText
+             android:id="@+id/change_username"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入新用户名"
+             android:inputType="text"
+             android:padding="12dp"
+             android:textSize="16sp" />
+         
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/ll_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+         
+        <EditText
+             android:id="@+id/old_password"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入原始密码 "
+             android:password="true"
+             android:padding="12dp"
+             android:textSize="16sp" />
+         
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+        
+        <EditText
+             android:id="@+id/new_password"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入新密码"
+             android:password="true"
+             android:padding="12dp"
+             android:textSize="16sp" />
+
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+         
+         <EditText
+             android:id="@+id/new_password_again"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请再次输入新密码"
+             android:password="true"
+             android:padding="12dp"
+             android:textSize="16sp" />
+         
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+         
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/ll_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+         
+        <EditText
+             android:id="@+id/old_password_email"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入用户密码"
+             android:password="true"
+             android:padding="12dp"
+             android:textSize="16sp" />
+         
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+        
+        <EditText
+             android:id="@+id/change_email"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@null"
+             android:hint="请输入新邮箱"
+             android:inputType="text"
+             android:padding="12dp"
+             android:textSize="16sp" />
+
+         <View
+             android:layout_width="match_parent"
+             android:layout_height="0.5dp"
+             android:background="#dddddd" >
+         </View>
+         
+    </LinearLayout>
+    
+    <Button
+        android:id="@+id/change_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:background="@drawable/longbtn_selector"
+        android:padding="5dp"
+        android:text="确定"
+        android:textColor="#fff"
+        android:textSize="16sp" />
+    
+
+</LinearLayout>

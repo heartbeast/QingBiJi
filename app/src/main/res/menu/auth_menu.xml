@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item android:title="@string/auth_menu_binding"
+	    android:id="@+id/auth_menu_binding">
+	</item>
+    <item android:title="@string/auth_menu_regist"
+        android:id="@+id/auth_menu_regist">
+    </item>
+
+</menu>

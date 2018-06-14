@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filelist_page"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <!-- tool bar -->
+
+    <FrameLayout
+        android:id="@+id/filelist_toolbar_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="46dip" >
+
+        <TextView 
+            android:id="@+id/filelist_back"
+            style="@style/toolbar_back"
+            android:text="返回"/>
+        
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/filelist_path"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#aaaaaa"
+        android:text="asdfasdf"
+        android:textColor="#ffffff" >
+    </TextView>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ListView
+            android:id="@+id/filelist_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:fadingEdge="none"
+            android:cacheColorHint="#00000000" >
+        </ListView>
+    </FrameLayout>
+
+</LinearLayout>

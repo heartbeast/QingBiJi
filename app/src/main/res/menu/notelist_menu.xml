@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<item android:title="@string/notelist_menu_updatetime" 
+	    android:checkable="true"
+		android:id="@+id/notelist_menu_updatetime">
+	</item>
+
+	<item android:title="@string/notelist_menu_createtime" 
+	    android:checkable="true"
+		android:id="@+id/notelist_menu_createtime">
+	</item>
+	
+	<item android:title="@string/notelist_menu_cancel" 
+		android:id="@+id/notelist_menu_cancel">
+	</item>  
+</menu>

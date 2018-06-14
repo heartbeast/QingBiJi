@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical">
+
+<LinearLayout
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+    
+	<EditText android:id="@+id/netsearch_name_edittext" 
+		android:hint="@string/netsearch_name_hint"
+		android:singleLine="true"
+		android:maxLength="50"
+		android:layout_height="wrap_content" 
+		android:layout_width="0dip"
+		android:layout_weight="1" 
+		android:layout_marginTop="10dip"
+		android:layout_marginLeft="10dip"
+		android:imeOptions="actionSearch">
+	</EditText>
+	<ImageButton android:layout_width="48dip" 
+	    android:contentDescription="@string/contentDescription"
+		android:src="@drawable/search_2" 
+		android:id="@+id/netsearch_name_searchbtn" 
+		android:layout_marginTop="10dip" 
+		android:layout_height="48dip" 
+		android:background="@drawable/btn_trans_selector">
+	</ImageButton>
+</LinearLayout>
+
+	<TextView android:text="@string/netsearch_name" 
+		android:id="@+id/netsearch_name_hint" 
+		android:singleLine="true"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:layout_marginRight="10dip"
+		android:layout_marginBottom="10dip"
+		android:layout_marginLeft="10dip">
+	</TextView>
+
+</LinearLayout>

@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/page_bg" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="44dip"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/main_toolbar_linearlayout"
+                android:layout_width="fill_parent"
+                android:layout_height="46dip"
+                android:background="@drawable/toolbg">
+
+                <TextView
+                    android:id="@+id/main_logo_imagebutton"
+                    android:contentDescription="@string/contentDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/dialog_icon"
+                    android:drawablePadding="3dp"
+                    android:text="轻笔记" />
+
+                <TextView
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/main_serch"
+                    android:contentDescription="@string/contentDescription"
+                    style="@style/image_button"
+                    android:src="@drawable/search" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dip"
+                android:layout_marginTop="8dip"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dip"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_newnote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="5dip"
+                            android:layout_marginTop="5dip"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:clickable="false"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_newnote_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_newnote" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="5dip"
+                                android:text="@string/main_btnname_newnote"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_cameranote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="5dip"
+                            android:layout_marginTop="5dip"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_camera_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_camera" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="5dip"
+                                android:text="@string/main_btnname_cameranote"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dip"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_doodlenote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dip"
+                            android:layout_gravity="center"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_doodle_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_doodle" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/main_btnname_doodlenote"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_recordnote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="5dip"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_record_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_record" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/main_btnname_recordnote"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/main_divide"
+                    android:contentDescription="@string/contentDescription"
+                    android:src="@drawable/divide_horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="3dip"
+                    android:layout_marginLeft="40dip"
+                    android:layout_marginRight="40dip" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dip"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_allnote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="5dip"
+                            android:layout_marginLeft="5dip"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_allnote_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_allnote" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginBottom="5dip"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/main_btnname_allnote"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dip"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <LinearLayout
+                            android:id="@+id/main_project"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="5dip"
+                            android:layout_marginRight="5dip"
+                            android:background="@drawable/btn_trans_selector_light_colored"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/main_project_img"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dip"
+                                android:layout_marginRight="5dip"
+                                android:src="@drawable/main_project" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginBottom="5dip"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/main_btnname_project"
+                                android:textColor="#ff000000" />
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:id="@+id/main_projectlog_count_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="46dip"
+                            android:layout_marginLeft="25dip" >
+
+                            <ImageView
+                                android:id="@+id/main_projectlog_count_bg_imageView"
+                                android:contentDescription="@string/contentDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/main_projectlog_count_bg" />
+
+                            <TextView
+                                android:id="@+id/main_project_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginBottom="2dip"
+                                android:textColor="#ffffffff"
+                                android:textSize="12sp" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/main_bottom_bg_FrameLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="44dip"
+            android:layout_marginTop="-44dip"
+            android:background="@drawable/main_bottom_bg" >
+
+            <ImageButton
+                android:id="@+id/main_exchange"
+                android:contentDescription="@string/contentDescription"
+                android:layout_width="42dip"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginTop="1dip"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/btn_trans_selector_light_colored"
+                android:src="@drawable/main_setting" />
+
+            <TextView
+                android:id="@+id/main_lastsync_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="false"
+                android:gravity="center"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="#7a7a7a"
+                android:textSize="12sp" />
+
+            <ImageButton
+                android:id="@+id/main_sync_btn"
+                android:contentDescription="@string/contentDescription"
+                android:layout_width="42dip"
+                android:layout_height="fill_parent"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginTop="1dip"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/btn_trans_selector_light_colored"
+                android:src="@drawable/main_sync_btn" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/main_bootview"
+        android:contentDescription="@string/contentDescription"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/boot_view_mian"
+        android:visibility="gone" />
+
+</FrameLayout>

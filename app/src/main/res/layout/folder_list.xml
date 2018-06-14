@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/folderlist_page_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/page_bg"
+    android:orientation="vertical" >
+
+    <!-- tool bar -->
+
+    <FrameLayout
+        android:id="@+id/folderlist_toolbar_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="46dip"
+        android:background="@drawable/toolbg" >
+
+        <!-- invisible button -->
+        <Button
+            android:id="@+id/catnote_sort_menu"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/folderlist_folder_menu"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" >
+        </Button>
+
+        <Button
+            android:id="@+id/folderlist_note_menu"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" />
+
+        <ImageButton
+            android:id="@+id/folderlist_logo"
+            style="@style/image_button"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/back" >
+        </ImageButton>
+
+        <ImageView
+            android:id="@+id/folderlist_newnote_divide"
+            style="@style/button_divide"
+            android:layout_gravity="right"
+            android:layout_marginRight="146dip" />
+
+        <ImageButton
+            android:id="@+id/folderlist_newnote"
+            style="@style/image_button"
+            android:layout_gravity="right"
+            android:layout_marginRight="98dip"
+            android:src="@drawable/newnote" />
+
+        <ImageView
+            android:id="@+id/folderlist_newfolder_divide"
+            style="@style/button_divide"
+            android:layout_gravity="right"
+            android:layout_marginRight="97dip" />
+
+        <ImageButton
+            android:id="@+id/folderlist_newfolder"
+            style="@style/image_button"
+            android:layout_gravity="right"
+            android:layout_marginRight="49dip"
+            android:src="@drawable/newfolder1" />
+
+        <ImageView
+            android:id="@+id/folderlist_serch_divide"
+            style="@style/button_divide"
+            android:layout_gravity="right"
+            android:layout_marginRight="48dip" />
+
+        <ImageButton
+            android:id="@+id/folderlist_serch"
+            style="@style/image_button"
+            android:layout_gravity="right"
+            android:src="@drawable/search" >
+        </ImageButton>
+    </FrameLayout>
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        layout="@layout/pagechild_catlist" />
+
+</LinearLayout>

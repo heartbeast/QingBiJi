@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/projects_menu_inviteforsina"
+        android:title="@string/projects_menu_invite_sina">
+    </item>
+    <item
+        android:id="@+id/projects_menu_inviteforemail"
+        android:title="@string/projects_menu_invite_email">
+    </item>
+    <item
+        android:id="@+id/projects_menu_inviteforsms"
+        android:title="@string/projects_menu_invite_sms">
+    </item>
+
+</menu>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_page_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+    
+	<LinearLayout
+	    android:id="@+id/serch_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@drawable/toolbg"
+        android:orientation="horizontal" >
+        
+	    <LinearLayout 
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="12dp"
+	        android:orientation="vertical">
+	        
+	        <EditText 
+	            android:id="@+id/serch_edittext"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:singleLine="true"
+		        android:background="@null"
+		        android:hint="搜索"
+		        android:textColor="#333333"
+		        android:textSize="16sp"
+		        android:paddingLeft="10dp"
+		        android:paddingBottom="2dp"
+		        android:layout_marginTop="10dip"
+		        android:layout_marginRight="4dip"/>
+	        
+	        <View 
+	            android:layout_width="match_parent"
+	            android:layout_height="0.5dp"
+	            android:background="#9ac1e1"/>
+	    </LinearLayout>
+	    
+	    <TextView 
+	        android:id="@+id/serch_serch_btn"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="搜索"
+	        android:textSize="18sp"
+	        android:layout_marginLeft="12dp"
+	        android:layout_marginRight="12dp"
+	        android:textColor="#FFFFFF"/>
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="50dp"
+        android:textSize="16sp"
+        android:textColor="#cccccc"
+        android:text="对本地个人所有笔记的标题和正文进行搜索"/>
+
+</LinearLayout>

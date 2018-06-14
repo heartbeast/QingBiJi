@@ -1,0 +1,66 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .idea\
+* .idea\QingBiJi.iml
+* .idea\compiler.xml
+* .idea\copyright\
+* .idea\copyright\profiles_settings.xml
+* .idea\misc.xml
+* .idea\modules.xml
+* .idea\vcs.xml
+* .idea\workspace.xml
+* Log.txt
+* ReleaseProcess.txt
+* build.bat
+* keys\
+* keys\ThinkerNote2_key0817
+* proguard.cfg
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app\src\main\AndroidManifest.xml
+* assets\ => app\src\main\assets\
+* libs\alipaySdk-20161009.jar => app\libs\alipaySdk-20161009.jar
+* libs\android-async-http-1.4.4.jar => app\libs\android-async-http-1.4.4.jar
+* libs\android_api.jar => app\libs\android_api.jar
+* libs\armeabi\liblocSDK_2.3.so => app\src\main\jniLibs\armeabi\liblocSDK_2.3.so
+* libs\baidu_locSDK_2.3.jar => app\libs\baidu_locSDK_2.3.jar
+* libs\httpmime-4.1.jar => app\libs\httpmime-4.1.jar
+* libs\libammsdk.jar => app\libs\libammsdk.jar
+* libs\Msc.jar => app\libs\Msc.jar
+* libs\mta-sdk-1.6.2.jar => app\libs\mta-sdk-1.6.2.jar
+* libs\open_sdk.jar => app\libs\open_sdk.jar
+* libs\pinyin4j-2.5.0.jar => app\libs\pinyin4j-2.5.0.jar
+* libs\weibo_sdk.jar => app\libs\weibo_sdk.jar
+* lint.xml => app\lint.xml
+* res\ => app\src\main\res\
+* src\ => app\src\main\java\
+* foldericon.PNG => foldericon.png
+* foldericonchild.PNG => foldericonchild.png
+* foldericonparent.PNG => foldericonparent.png
+* foldericonparent2.PNG => foldericonparent2.png
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

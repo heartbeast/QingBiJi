@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<PreferenceCategory android:title="@string/about_company"
+		android:key = "about_company">
+
+		<Preference
+			android:title="@string/about_advice"
+			android:key="about_advice" 
+			android:widgetLayout="@layout/preference_more" />
+
+		<Preference
+			android:title="@string/about_comment"
+			android:key="about_comment" 
+			android:widgetLayout="@layout/preference_more" />
+	    		
+		<Preference
+			android:title="@string/about_homepage"
+			android:summary="@string/about_homepage_url"
+			android:key="about_homepage"
+			android:widgetLayout="@layout/preference_more" />
+	
+	 	<Preference
+			android:title="@string/about_contact"
+			android:summary="@string/about_contact_email"
+			android:key="about_contact"
+			android:widgetLayout="@layout/preference_more" />
+	
+	</PreferenceCategory>
+		
+	<PreferenceCategory android:title="@string/about_other"
+		android:key="about_other">
+		<Preference
+			android:title="@string/about_revision"
+			android:key="about_revision" />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/about_friends"
+		android:key="about_friends">
+		<Preference
+			android:title="@string/about_qihu360"
+			android:key="about_qihu360" 
+			android:widgetLayout="@layout/preference_more" />
+	</PreferenceCategory>
+
+</PreferenceScreen>

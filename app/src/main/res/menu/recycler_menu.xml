@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<item android:title="@string/recycler_menu_restore" 
+		android:id="@+id/recycler_menu_restore">
+	</item>
+	
+	<item android:title="@string/recycler_menu_delete" 
+		android:id="@+id/recycler_menu_delete">
+	</item>
+	
+	<item android:title="@string/recycler_menu_view" 
+		android:id="@+id/recycler_menu_view">
+	</item>
+
+	<item android:title="@string/recycler_menu_cancel" 
+		android:id="@+id/recycler_menu_cancel">
+	</item>
+	
+</menu>

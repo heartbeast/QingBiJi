@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tuya_page"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/tuya_toolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="46dip"
+        android:background="@drawable/toolbg" >
+
+        <TextView 
+            android:id="@+id/tuya_back_btn"
+            style="@style/toolbar_back"
+            android:text="涂鸦"/>
+
+        <Button
+            android:id="@+id/tuya_save_btn"
+            android:contentDescription="@string/contentDescription"
+            style="@style/button"
+            android:layout_gravity="right"
+            android:text="@string/finish"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/tuya_view_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/tuya_bottom_toolbar"
+        android:baselineAligned="false"
+        android:layout_width="fill_parent"
+        android:layout_height="44dip"
+        android:background="@drawable/bottom_toolbg" >
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_color_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_select_color_selector"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_strokewidth_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_strokewidth_selector"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_undo_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_undo_selector"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_redo_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_redu_selector"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_clear_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_clear_selector"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/tuya_eraser_btn"
+                android:contentDescription="@string/contentDescription"
+                android:src="@drawable/tuya_eraser"
+                style="@style/tuyabtn_style" />
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

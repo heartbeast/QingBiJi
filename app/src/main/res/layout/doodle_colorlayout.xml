@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/doodle_color_rg"
+    android:background="@drawable/doodle_color_bg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="1dip"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingLeft="4dip"
+    android:paddingRight="4dip" >
+
+    <RadioButton
+        android:id="@+id/doodle_color_read"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_read"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_pink"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_pink"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_yellow"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_yellow"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_green"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_green"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_blue"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_blue"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_gray"
+        style="@style/doodle_radiobutton"
+        android:background="@drawable/color_gray"
+        android:button="@drawable/doodle_color_selector" />
+
+    <RadioButton
+        android:id="@+id/doodle_color_black"
+        style="@style/doodle_radiobutton"
+        android:checked="true"
+        android:background="@drawable/color_black"
+        android:button="@drawable/doodle_color_selector" />
+
+</RadioGroup>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--<item-->
+        <!--android:id="@+id/noteview_menu_toemail"-->
+        <!--android:title="@string/noteview_menu_email"></item>-->
+    
+    <item
+        android:id="@+id/noteview_menu_shareto_SMS"
+        android:title="@string/noteview_menu_shareto_sms"></item>
+
+    <item
+        android:id="@+id/noteview_menu_shareto_WX"
+        android:title="@string/noteview_menu_shareto_wx"></item>
+
+    <item
+        android:id="@+id/noteview_menu_shareto_WXCycle"
+        android:title="@string/noteview_menu_shareto_wxcycle"></item>
+
+    <item
+        android:id="@+id/noteview_menu_shareto_QQ"
+        android:title="@string/noteview_menu_shareto_qq"></item>
+
+    <item
+        android:title="@string/openatt_menu_cancel"
+        android:id="@+id/openatt_menu_cancel">
+    </item>
+
+    <!--<item-->
+        <!--android:id="@+id/noteview_menu_text"-->
+        <!--android:title="@string/noteview_menu_text"></item>-->
+
+</menu>

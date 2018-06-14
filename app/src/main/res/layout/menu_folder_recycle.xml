@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+    <TextView 
+        android:id="@+id/folder_menu_recycle"
+        android:text="@string/folder_menu_recycle"
+        style="@style/menu_item"/>
+    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/divider"/>
+    
+    <TextView 
+        android:id="@+id/folder_menu_cancel"
+        android:text="@string/folder_menu_cancel"
+        style="@style/menu_item"/>
+    
+</LinearLayout>

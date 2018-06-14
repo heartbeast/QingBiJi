@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<PreferenceCategory android:title="@string/noteinfo_note"
+		android:key="noteinfo_note">
+	   	<Preference
+			android:title="@string/noteinfo_folder"
+			android:key="noteinfo_folder"  />
+			
+	   	<Preference
+			android:title="@string/noteinfo_issync"
+			android:key="noteinfo_issync"  />
+
+		<Preference
+			android:title="@string/noteinfo_share"
+			android:key="noteinfo_share"
+			android:widgetLayout="@layout/preference_more"  />
+			
+		<Preference
+			android:title="@string/noteinfo_share_url"
+			android:key="noteinfo_share_url"
+			android:widgetLayout="@layout/preference_more"  />
+
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/noteinfo_note_other"
+		android:key="noteinfo_note_other">
+	   	<Preference
+			android:title="@string/noteinfo_client"
+			android:key="noteinfo_client"  />
+<!--
+	   	<Preference
+			android:title="@string/noteinfo_source"
+			android:key="noteinfo_source"  />
+ -->
+	   	<Preference
+			android:title="@string/noteinfo_createtime"
+			android:key="noteinfo_createtime" 
+			android:widgetLayout="@layout/preference_more" />
+<!--
+	   	<Preference
+			android:title="@string/noteinfo_lastaccess"
+			android:key="noteinfo_lastaccess"  />
+ -->
+	   	<Preference
+			android:title="@string/noteinfo_lastupdate"
+			android:key="noteinfo_lastupdate"  />
+<!--
+	   	<Preference
+			android:title="@string/noteinfo_accesstimes"
+			android:key="noteinfo_accesstimes"  />
+-->
+
+		<Preference
+			android:title="@string/noteinfo_location"
+			android:key="noteinfo_location"  />
+
+	   	<Preference
+			android:title="@string/noteinfo_wordcount"
+			android:key="noteinfo_wordcount"  />
+
+	</PreferenceCategory>
+</PreferenceScreen>

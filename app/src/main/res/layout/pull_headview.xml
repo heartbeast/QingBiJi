@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <FrameLayout
+        android:id="@+id/pull_head"
+        android:layout_width="fill_parent"
+        android:layout_height="84dip"
+        android:layout_gravity="bottom"
+        android:background="#00000000" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="64dip"
+            android:layout_gravity="bottom"
+            android:background="@drawable/notelistitem_bg"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:paddingLeft="80dip">
+
+            <TextView android:id="@+id/pull_head_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="111"
+                android:textColor="#ff000000"
+                android:textSize="16sp" />
+
+            <TextView android:id="@+id/pull_head_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textColor="#ff656565"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dip"
+            android:contentDescription="@string/contentDescription"
+            android:src="@drawable/usericon_default_big" />
+    </FrameLayout>
+
+</LinearLayout>

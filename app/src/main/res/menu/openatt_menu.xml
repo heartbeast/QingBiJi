@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  	<item android:title="@string/openatt_menu_view" 
+		android:id="@+id/openatt_menu_view">
+	</item>
+
+  	<item android:title="@string/openatt_menu_save" 
+		android:id="@+id/openatt_menu_save">
+	</item>
+
+  	<item android:title="@string/openatt_menu_send" 
+		android:id="@+id/openatt_menu_send">
+	</item>
+	
+	<item android:title="@string/openatt_menu_cancel" 
+		android:id="@+id/openatt_menu_cancel">
+	</item>
+	
+</menu>

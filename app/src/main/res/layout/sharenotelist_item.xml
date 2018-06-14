@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sharenotes_item_selector"
+    android:orientation="horizontal"
+    android:paddingBottom="6dip"
+    android:paddingTop="6dip" >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dip"
+        android:layout_marginRight="8dip" >
+
+        <ImageView
+            android:id="@+id/sharenotes_item_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contentDescription"
+            android:src="@drawable/notelist_thumbnail_att" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="26dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/sharenotes_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dip"
+            android:drawableRight="@drawable/quality_sharenote"
+            android:singleLine="true"
+            android:text="@string/test_title"
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip" >
+
+            <TextView
+                android:id="@+id/sharenotes_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/test_date"
+                android:textColor="#ff4485d6"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/sharenotes_item_content"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="6"
+                android:text="@string/test_text"
+                android:textColor="#FF656565"
+                android:textSize="14sp" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/sharenotes_item_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dip"
+            android:contentDescription="@string/contentDescription"
+            android:src="@drawable/ic_audio" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="4dip" >
+
+            <TextView
+                android:id="@+id/sharenotes_item_source"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:paddingRight="8dip"
+                android:singleLine="true"
+                android:text="@string/test_source"
+                android:textColor="#ffb6b6b6"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView android:id="@+id/sharenoteitem_arrows"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="-22dip"
+        android:contentDescription="@string/contentDescription"
+        android:src="@drawable/arrows" />
+
+</LinearLayout>

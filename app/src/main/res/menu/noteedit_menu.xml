@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<item android:title="@string/noteedit_menu_audioinput" 
+		android:id="@+id/noteedit_menu_audioinput" 
+		android:icon="@drawable/ic_menu_start_conversation">
+	</item>
+	
+</menu>

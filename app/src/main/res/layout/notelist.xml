@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notelist_page_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/page_bg"
+    android:orientation="vertical" >
+
+    <!-- tool bar -->
+
+    <FrameLayout
+        android:id="@+id/maincats_toolbar_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="46dip"
+        android:background="@drawable/toolbg" >
+
+        <!-- invisible button -->
+
+        <Button
+            android:id="@+id/notelist_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" >
+        </Button>
+
+        <Button
+            android:id="@+id/notelist_recyclermenu"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" >
+        </Button>
+
+        <Button
+            android:id="@+id/notelist_itemmenu"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:visibility="invisible" >
+        </Button>
+
+        <TextView 
+            android:id="@+id/notelist_home"
+            style="@style/toolbar_back"
+            android:text="我的笔记"/>
+
+        <ImageButton
+            android:id="@+id/notelist_newnote"
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="96dip" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/notelist_search"
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="48dip" >
+        </ImageButton>
+        
+        <ImageButton
+            android:id="@+id/notelist_sort"
+            android:layout_width="48dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="right|center_vertical" >
+        </ImageButton>
+    </FrameLayout>
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        layout="@layout/pagerchild_notelist" />
+    
+    <LinearLayout 
+        android:id="@+id/ll_clearrecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/divider"/>
+        
+        <TextView
+            android:id="@+id/maincats_menu_clearrecycler"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:text="清空" 
+	        android:textColor="@color/red"
+	        android:textSize="18sp"
+	        android:padding="10dp"
+	        />
+    </LinearLayout>
+    
+</LinearLayout>

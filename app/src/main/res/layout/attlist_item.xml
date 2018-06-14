@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/attlistitem_layout_linlerlayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:clickable="false" >
+
+    <ImageView android:id="@+id/attlistitem_thumbnail"
+        android:layout_width="100dip"
+        android:layout_height="77dip"
+        android:layout_marginLeft="2dip"/>
+    <LinearLayout 
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dip"
+        android:layout_marginRight="4dip"
+        android:orientation="vertical">
+        <TextView android:id="@+id/attlistitem_attname"
+            android:layout_width="fill_parent"
+            android:singleLine="true"
+            android:textSize="15sp"
+            android:textColor="#FF000000"
+            android:layout_height="wrap_content"
+            android:text="文件名"
+            />
+        <TextView 
+            android:id="@+id/attlistitem_attsize"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF4485d6"
+            android:layout_marginTop="2dip"
+            android:singleLine="true"
+            android:text="111111KB"></TextView>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:title="@string/attedit_menu_camera" 
+		android:id="@+id/addatt_menu_camera">
+	</item>
+
+	<item android:title="@string/attedit_menu_audio" 
+		android:id="@+id/addatt_menu_audio">
+	</item>
+
+	<item android:title="@string/attedit_menu_photo" 
+		android:id="@+id/addatt_menu_photo">
+	</item>
+	
+	<item android:title="@string/attedit_menu_file" 
+		android:id="@+id/addatt_menu_file">
+	</item>
+
+	<item android:title="@string/attedit_menu_cancel" 
+		android:id="@+id/addatt_menu_cancel">
+	</item>
+</menu>
