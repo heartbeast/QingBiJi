@@ -33,7 +33,8 @@ public class TNTagService {
 		
 		return singleton;
 	}
-	
+
+	//TODO
 	public void TagAdd(TNAction aAction) {
 		JSONObject jsonData = TNUtils.makeJSON(
 				"name", aAction.inputs.get(0));
@@ -63,7 +64,8 @@ public class TNTagService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO
 	public void TagRename(TNAction aAction) {
 		Object tagId = aAction.inputs.get(0);
 		String name = (String) aAction.inputs.get(1);

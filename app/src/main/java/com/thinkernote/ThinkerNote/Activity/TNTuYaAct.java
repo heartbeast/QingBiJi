@@ -38,7 +38,7 @@ import com.thinkernote.ThinkerNote.Other.TuyaView;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
- * 写笔记--涂鸦主界面
+ * 写笔记--涂鸦主界面 sjy 0614
  */
 public class TNTuYaAct extends TNActBase implements OnClickListener,
 		OnCheckedChangeListener, OnSeekBarChangeListener {

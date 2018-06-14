@@ -69,9 +69,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.userinfo);
         setViews();
-        //TODO
-        TNAction.regResponder(TNActionType.Logout, this, "respondLogout");
-        TNAction.regResponder(TNActionType.Upgrade, this, "respondUpgrade");
+        //TODO delete
         TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
 
         //

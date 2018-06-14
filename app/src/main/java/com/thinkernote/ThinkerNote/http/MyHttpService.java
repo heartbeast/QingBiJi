@@ -304,6 +304,66 @@ public interface MyHttpService {
     Observable<CommonBean1<MainUpgradeBean>> synchronizeData();
 
 
+    //-------------------------------------------------写笔记相关----------------------------------------------------
+
+    /**
+     * 新建 标签
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.TAG)
+    Observable<CommonBean> tagAdd( @Field("name") String phone);
+
+    /**
+     * 新建 文件
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.FOLDER)
+    Observable<CommonBean> folderAdd( @Field("name") String phone);
+
+
+    /**
+     * 新建 文件
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.FOLDER)
+    Observable<CommonBean> folderAdd(
+            @Field("name") String phone
+            ,@Field("pid") long pid);
+
+
+    /**
+     *  文件rename
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Note.FOLDER)
+    Observable<CommonBean> folderRename(
+            @Field("name") String phone
+            ,@Field("folder_id") long pid);
+
+    /**
+     * 标签rename
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Note.TAG)
+    Observable<CommonBean> tagRename(
+            @Field("name") String phone
+            ,@Field("tag_id") long pid);
+
+
+
+
+
+
 
 
 

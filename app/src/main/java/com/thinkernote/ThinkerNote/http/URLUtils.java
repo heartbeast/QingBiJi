@@ -54,7 +54,7 @@ public class URLUtils {
          * 手机验证码接口
          */
         public static final String PHONE_QUERFY_CODE = "api/verifycode";
-         /**
+        /**
          * 邮箱验证码接口
          */
         public static final String EMAIL_QUERFY_CODE = "api/verifycode/email";
@@ -69,7 +69,7 @@ public class URLUtils {
          */
         public static final String VERIFY_PIC = "api/captcha";
 
-         /**
+        /**
          * 找回密码 提交
          */
         public static final String SUBMIT_FINDPS = "api/user/password/reset";
@@ -110,7 +110,19 @@ public class URLUtils {
 
     }
 
+    public static class Note {
+        /**
+         * 文件
+         */
+        public static final String FOLDER = "api/folders";
 
+        /**
+         * 标签
+         */
+        public static final String TAG = "api/tags";
+
+
+    }
 
 
 }
