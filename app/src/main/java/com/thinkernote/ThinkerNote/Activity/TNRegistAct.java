@@ -14,9 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
@@ -30,10 +27,9 @@ import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 
-import org.json.JSONObject;
-
 /**
  * 登录 注册
+ * sjy 0612
  */
 public class TNRegistAct extends TNActBase implements OnClickListener,OnRegistListener {
 	

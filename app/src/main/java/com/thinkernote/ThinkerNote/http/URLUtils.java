@@ -113,6 +113,11 @@ public class URLUtils {
         public static final String FEEDBACK = "api/feedback";
 
         /**
+         * 支付
+         */
+        public static final String PAY_TIP = "api/margin/deposit";
+
+        /**
          * pic 上传 （feedback，等）
          */
         public static final String UPLOAD_PIC = "api/attachment";

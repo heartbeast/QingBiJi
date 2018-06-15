@@ -416,7 +416,8 @@ public class TNUserService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO 自定义下载
 	public void UpdateSoftware(TNAction aAction){
 		String uriPath = (String) aAction.inputs.get(0);
 		InputStream in = null;
@@ -458,7 +459,7 @@ public class TNUserService {
 			}
 		}
 	}
-	
+	//TODO
 	public void Pay(TNAction aAction) {
 		JSONObject jsonData = TNUtils.makeJSON(
 				"amount", aAction.inputs.get(0), 

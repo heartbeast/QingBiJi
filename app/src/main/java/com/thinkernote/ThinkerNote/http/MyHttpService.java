@@ -6,7 +6,9 @@ import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.CommonListBean;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
+import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 
 import java.util.List;
 
@@ -315,6 +317,29 @@ public interface MyHttpService {
             @Field("content") String content
             , @Field("pic_id") long pic
             , @Field("email") String email);
+
+    /**
+     *支付宝支付
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Home.PAY_TIP)
+    Observable<CommonBean1<AlipayBean>> alipay(
+            @Field("amount") String amount
+            , @Field("channel") String channel);
+
+
+    /**
+     *微信支付
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Home.PAY_TIP)
+    Observable<WxpayBean> wxpay(
+            @Field("amount") String amount
+            , @Field("channel") String channel);
 
 
     /**
