@@ -370,7 +370,8 @@ public class TNNoteService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO
 	public void GetNoteByNoteId(TNAction aAction) {
 		JSONObject jsonData = TNUtils.makeJSON(
 				"note_id", aAction.inputs.get(0));
@@ -385,6 +386,7 @@ public class TNNoteService {
 		}
 	}
 
+	//TODO
 	public void GetTrashNoteByNoteId(TNAction aAction) {
 		JSONObject jsonData = TNUtils.makeJSON(
 				"note_id", aAction.inputs.get(0));

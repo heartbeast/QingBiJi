@@ -139,6 +139,10 @@ public class URLUtils {
          * 标签
          */
         public static final String TAGLIST = "api/tags";
+        /**
+         * getNote
+         */
+        public static final String NOTE = "api/note";
 
         /**
          * 设置默认路径

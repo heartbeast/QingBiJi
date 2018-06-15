@@ -416,6 +416,16 @@ public interface MyHttpService {
 
 
     /**
+     * getNote
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @GET(URLUtils.Note.NOTE)
+    Observable<CommonBean> getNote(@Field("note_id") long note_id);
+
+
+    /**
      * deleteTag
      *
      * @return
@@ -440,6 +450,12 @@ public interface MyHttpService {
      */
     @POST(URLUtils.Note.VERIFY_EMAIL)
     Observable<CommonBean> verifyEmail();
+
+
+
+
+
+
 
 
     /**
