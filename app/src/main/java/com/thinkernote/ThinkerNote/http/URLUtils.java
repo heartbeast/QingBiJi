@@ -154,6 +154,16 @@ public class URLUtils {
          */
         public static final String VERIFY_EMAIL = "api/user/verifyemail";
 
+         /**
+         * noteList
+         */
+        public static final String NOTE_LIST_FOLDERID = "api/folders/note";
+
+        /**
+         * noteList
+         */
+        public static final String NOTE_LIST_TAGID = TAGLIST;
+
 
     }
 

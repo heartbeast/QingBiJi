@@ -17,7 +17,9 @@ import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 
-
+/**
+ * 本地数据库
+ */
 public class TNDbUtils {
 	private static final String TAG = "TNDbUtils";
 

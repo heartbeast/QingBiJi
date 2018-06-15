@@ -8,6 +8,7 @@ import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 
 import java.util.List;
@@ -450,6 +451,37 @@ public interface MyHttpService {
      */
     @POST(URLUtils.Note.VERIFY_EMAIL)
     Observable<CommonBean> verifyEmail();
+
+
+
+
+    /**
+     * NoteListByFolderId
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @GET(URLUtils.Note.NOTE_LIST_FOLDERID)
+    Observable<NoteListBean> getNoteListByFolderId(
+            @Field("folder_id") long folder_id
+            , @Field("pagenum") int pagenum
+            , @Field("pagesize") int pagesize
+            , @Field("sortord") String sortord);
+
+
+
+    /**
+     * NoteListByTagId
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @GET(URLUtils.Note.NOTE_LIST_TAGID)
+    Observable<NoteListBean> getNoteListByTagId(
+            @Field("folder_id") long folder_id
+            , @Field("pagenum") int pagenum
+            , @Field("pagesize") int pagesize
+            , @Field("sortord") String sortord);
 
 
 

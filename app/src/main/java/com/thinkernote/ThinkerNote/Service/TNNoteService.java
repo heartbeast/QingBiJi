@@ -339,7 +339,8 @@ public class TNNoteService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO
 	public void GetNoteListByFolderId(TNAction aAction) {
 		long folder_id = (Long) aAction.inputs.get(0);
 		int pageNum = (Integer) aAction.inputs.get(1);
@@ -567,7 +568,8 @@ public class TNNoteService {
 		Vector<TNNote> notes = TNDbUtils.getNoteListBySearch(settings.userId, keyWord, settings.sort);
 		aAction.finished(notes);
 	}
-	
+
+	//TODO
 	public void GetNoteListByTagId(TNAction aAction) {
 		long tagId = (Long) aAction.inputs.get(0);
 		int pageNum = (Integer) aAction.inputs.get(1);
