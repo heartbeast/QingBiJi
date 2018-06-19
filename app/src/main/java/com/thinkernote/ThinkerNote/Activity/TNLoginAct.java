@@ -88,6 +88,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         initView();
         //初始化 p
         logPresener = new LogPresenterImpl(this, this);
+
     }
 
     private void initView() {
@@ -200,6 +201,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             ((EditText) findViewById(R.id.login_password)).requestFocus();
             return;
         }
+        //
         TNSettings settings = TNSettings.getInstance();
         settings.loginname = mUserName;
         settings.password = mPassword;
@@ -377,44 +379,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         return super.onKeyDown(keyCode, event);
     }
 
-    //-------------------------------------------------------------------------------
 
-    public void respondLoginThird(TNAction aAction) {
-        if (aAction.inputs.size() != 6)
-            return;
-        mLoginingDialog.hide();
-        MLog.d("第三方登录返回==" + aAction.result + "--" + TNActionResult.Finished);
-        if (aAction.result == TNActionResult.Finished) {
-            TNSettings settings = TNSettings.getInstance();
-            settings.isLogout = false;
-            settings.firstLaunch = false;
-            settings.savePref(false);
-            startActivity(TNMainAct.class);
-            finish();
-        } else {
-            int bType = (Integer) aAction.inputs.get(0);
-            String bid = (String) aAction.inputs.get(1);
-            long stamp = (Long) aAction.inputs.get(2);
-            String outputs = (String) aAction.outputs.get(0);
-            if ("用户未绑定轻笔记".equals(outputs)) {
-                String accessToken = (String) aAction.inputs.get(3);
-                String refreshToken = (String) aAction.inputs.get(4);
-                String name = (String) aAction.inputs.get(5);
-                Bundle b = new Bundle();
-                b.putString("type", "third");
-                b.putInt("bType", bType);
-                b.putString("bid", bid);
-                b.putLong("stamp", stamp);
-                b.putString("accessToken", accessToken);
-                b.putString("refreshToken", refreshToken);
-                b.putString("name", name);
-//				runActivity("TNRegistAct", b);
-                startActivity(TNBindAccountAct.class, b);
-            } else {
-                TNHandleError.handleResult(TNLoginAct.this, aAction);
-            }
-        }
-    }
 
     //-----------------------------------p层调用接口--------------------------------------------
 
@@ -443,6 +408,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     //正常登录
     @Override
     public void onLoginNormalSuccess(Object obj) {
+
         mLoginingDialog.hide();
         TNSettings settings = TNSettings.getInstance();
         settings.isLogout = false;
@@ -549,6 +515,45 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             startActivity(TNBindAccountAct.class, b);//绑定手机号
         } else {
             TNUtilsUi.alert(this, msg);
+        }
+    }
+
+    //-------------------------------------------------------------------------------
+
+    public void respondLoginThird(TNAction aAction) {
+        if (aAction.inputs.size() != 6)
+            return;
+        mLoginingDialog.hide();
+        MLog.d("第三方登录返回==" + aAction.result + "--" + TNActionResult.Finished);
+        if (aAction.result == TNActionResult.Finished) {
+            TNSettings settings = TNSettings.getInstance();
+            settings.isLogout = false;
+            settings.firstLaunch = false;
+            settings.savePref(false);
+            startActivity(TNMainAct.class);
+            finish();
+        } else {
+            int bType = (Integer) aAction.inputs.get(0);
+            String bid = (String) aAction.inputs.get(1);
+            long stamp = (Long) aAction.inputs.get(2);
+            String outputs = (String) aAction.outputs.get(0);
+            if ("用户未绑定轻笔记".equals(outputs)) {
+                String accessToken = (String) aAction.inputs.get(3);
+                String refreshToken = (String) aAction.inputs.get(4);
+                String name = (String) aAction.inputs.get(5);
+                Bundle b = new Bundle();
+                b.putString("type", "third");
+                b.putInt("bType", bType);
+                b.putString("bid", bid);
+                b.putLong("stamp", stamp);
+                b.putString("accessToken", accessToken);
+                b.putString("refreshToken", refreshToken);
+                b.putString("name", name);
+//				runActivity("TNRegistAct", b);
+                startActivity(TNBindAccountAct.class, b);
+            } else {
+                TNHandleError.handleResult(TNLoginAct.this, aAction);
+            }
         }
     }
     //-------------------------------------------------------------------------------

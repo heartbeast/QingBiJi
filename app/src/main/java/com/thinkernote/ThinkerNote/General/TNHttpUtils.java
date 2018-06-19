@@ -24,6 +24,9 @@ import android.graphics.BitmapFactory;
 import com.thinkernote.ThinkerNote.OAuth2.TNHttpEntity;
 import com.thinkernote.ThinkerNote.OAuth2.TNHttpHelper.RestHttpException;
 
+/**
+ * HttpClient工具类
+ */
 public class TNHttpUtils {
 	private static String TAG = "TNHttpUtils";
 

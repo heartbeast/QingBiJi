@@ -66,6 +66,7 @@ public class TNMainAct extends TNActBase implements OnClickListener,OnMainListen
 		TNAction.regResponder(TNActionType.SynchronizeEdit, this, "respondSynchronizeEdit");
 		TNAction.regResponder(TNActionType.Upgrade, this, "respondUpgrade");
 		TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
+
 		//
 		presener = new MainPresenterImpl(this, this);
 		setViews();
@@ -138,7 +139,9 @@ public class TNMainAct extends TNActBase implements OnClickListener,OnMainListen
 
 	@Override
 	protected void configView() {
+
 		if (TextUtils.isEmpty(mSettings.phone) && mSettings.phoneDialogShowCount < 3 && createStatus == 0) {
+
 			mSettings.phoneDialogShowCount += 1;
 			mSettings.savePref(false);
 			CustomDialog.Builder builder = new CustomDialog.Builder(this);  

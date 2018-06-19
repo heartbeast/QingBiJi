@@ -27,6 +27,9 @@ import com.thinkernote.ThinkerNote.Network.TNSocketTag;
 import com.thinkernote.ThinkerNote.Network.TNSocketUser;
 import com.thinkernote.ThinkerNote.OAuth2.TNHttpHelper.RestHttpException;
 
+/**
+ *
+ */
 public class TNOAuth2 {
 	private static final String TAG = "TNOAuth2";
 	public static String TNOAUTH_ACTION_UTL_BASE = "http://s2.thinkernote.com/open/";

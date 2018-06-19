@@ -1,5 +1,6 @@
 package com.thinkernote.ThinkerNote.OAuth2;
 
+//TODO 删
 public class TNUriConst {
 	public static final String REDIRECT_URI_BAIDU = "http://www.qingbiji.cn/binding/baidu_auth_code";
 	public static final String REDIRECT_URI_SINA = "http://www.qingbiji.cn/binding/weibo_token";

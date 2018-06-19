@@ -20,6 +20,9 @@ import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import android.text.TextUtils;
 import android.util.Log;
 
+/**
+ *handle_Notes
+ */
 public class TNSocketNote {
 	private static final String TAG = "TNSocketNote";
 	public static void handle_Notes(TNAction aAction){

@@ -96,6 +96,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
 	private Timer mTimer;
 	private TimerTask mTimerTask;
+
+
 	private Handler mHandler = new Handler() {
 
 		@Override

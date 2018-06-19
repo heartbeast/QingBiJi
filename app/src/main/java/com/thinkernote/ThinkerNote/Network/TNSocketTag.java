@@ -11,7 +11,9 @@ import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
-
+/**
+ * handle_Tags
+ */
 public class TNSocketTag {
 	private static final String TAG = "TNSocketTag";
 	public static void handle_Tags(TNAction aAction){

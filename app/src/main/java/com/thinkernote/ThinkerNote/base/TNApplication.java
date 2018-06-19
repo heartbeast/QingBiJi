@@ -35,17 +35,18 @@ public class TNApplication extends Application {
 
 	@Override
 	public void onCreate() {
-		// 设置是否输出log
-		Log.DEBUG = true;
+		super.onCreate();
+
 		// 是否使用测试服务器
 		TNOAuth2.useTestServer(false);
 
-		Log.d(TAG, "onCreate");
-		super.onCreate();
-		
-		TNAction.regRunner(TNActionType.DbReportError, this, "DbReportError");
-		
+		//TODO 删
 		initialize();
+
+		//TODO 修改
+		//注册反射方法，TNDb.java使用
+		TNAction.regRunner(TNActionType.DbReportError, this, "DbReportError");
+
 		//新网络框架初始化
 		MLog.init(true,"SJY");
 
@@ -105,6 +106,20 @@ public class TNApplication extends Application {
 		
 		aAction.finished();
 		Log.i(TAG, "DbReportError e");
+	}
+
+	// 检测db错误 /TNDb.java使用
+	public void DbReportError(){
+		MLog.i( "DbReportError s" , TNSettings.getInstance().topAct);
+		//TNUtilsUi.showToast("DB ERROR!!");
+		if( TNSettings.getInstance().topAct != null){
+			TNUtilsUi.showNotification(TNSettings.getInstance().topAct,
+				R.string.alert_DBError, true);
+		}
+		TNSettings.getInstance().hasDbError = true;
+		TNSettings.getInstance().savePref(false);
+
+		MLog.i( "DbReportError e");
 	}
 	
 	private void watchAppSwitch(){

@@ -4,6 +4,9 @@ import java.net.URI;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
+/**
+ * 自定义删除
+ */
 public class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
 	
     public static final String METHOD_NAME = "DELETE";

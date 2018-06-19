@@ -1,5 +1,8 @@
 package com.thinkernote.ThinkerNote.General;
 
+/**
+ * 常量
+ */
 public class TNConst {
 	public static final String DEFAULT_TITLE = "未命名";
 	public static final String ATT_MISSING_MSG = "文件尚未上传";

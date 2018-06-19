@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+/**
+ * 全局用户信息类
+ */
 public class TNSettings {
 	public static final String kThinkerNotePackage = "com.thinkernote.ThinkerNote";
 	public static final String kActivityPackage = "com.thinkernote.ThinkerNote.Activity";

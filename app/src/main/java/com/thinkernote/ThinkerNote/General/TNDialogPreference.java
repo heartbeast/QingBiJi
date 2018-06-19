@@ -13,7 +13,6 @@ public class TNDialogPreference extends DialogPreference {
 
 	public TNDialogPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void setOnClickListener(OnClickListener aOnClickListener){

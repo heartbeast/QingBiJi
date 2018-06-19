@@ -17,6 +17,11 @@ import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 
 import android.text.TextUtils;
 
+/**
+ * handle_Login
+ * handle_LoginThird
+ * handle_Profile
+ */
 public class TNSocketUser {
 	private static final String TAG = "TNSocketUser";
 	public static void handle_Login(TNAction aAction){

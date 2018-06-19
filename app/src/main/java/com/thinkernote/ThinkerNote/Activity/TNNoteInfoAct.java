@@ -47,7 +47,8 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.LinearLayout;
 
 /**
- * 笔记属性
+ * menu 属性
+ * sjy 0615
  */
 public class TNNoteInfoAct extends TNActBase implements OnClickListener, OnChildClickListener, OnGroupClickListener {
 	/*

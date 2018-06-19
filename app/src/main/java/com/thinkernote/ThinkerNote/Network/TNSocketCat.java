@@ -15,6 +15,10 @@ import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 
+/**
+ * handle_Folders
+ *
+ */
 public class TNSocketCat {
 	private static final String TAG = "TNSocketCat";
 	public static void handle_Folders(TNAction aAction){

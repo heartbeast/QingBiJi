@@ -10,7 +10,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-
+/**
+ * 错误的返回处理
+ */
 public class TNHandleError {
 	private static final String TAG = "TNHandleError";
 	private static Activity currentAct=null;
