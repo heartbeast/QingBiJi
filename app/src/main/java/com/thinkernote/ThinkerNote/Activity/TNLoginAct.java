@@ -11,6 +11,8 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
@@ -27,6 +29,8 @@ import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote._constructer.presenter.LogPresenterImpl;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.Weibo;
 import com.weibo.sdk.android.WeiboAuthListener;
@@ -37,6 +41,7 @@ import com.weibo.sdk.android.sso.SsoHandler;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -72,7 +77,9 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     private String mLoginId;
 
     //p层相关
-    ILogPresener logPresener;
+    private ILogPresener logPresener;
+    private LoginBean loginBean;
+    private ProfileBean profileBean;//登录更新
 
     // Activity methods
     //-------------------------------------------------------------------------------
@@ -278,7 +285,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
 
 
     //-------------------------------------wechat登录------------------------------------------
-    private void loginWechat(){
+    private void loginWechat() {
         WXapi = WXAPIFactory.createWXAPI(this, TNConst.WX_APP_ID, true);
         WXapi.registerApp(TNConst.WX_APP_ID);
         SendAuth.Req req = new SendAuth.Req();
@@ -346,7 +353,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        MLog.d("登录返回结果处理"+requestCode+"--"+resultCode);
+        MLog.d("登录返回结果处理" + requestCode + "--" + resultCode);
         //wechat
         if (resultCode == 11) {//微信登录 成功返回
             MLog.d("登录返回结果处理");
@@ -354,7 +361,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             String refresh_token = data.getStringExtra("refresh_token");
             String uid = data.getStringExtra("unionid");
             String nickName = data.getStringExtra("nickName");
-            MLog.d("登录返回结果处理"+nickName);
+            MLog.d("登录返回结果处理" + nickName);
             //微信登录
             pLoginWechat(9, uid, System.currentTimeMillis(), access_token, refresh_token, nickName);
 
@@ -380,7 +387,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     }
 
 
-
     //-----------------------------------p层调用接口--------------------------------------------
 
     //正常登录
@@ -403,22 +409,42 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         logPresener.loginWechat(aArray, unionId, currentTime, accessToken, refreshToken, name);
     }
 
+    private void updateProfile() {
+        logPresener.pUpdataProfile();
+    }
+
     //-----------------------------------接口返回的回调--------------------------------------------
 
-    //正常登录
+    /**
+     * 正常登录 返回
+     * 根据以前接口要求，调用登录接口成功后，还需再调用一个更新接口
+     *
+     * @param obj
+     */
     @Override
     public void onLoginNormalSuccess(Object obj) {
-
-        mLoginingDialog.hide();
+        loginBean = (LoginBean) obj;
         TNSettings settings = TNSettings.getInstance();
         settings.isLogout = false;
+
+        //
+        settings.password = mPassword;
+        settings.userId = loginBean.getUser_id();
+        settings.username = loginBean.getUsername();
+        settings.token = loginBean.getToken();
+        settings.expertTime = loginBean.getExpire_at();
+        if (TextUtils.isEmpty(settings.loginname)) {
+            settings.loginname = loginBean.getUsername();
+        }
         settings.savePref(false);
-        startActivity(TNMainAct.class);
-        finish();
+        //更新
+        updateProfile();
+
     }
 
     @Override
     public void onLoginNormalFailed(String msg, Exception e) {
+        loginBean = null;
         mLoginingDialog.hide();
         if (e == null) {
             TNUtilsUi.alert(this, msg);
@@ -458,6 +484,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         }
     }
 
+    //微信
     @Override
     public void onLoginWechatSuccess(Object obj) {
         mLoginingDialog.hide();
@@ -488,6 +515,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         }
     }
 
+    //新浪
     @Override
     public void onLoginSinaSuccess(Object obj) {
         mLoginingDialog.hide();
@@ -516,6 +544,53 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         } else {
             TNUtilsUi.alert(this, msg);
         }
+    }
+
+    //正常登录的更新
+    @Override
+    public void onLogProfileSuccess(Object obj) {
+        profileBean = (ProfileBean) obj;
+        mLoginingDialog.hide();
+
+        //
+        TNSettings settings = TNSettings.getInstance();
+        long userId = TNDbUtils.getUserId(settings.username);
+
+        settings.phone = profileBean.getPhone();
+        settings.email = profileBean.getEmail();
+        settings.defaultCatId = profileBean.getDefault_folder();
+
+        if (userId != settings.userId) {
+            //清空user表
+            UserDbHelper.clearUsers();
+        }
+
+        JSONObject user = TNUtils.makeJSON(
+                "username", settings.username,
+                "password", settings.password,
+                "userEmail", settings.email,
+                "phone", settings.phone,
+                "userId", settings.userId,
+                "emailVerify", profileBean.getEmailverify(),
+                "totalSpace", profileBean.getTotal_space(),
+                "usedSpace", profileBean.getUsed_space());
+
+        //更新user表
+        UserDbHelper.addOrUpdateUser(user);
+
+        //
+        settings.isLogout = false;
+        settings.savePref(false);
+
+        //
+        startActivity(TNMainAct.class);
+        finish();
+    }
+
+    @Override
+    public void onLogProfileFailed(String msg, Exception e) {
+        mLoginingDialog.hide();
+        profileBean = null;
     }
 
     //-------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ public class LoginBean extends CommonBean implements Serializable {
     String username;
     long user_id;
     String token;
-    String expire_at;
+    long expire_at;
 
     public String getUsername() {
         return username;
@@ -38,11 +38,11 @@ public class LoginBean extends CommonBean implements Serializable {
         this.token = token;
     }
 
-    public String getExpire_at() {
+    public long getExpire_at() {
         return expire_at;
     }
 
-    public void setExpire_at(String expire_at) {
+    public void setExpire_at(long expire_at) {
         this.expire_at = expire_at;
     }
 

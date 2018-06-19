@@ -6,7 +6,9 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ILogModule;
 import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.CommonBean2;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;
@@ -160,6 +162,41 @@ public class LogModuleImpl implements ILogModule {
                             listener.onLoginWechatSuccess(bean);
                         } else{
                             listener.onLoginWechatFailed(bean.getMessage(),null,bid,stamp,accessToken,refreshToken,name);
+                        }
+                    }
+
+                });
+    }
+
+    @Override
+    public void mProfile(final OnLogListener listener) {
+        MyHttpService.NoCacheBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .LogNormalProfile()//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mProfile--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e(TAG, "mProfile--异常onError:" + e.toString());
+                        listener.onLogProfileFailed("异常"  ,new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean2<ProfileBean> bean) {
+                        MLog.d(TAG, "mProfile-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            MLog.d(TAG, "mProfile-成功");
+                            listener.onLogProfileSuccess(bean.getProfile());
+                        } else{
+                            listener.onLogProfileFailed(bean.getMsg(),null);
                         }
                     }
 

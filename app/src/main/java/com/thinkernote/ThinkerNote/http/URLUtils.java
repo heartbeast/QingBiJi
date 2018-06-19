@@ -41,9 +41,13 @@ public class URLUtils {
      */
     public static class Log {
         /**
-         *
+         * 正常登录
          */
         public static final String LOGINNORMAL = "api/login";
+        /**
+         * 登录后的同步更新
+         */
+        public static final String PROFILE = "api/user/profile";
 
         /**
          * qq登录
@@ -154,7 +158,7 @@ public class URLUtils {
          */
         public static final String VERIFY_EMAIL = "api/user/verifyemail";
 
-         /**
+        /**
          * noteList
          */
         public static final String NOTE_LIST_FOLDERID = "api/folders/note";

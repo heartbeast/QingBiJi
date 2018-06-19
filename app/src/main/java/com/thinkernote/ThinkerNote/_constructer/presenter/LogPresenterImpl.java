@@ -11,7 +11,7 @@ import com.thinkernote.ThinkerNote._constructer.module.LogModuleImpl;
 /**
  * 登录 p层 具体实现
  */
-public class LogPresenterImpl implements ILogPresener ,OnLogListener{
+public class LogPresenterImpl implements ILogPresener, OnLogListener {
     private Context context;
     private OnLogListener onLogView;
     //p层调用M层方法
@@ -26,46 +26,52 @@ public class LogPresenterImpl implements ILogPresener ,OnLogListener{
     //============================p层重写，用于调用m层方法============================
     @Override
     public void loginNormal(String name, String ps) {
-        logModule.loginNomal(this,name,ps);
+        logModule.loginNomal(this, name, ps);
     }
 
     @Override
-    public void loginQQ(int aArray,String unionId,long currentTime,String accessToken,String refreshToken,String name) {
+    public void loginQQ(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
         String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
         logModule.loginQQ(this
-                ,aArray
-                ,unionId
-                ,currentTime
+                , aArray
+                , unionId
+                , currentTime
                 , TNUtils.toMd5(sign).toLowerCase()
                 , accessToken
-                ,refreshToken
-                ,name);
+                , refreshToken
+                , name);
     }
 
     @Override
-    public void loginWechat(int aArray,String unionId,long currentTime,String accessToken,String refreshToken,String name) {
+    public void loginWechat(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
         String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
         logModule.loginWechat(this
-                ,aArray
-                ,unionId
-                ,currentTime
+                , aArray
+                , unionId
+                , currentTime
                 , TNUtils.toMd5(sign).toLowerCase()
                 , accessToken
-                ,refreshToken
-                ,name);
+                , refreshToken
+                , name);
+    }
+
+    //更新
+    @Override
+    public void pUpdataProfile() {
+        logModule.mProfile(this);
     }
 
     @Override
-    public void loginSina(int aArray,String unionId,long currentTime,String accessToken,String refreshToken,String name) {
+    public void loginSina(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
         String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
         logModule.loginSina(this
-                ,aArray
-                ,unionId
-                ,currentTime
+                , aArray
+                , unionId
+                , currentTime
                 , TNUtils.toMd5(sign).toLowerCase()
                 , accessToken
-                ,refreshToken
-                ,name);
+                , refreshToken
+                , name);
     }
 
     //==========================结果回调==============================
@@ -75,8 +81,8 @@ public class LogPresenterImpl implements ILogPresener ,OnLogListener{
     }
 
     @Override
-    public void onLoginNormalFailed(String msg,Exception e) {
-        onLogView.onLoginNormalFailed(msg,e);
+    public void onLoginNormalFailed(String msg, Exception e) {
+        onLogView.onLoginNormalFailed(msg, e);
     }
 
     @Override
@@ -85,8 +91,8 @@ public class LogPresenterImpl implements ILogPresener ,OnLogListener{
     }
 
     @Override
-    public void onLoginQQFailed(String msg, Exception e, String bid,long currentTime, String accessToken, String refreshToken, String name) {
-        onLogView.onLoginQQFailed(msg,e,bid,currentTime,accessToken,refreshToken,name);
+    public void onLoginQQFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
+        onLogView.onLoginQQFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
     }
 
     @Override
@@ -95,8 +101,8 @@ public class LogPresenterImpl implements ILogPresener ,OnLogListener{
     }
 
     @Override
-    public void onLoginWechatFailed(String msg,Exception e, String bid,long currentTime,String accessToken,String refreshToken,String name) {
-        onLogView.onLoginWechatFailed(msg,e,bid,currentTime,accessToken,refreshToken,name);
+    public void onLoginWechatFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
+        onLogView.onLoginWechatFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
 
     }
 
@@ -106,8 +112,18 @@ public class LogPresenterImpl implements ILogPresener ,OnLogListener{
     }
 
     @Override
-    public void onLoginSinaFailed(String msg,Exception e, String bid,long currentTime,String accessToken,String refreshToken,String name) {
-        onLogView.onLoginSinaFailed(msg,e,bid,currentTime,accessToken,refreshToken,name);
+    public void onLoginSinaFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
+        onLogView.onLoginSinaFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
+    }
+
+    @Override
+    public void onLogProfileSuccess(Object obj) {
+        onLogView.onLogProfileSuccess(obj);
+    }
+
+    @Override
+    public void onLogProfileFailed(String msg, Exception e) {
+        onLogView.onLogProfileFailed(msg, e);
     }
     //========================================================
 }

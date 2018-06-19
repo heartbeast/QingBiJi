@@ -3,8 +3,10 @@ package com.thinkernote.ThinkerNote.http;
 
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
+import com.thinkernote.ThinkerNote.bean.CommonBean2;
 import com.thinkernote.ThinkerNote.bean.CommonListBean;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
@@ -118,6 +120,16 @@ public interface MyHttpService {
             , @Field("bid") String password
             , @Field("stamp") long stamp
             , @Field("sign") String sign
+    );
+
+    /**
+     * 登录同步更新
+     *
+     * @return
+     */
+    @GET(URLUtils.Log.PROFILE)
+    Observable<CommonBean2<ProfileBean>> LogNormalProfile(
+
     );
 
     /**

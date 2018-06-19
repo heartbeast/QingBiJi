@@ -19,4 +19,8 @@ public interface OnLogListener {
     void onLoginSinaSuccess(Object obj);
 
     void onLoginSinaFailed(String msg,Exception e, String bid,long currentTime,String accessToken,String refreshToken,String name);
+
+    void onLogProfileSuccess(Object obj);
+
+    void onLogProfileFailed(String msg,Exception e);
 }
