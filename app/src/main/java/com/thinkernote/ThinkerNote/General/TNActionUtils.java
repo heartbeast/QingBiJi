@@ -1,9 +1,10 @@
 package com.thinkernote.ThinkerNote.General;
 
-import java.util.Vector;
-
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.Vector;
 
 public class TNActionUtils {
 	private static final String TAG = "TNActionUtils";
@@ -41,7 +42,7 @@ public class TNActionUtils {
 						|| action.type == TNActionType.GetNoteByNoteId
 						|| action.type == TNActionType.SyncNoteAtt
 						|| action.type == TNActionType.GetAllDataByNoteId){
-					Log.d(TAG, "isSynchronizing:" + action.type);
+					MLog.d(TAG, "isSynchronizing:" + action.type);
 					return true;
 				}
 			}
@@ -64,7 +65,7 @@ public class TNActionUtils {
 						|| action.type == TNActionType.GetNoteByNoteId
 						|| action.type == TNActionType.SyncNoteAtt
 						|| action.type == TNActionType.GetAllDataByNoteId)){
-					Log.i(TAG, "isSynchronizing" + action.type + action + curAction);
+					MLog.i(TAG, "isSynchronizing" + action.type + action + curAction);
 					return true;
 				}
 			}
@@ -79,7 +80,7 @@ public class TNActionUtils {
 				if(action.type == TNActionType.GetNoteByNoteId
 						|| action.type == TNActionType.SyncNoteAtt
 						|| action.type == TNActionType.GetAllDataByNoteId){
-					Log.d(TAG, "isNoteSynchronizing:" + action.type);
+					MLog.d(TAG, "isNoteSynchronizing:" + action.type);
 					return true;
 				}
 			}
@@ -107,7 +108,7 @@ public class TNActionUtils {
 				if(action.type == TNActionType.TNHttpDownloadAtt){
 					long attId = (Long) action.inputs.get(1);
 					if( attId == id){
-						Log.e(TAG, action.type + " downloading:" + id);
+						MLog.e(TAG, action.type + " downloading:" + id);
 						return true;
 					}
 				}
@@ -177,7 +178,7 @@ public class TNActionUtils {
 						|| action.type == TNActionType.GetParentFolders
 						|| action.type == TNActionType.GetTagList
 						|| action.type == TNActionType.GetAllDataByNoteId){
-					Log.d(TAG, "isSyncing:" + action.type);
+					MLog.d(TAG, "isSyncing:" + action.type);
 					return true;
 				}
 			}

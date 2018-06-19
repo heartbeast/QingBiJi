@@ -33,7 +33,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Scroller;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 /**
  * A view group that allows users to switch between multiple screens (layouts) in the same way as
@@ -432,7 +432,7 @@ public final class HorizontalPager extends ViewGroup {
 			snapToScreen(currentScreen, ANIMATION_SCREEN_SET_DURATION_MILLIS);
 		} else {
 			scrollTo(mCurrentScreen * getWidth(), 0);
-			Log.e(TAG, mCurrentScreen + " to " + currentScreen);
+			MLog.e(TAG, mCurrentScreen + " to " + currentScreen);
 			if(mOnScreenSwitchListener != null && mCurrentScreen != currentScreen){
 					mOnScreenSwitchListener.onScreenSwitched(currentScreen);
 			}
@@ -509,7 +509,7 @@ public final class HorizontalPager extends ViewGroup {
 			mScroller.startScroll(getScrollX(), 0, delta, 0, duration);
 		}
 
-		Log.e(TAG, mCurrentScreen + " to " + whichScreen);
+		MLog.e(TAG, mCurrentScreen + " to " + whichScreen);
 		if(mOnScreenSwitchListener != null && mCurrentScreen != whichScreen){
 				mOnScreenSwitchListener.onScreenSwitched(whichScreen);
 		}

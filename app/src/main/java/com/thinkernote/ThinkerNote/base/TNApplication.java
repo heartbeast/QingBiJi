@@ -3,15 +3,14 @@ package com.thinkernote.ThinkerNote.base;
 import android.app.Application;
 import android.os.AsyncTask;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDb2;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.OAuth2.TNOAuth2;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Service.TNAttDownloadService;
 import com.thinkernote.ThinkerNote.Service.TNAttLocalService;
 import com.thinkernote.ThinkerNote.Service.TNAttService;
@@ -60,7 +59,7 @@ public class TNApplication extends Application {
 	// private methods
 	//-------------------------------------------------------------------------------
 	private void initialize(){
-		Log.d(TAG, "initialize");
+		MLog.d(TAG, "initialize");
 		
 		TNSettings settings = TNSettings.getInstance();
 		settings.appContext = this;
@@ -95,7 +94,7 @@ public class TNApplication extends Application {
 	}
 	
 	public void DbReportError(TNAction aAction){
-		Log.i(TAG, "DbReportError s" + TNSettings.getInstance().topAct);
+		MLog.i(TAG, "DbReportError s" + TNSettings.getInstance().topAct);
 		//TNUtilsUi.showToast("DB ERROR!!");
 		if( TNSettings.getInstance().topAct != null){
 			TNUtilsUi.showNotification(TNSettings.getInstance().topAct,
@@ -105,7 +104,7 @@ public class TNApplication extends Application {
 		TNSettings.getInstance().savePref(false);
 		
 		aAction.finished();
-		Log.i(TAG, "DbReportError e");
+		MLog.i(TAG, "DbReportError e");
 	}
 
 	// 检测db错误 /TNDb.java使用

@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Adapter;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Vector;
-
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
@@ -15,19 +11,18 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Vector;
 
 public class TNProjectNotesExpandableAdapter extends BaseExpandableListAdapter{
 	private static final String TAG = "TNProjectNotesExpandableAdapter";

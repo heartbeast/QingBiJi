@@ -1,21 +1,20 @@
 package com.thinkernote.ThinkerNote.Network;
 
-import org.json.JSONObject;
+import android.text.TextUtils;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
-import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import android.text.TextUtils;
+import org.json.JSONObject;
 
 /**
  * handle_Login
@@ -25,7 +24,7 @@ import android.text.TextUtils;
 public class TNSocketUser {
 	private static final String TAG = "TNSocketUser";
 	public static void handle_Login(TNAction aAction){
-		Log.i(TAG, "handle_LOGIN");
+		MLog.i(TAG, "handle_LOGIN");
 		JSONObject inputs = (JSONObject)aAction.inputs.get(2);
 		JSONObject outputs = (JSONObject)aAction.outputs.get(0);
 		int result = (Integer)TNUtils.getFromJSON(outputs, "code");
@@ -49,7 +48,7 @@ public class TNSocketUser {
 	}
 	
 	public static void handle_LoginThird(TNAction aAction){
-		Log.i(TAG, "handle_LoginThird");
+		MLog.i(TAG, "handle_LoginThird");
 		JSONObject inputs = (JSONObject)aAction.inputs.get(2);
 		JSONObject outputs = (JSONObject)aAction.outputs.get(0);
 		int result = (Integer)TNUtils.getFromJSON(outputs, "code");

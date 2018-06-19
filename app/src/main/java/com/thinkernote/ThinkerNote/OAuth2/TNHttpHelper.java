@@ -53,8 +53,8 @@ import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.Utils.DeviceInfoUtils;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 /**
  * http执行类
@@ -97,13 +97,13 @@ public class TNHttpHelper {
     }
 
     public TNHttpEntity doGet(String url) throws RestHttpException, HttpException {
-        Log.i("doGet", "url=" + url);
+        MLog.i("doGet", "url=" + url);
         final HttpGet request = new HttpGet(url);
         return execute(request);
     }
 
     public TNHttpEntity doGet(String url, Vector<Header> headers) throws RestHttpException, HttpException {
-        Log.i("doGet", "url=" + url);
+        MLog.i("doGet", "url=" + url);
         final HttpGet request = new HttpGet(url);
         if (headers != null && headers.size() > 0) {
             for (Header header : headers) {
@@ -115,7 +115,7 @@ public class TNHttpHelper {
     }
 
     public void doGetToFile(String url, String localFilePath) throws RestHttpException, HttpException {
-        Log.i("doGetToFile", "url=" + url + " outPath=" + localFilePath);
+        MLog.i("doGetToFile", "url=" + url + " outPath=" + localFilePath);
         final HttpGet request = new HttpGet(url);
         final HttpResponse resp;
         try {
@@ -124,12 +124,12 @@ public class TNHttpHelper {
 
             StatusLine status = resp.getStatusLine();
             int statusCode = status.getStatusCode();
-            Log.i(TAG, "response=" + resp);
-            Log.i(TAG, "statusCode=" + statusCode);
-            Log.i(TAG, "toString=" + status.toString());
+            MLog.i(TAG, "response=" + resp);
+            MLog.i(TAG, "statusCode=" + statusCode);
+            MLog.i(TAG, "toString=" + status.toString());
             Header[] headers = resp.getAllHeaders();
             for (int i = 0; i < headers.length; i++) {
-                Log.i(TAG, "header: name=" + headers[i].getName() + " value=" + headers[i].getValue());
+                MLog.i(TAG, "header: name=" + headers[i].getName() + " value=" + headers[i].getValue());
             }
             request.addHeader("user-agent", DeviceInfoUtils.getUserDeviceInfo(mContex));
 
@@ -160,7 +160,7 @@ public class TNHttpHelper {
      * @throws HttpException
      */
     public TNHttpEntity doPost(String url, List<NameValuePair> params) throws RestHttpException, HttpException {
-        Log.i("doPost", "url=" + url);
+        MLog.i("doPost", "url=" + url);
         if (params == null)
             params = EMPTY_PARAMS;
 
@@ -179,7 +179,7 @@ public class TNHttpHelper {
     }
 
     public TNHttpEntity doPostMultipart(String url, List<NameValuePair> params, Object imageData, String key) throws RestHttpException, HttpException {
-        Log.i("doPostMultipart", "url=" + url);
+        MLog.i("doPostMultipart", "url=" + url);
         if (params == null)
             params = EMPTY_PARAMS;
 
@@ -208,7 +208,7 @@ public class TNHttpHelper {
     }
 
     public TNHttpEntity doPut(String url, List<NameValuePair> params) throws RestHttpException, HttpException {
-        Log.i("doPut", "url=" + url);
+        MLog.i("doPut", "url=" + url);
         if (params == null)
             params = EMPTY_PARAMS;
 
@@ -235,7 +235,7 @@ public class TNHttpHelper {
      * @throws HttpException
      */
     public TNHttpEntity doDelete(String url, List<NameValuePair> params) throws RestHttpException, HttpException {
-        Log.i("doDelete", "url=" + url);
+        MLog.i("doDelete", "url=" + url);
         if (params == null)
             params = EMPTY_PARAMS;
 
@@ -254,7 +254,7 @@ public class TNHttpHelper {
     }
 
     public TNHttpEntity doUploadFile(String url, String filePath, List<NameValuePair> params) throws RestHttpException, HttpException {
-        Log.i("doUploadFile", "url=" + url);
+        MLog.i("doUploadFile", "url=" + url);
         url = url.replace(" ", "%20");//文件名有空格
         final HttpPost request = new HttpPost(url);
         MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -283,28 +283,28 @@ public class TNHttpHelper {
             long thumbnailAttId = -1;
             Header[] headers = resp.getAllHeaders();
             for (int i = 0; i < headers.length; i++) {
-                Log.i(TAG, "header: name=" + headers[i].getName() + " value=" + headers[i].getValue());
+                MLog.i(TAG, "header: name=" + headers[i].getName() + " value=" + headers[i].getValue());
             }
             Header head = resp.getFirstHeader("Thumb-Att-Id");
             if (head != null) {
                 thumbnailAttId = Long.valueOf(head.getValue());
-                Log.e(TAG, "thumbnailAttId=" + thumbnailAttId);
+                MLog.e(TAG, "thumbnailAttId=" + thumbnailAttId);
             }
             StatusLine status = resp.getStatusLine();
             int statusCode = status.getStatusCode();
-            Log.i(TAG, "response=" + resp);
-            Log.i(TAG, "statusCode=" + statusCode);
-            Log.i(TAG, "toString=" + status.toString());
+            MLog.i(TAG, "response=" + resp);
+            MLog.i(TAG, "statusCode=" + statusCode);
+            MLog.i(TAG, "toString=" + status.toString());
 
             HttpEntity entity = resp.getEntity();
-            Log.i(TAG, "entity=" + entity);
+            MLog.i(TAG, "entity=" + entity);
 
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 TNHttpEntity tnEntity = new TNHttpEntity(entity, thumbnailAttId);
                 return tnEntity;
             } else {
                 String response = EntityUtils.toString(entity);
-                Log.e(TAG, "http errorcode: " + resp.getStatusLine().getStatusCode()
+                MLog.e(TAG, "http errorcode: " + resp.getStatusLine().getStatusCode()
                         + " response: " + response);
                 throw new RestHttpException(resp.getStatusLine().getStatusCode(), response);
             }

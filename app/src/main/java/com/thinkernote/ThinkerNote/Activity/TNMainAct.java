@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
@@ -374,7 +373,7 @@ public class TNMainAct extends TNActBase implements OnClickListener,OnMainListen
 			try {
 				PackageInfo info = getPackageManager().getPackageInfo(
 						getPackageName(), 0);
-				Log.d(TAG, info.versionCode + "," + info.versionName);
+				MLog.d(TAG, info.versionCode + "," + info.versionName);
 				String newVersionName = (String) TNUtils.getFromJSON(respond, "version");
 				String newVersionCode = TNUtils.getFromJSON(respond, "versionCode") != null ? respond.getString("versionCode"): "-1";
 //				这里需要加判断更新的字段,判断是否需要更新且只更新一次
@@ -387,7 +386,7 @@ public class TNMainAct extends TNActBase implements OnClickListener,OnMainListen
 				int newSize = respond.getInt("size");
 				String description = respond.getString("content");
 				mDownLoadAPKPath = respond.getString("url");
-				Log.d(TAG, newVersionName + ","
+				MLog.d(TAG, newVersionName + ","
 						+ newSize);
 				if (Integer.valueOf(newVersionCode) > info.versionCode) {
 					LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -451,7 +450,7 @@ public class TNMainAct extends TNActBase implements OnClickListener,OnMainListen
 					pb.getMax() / 1024f / 1024f,
 					100f * pb.getProgress() / pb.getMax()));
 		} else if (aAction.result == TNActionResult.Finished) {
-			Log.d(TAG, "respondUpdateSoftware finished");
+			MLog.d(TAG, "respondUpdateSoftware finished");
 			Dialog dialog = (Dialog) aAction.inputs.get(1);
 			dialog.dismiss();
 			String filePath = (String) aAction.outputs.get(0);

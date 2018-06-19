@@ -9,7 +9,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class SlideLayout extends ViewGroup {
 	private static final String TAG = "ScrollLayout";
@@ -62,7 +62,7 @@ public class SlideLayout extends ViewGroup {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		Log.e(TAG, "onMeasure");
+		MLog.e(TAG, "onMeasure");
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
 		final int width = MeasureSpec.getSize(widthMeasureSpec);
@@ -116,7 +116,7 @@ public class SlideLayout extends ViewGroup {
 			if (mOnScreenSwitchListener != null) {
 				mOnScreenSwitchListener.onScreenSwitched(whichScreen);
 			}
-			Log.d(TAG, "cahnge screen:" + whichScreen);
+			MLog.d(TAG, "cahnge screen:" + whichScreen);
 		}
 		mCurScreen = whichScreen;
 	}
@@ -158,7 +158,7 @@ public class SlideLayout extends ViewGroup {
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			Log.e(TAG, "event down!");
+			MLog.e(TAG, "event down!");
 			if (!mScroller.isFinished()) {
 				mScroller.abortAnimation();
 			}
@@ -186,20 +186,20 @@ public class SlideLayout extends ViewGroup {
 			break;}
 
 		case MotionEvent.ACTION_UP:{
-			Log.e(TAG, "event : up");
+			MLog.e(TAG, "event : up");
 			final VelocityTracker velocityTracker = mVelocityTracker;
 			velocityTracker.computeCurrentVelocity(1000);
 			int velocityX = (int) velocityTracker.getXVelocity();
-			Log.e(TAG, "velocityX:" + velocityX);
+			MLog.e(TAG, "velocityX:" + velocityX);
 
 			if (velocityX > SNAP_VELOCITY && mCurScreen > 0) {
 				// Fling enough to move left
-				Log.e(TAG, "snap left");
+				MLog.e(TAG, "snap left");
 				snapToScreen(mCurScreen - 1);
 			} else if (velocityX < -SNAP_VELOCITY
 					&& mCurScreen < getChildCount() - 1) {
 				// Fling enough to move right
-				Log.e(TAG, "snap right");
+				MLog.e(TAG, "snap right");
 				snapToScreen(mCurScreen + 1);
 			} else {
 				snapToDestination();
@@ -221,7 +221,7 @@ public class SlideLayout extends ViewGroup {
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		Log.e(TAG, "onInterceptTouchEvent-slop:" + mTouchSlop);
+		MLog.e(TAG, "onInterceptTouchEvent-slop:" + mTouchSlop);
 
 		final int action = ev.getAction();
 		if ((action == MotionEvent.ACTION_MOVE)

@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Vector;
-
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,24 +9,18 @@ import android.view.View.OnClickListener;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.thinkernote.ThinkerNote.Activity.fragment.TNPageCats;
-import com.thinkernote.ThinkerNote.Activity.fragment.TNPageNotes;
-import com.thinkernote.ThinkerNote.Activity.fragment.TNPageTags;
-import com.thinkernote.ThinkerNote.Database.TNDb;
-import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote._constructer.presenter.PagerPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IPagerPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnPagerListener;
-import com.thinkernote.ThinkerNote.base.TNChildViewBase;
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.Activity.fragment.TNPageCats;
+import com.thinkernote.ThinkerNote.Activity.fragment.TNPageNotes;
+import com.thinkernote.ThinkerNote.Activity.fragment.TNPageTags;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
@@ -41,7 +31,18 @@ import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.HorizontalPager;
 import com.thinkernote.ThinkerNote.Other.HorizontalPager.OnScreenSwitchListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote._constructer.presenter.PagerPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.IPagerPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnPagerListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.base.TNChildViewBase;
+
+import org.json.JSONObject;
+
+import java.util.Vector;
+
+import static com.thinkernote.ThinkerNote.Utils.MLog.i;
 
 /**
  * 主页--我的笔记
@@ -481,14 +482,14 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
 
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.i(TAG, "onRestoreInstanceState");
+        i(TAG, "onRestoreInstanceState");
         int screen = savedInstanceState.getInt("CurrentScreen");
         mPager.setCurrentScreen(screen, false);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, "onSaveInstanceState");
+        i(TAG, "onSaveInstanceState");
         outState.putInt("CurrentScreen", mPager.getCurrentScreen());
         super.onSaveInstanceState(outState);
     }

@@ -1,14 +1,5 @@
 package com.thinkernote.ThinkerNote.Other;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import com.thinkernote.ThinkerNote.General.Log;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,6 +12,15 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LockPatternView extends View {
     public static final double OUTER_SIZE_RATIO = 0.50;
@@ -155,7 +155,7 @@ public class LockPatternView extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-            	Log.i("ACTION_UP", "practicePath=" + practicePath);
+                MLog.i("ACTION_UP", "practicePath=" + practicePath);
                 wildX = -1;
                 wildY = -1;
                              

@@ -26,7 +26,6 @@ import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
@@ -34,6 +33,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsTag;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.TagListPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ITagListPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
@@ -178,7 +178,7 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, 
 			int position, long id){
-		Log.d(TAG, parent.toString() + view.toString() + position + id);
+		MLog.d(TAG, parent.toString() + view.toString() + position + id);
 		ListView lv = (ListView)findViewById(R.id.taglist_list);
 		CheckBox cb = (CheckBox)lv.findViewWithTag((Object)position);
 		cb.setChecked(!cb.isChecked());
@@ -189,7 +189,7 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, 
 			int position, long id) {
-		Log.i(TAG, "onItemLongClick");
+		MLog.i(TAG, "onItemLongClick");
 		return false;
 	}
 

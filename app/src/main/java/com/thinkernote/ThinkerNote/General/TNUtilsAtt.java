@@ -1,5 +1,18 @@
 package com.thinkernote.ThinkerNote.General;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.os.Environment;
+import android.os.StatFs;
+import android.webkit.MimeTypeMap;
+
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.apache.http.util.EncodingUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -12,17 +25,6 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.Hashtable;
 import java.util.Map.Entry;
-
-import org.apache.http.util.EncodingUtils;
-
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.os.Environment;
-import android.os.StatFs;
-import android.webkit.MimeTypeMap;
 
 public class TNUtilsAtt {
 	private static final String TAG = "TNUtilsAtt";
@@ -107,7 +109,7 @@ public class TNUtilsAtt {
 	}
 
 	public static void deleteAllAtts() {
-		Log.d(TAG, "deleteAllAtts");
+		MLog.d(TAG, "deleteAllAtts");
 		if (hasExternalStorage()) {
 			recursionDeleteDir(new File(
 					Environment.getExternalStorageDirectory().getPath()
@@ -118,7 +120,7 @@ public class TNUtilsAtt {
 	}
 
 	public static void createNomedia() {
-		Log.d(TAG, "createNomedia");
+		MLog.d(TAG, "createNomedia");
 		try {
 			if (hasExternalStorage()) {
 				File f = new File(
@@ -127,7 +129,7 @@ public class TNUtilsAtt {
 				if (!f.exists()) {
 					f.getParentFile().mkdirs();
 					if (!f.createNewFile())
-						Log.i(TAG, "create .nomedia failed. " + f);
+						MLog.i(TAG, "create .nomedia failed. " + f);
 				}
 			}
 			File f2 = new File(TNUtils.getAppContext().getFilesDir().getPath()
@@ -135,7 +137,7 @@ public class TNUtilsAtt {
 			if (!f2.exists()) {
 				f2.getParentFile().mkdirs();
 				if (!f2.createNewFile())
-					Log.i(TAG, "create .nomedia failed. " + f2);
+					MLog.i(TAG, "create .nomedia failed. " + f2);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -183,7 +185,7 @@ public class TNUtilsAtt {
 	}
 
 	public static void deleteTempFiles() {
-		Log.d(TAG, "deleteTempFiles");
+		MLog.d(TAG, "deleteTempFiles");
 		if (hasExternalStorage()) {
 			recursionDeleteDir(new File(Environment.getExternalStorageDirectory()
 					.getPath()
@@ -216,7 +218,7 @@ public class TNUtilsAtt {
 		} else if (type.equals("data")) {
 			dir = Environment.getDataDirectory();
 		}
-		Log.d(TAG, "dir=" + dir);
+		MLog.d(TAG, "dir=" + dir);
 		StatFs sf = new StatFs(dir.getPath());
 		return (long) sf.getBlockSize() * (long) sf.getAvailableBlocks();
 	}
@@ -323,7 +325,7 @@ public class TNUtilsAtt {
 		BitmapFactory.decodeFile(file.getPath(), opts);
 
 		opts.inSampleSize = computeSampleSize(opts, -1, 1200 * 800);
-		Log.e("TNNoteAtt", "bitmap sampleSize: " + opts.inSampleSize);
+		MLog.e("TNNoteAtt", "bitmap sampleSize: " + opts.inSampleSize);
 		opts.inJustDecodeBounds = false;
 		Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), opts);
 		
@@ -358,7 +360,7 @@ public class TNUtilsAtt {
 			e.printStackTrace();
 		}
 
-		Log.e(TAG, path + " angle=" + orientation + "°");
+		MLog.e(TAG, path + " angle=" + orientation + "°");
 		return orientation;
 	}
 	
@@ -399,7 +401,7 @@ public class TNUtilsAtt {
 			out.flush();
 			out.close();
 
-			Log.i(TAG, "save ok: " + path);
+			MLog.i(TAG, "save ok: " + path);
 			return path;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -414,7 +416,7 @@ public class TNUtilsAtt {
 		BitmapFactory.Options bfo = new BitmapFactory.Options();
 		bfo.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(path, bfo);
-		Log.d(TAG, bfo.outWidth + "," + bfo.outHeight + "," + path);
+		MLog.d(TAG, bfo.outWidth + "," + bfo.outHeight + "," + path);
 
 		return bfo;
 	}
@@ -471,7 +473,7 @@ public class TNUtilsAtt {
 				break;
 			scale *= 2;
 		}
-		Log.d(TAG, bfo.outWidth + "," + bfo.outHeight + ", scale=" + scale);
+		MLog.d(TAG, bfo.outWidth + "," + bfo.outHeight + ", scale=" + scale);
 		BitmapFactory.Options bfo2 = new BitmapFactory.Options();
 		bfo2.inSampleSize = scale;
 		Bitmap b1 = BitmapFactory.decodeFile(path, bfo2);
@@ -509,7 +511,7 @@ public class TNUtilsAtt {
 				break;
 			scale *= 2;
 		}
-		Log.d(TAG, bfo.outWidth + "," + bfo.outHeight + ", scale=" + scale);
+		MLog.d(TAG, bfo.outWidth + "," + bfo.outHeight + ", scale=" + scale);
 		BitmapFactory.Options bfo2 = new BitmapFactory.Options();
 		bfo2.inSampleSize = scale;
 		Bitmap b1 = BitmapFactory.decodeFile(path, bfo2);
@@ -518,8 +520,8 @@ public class TNUtilsAtt {
 		// //return bitmap;
 		// return null;
 		// }
-		
-		Log.d(TAG, "b1: whidth=" + b1.getWidth() + " height=" + b1.getHeight());
+
+		MLog.d(TAG, "b1: whidth=" + b1.getWidth() + " height=" + b1.getHeight());
 		// scale
 		Bitmap b2;
 		if (b1.getWidth() == thumbnailWidth
@@ -537,14 +539,14 @@ public class TNUtilsAtt {
 			b2 = Bitmap.createBitmap(b1, 0, 0, b1.getWidth(), b1.getHeight(),
 					matrix, true);
 		}
-		Log.d(TAG, "b2: whidth=" + b2.getWidth() + " height=" + b2.getHeight());
+		MLog.d(TAG, "b2: whidth=" + b2.getWidth() + " height=" + b2.getHeight());
 		// crop		
 		Bitmap b3 = Bitmap.createBitmap(b2,
 					(b2.getWidth() - thumbnailWidth) / 2,
 					(b2.getHeight() - thumbnailHeight) / 2, thumbnailWidth,
 					thumbnailHeight);
-		
-		Log.d(TAG, b3.getWidth() + "," + b3.getHeight());
+
+		MLog.d(TAG, b3.getWidth() + "," + b3.getHeight());
 		
 		if (b1 != b2)
 			b1.recycle();
@@ -554,7 +556,7 @@ public class TNUtilsAtt {
 	}
 
 	public static String makeThumbnailForImage(String path, int thumbnailWidth, int thumbnailHeight) throws Exception {
-		Log.d(TAG, "makeThumbnailForImage:" + path);
+		MLog.d(TAG, "makeThumbnailForImage:" + path);
 		File orgfile = new File(path);
 		if (!orgfile.exists())
 			return null;
@@ -632,7 +634,7 @@ public class TNUtilsAtt {
 			File f = new File(thumbPath);
 			if(f.exists()){
 				f.delete();
-				Log.d(TAG, "delete thumbnail:" + thumbPath);
+				MLog.d(TAG, "delete thumbnail:" + thumbPath);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -673,9 +675,9 @@ public class TNUtilsAtt {
 		else {
 			MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
 			String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-			Log.i(TAG, "extension=" + extension + " path=" + path);
+			MLog.i(TAG, "extension=" + extension + " path=" + path);
 			String mimeType = mimeTypeMap.getMimeTypeFromExtension(extension);
-			Log.i(TAG, "mimeType=" + mimeType);
+			MLog.i(TAG, "mimeType=" + mimeType);
 			return mimeTypeMap.getMimeTypeFromExtension(extension);
 		}
 	}
@@ -709,7 +711,7 @@ public class TNUtilsAtt {
 			options.inJustDecodeBounds = true;
 			BitmapFactory.decodeFile(path, options);
 			options.inSampleSize = computeSampleSize(options, -1, size * size);
-			Log.i("size", options.inSampleSize + "   " + size);
+			MLog.i("size", options.inSampleSize + "   " + size);
 			options.inJustDecodeBounds = false;
 			return BitmapFactory.decodeFile(path, options);
 		} catch (RuntimeException e) {

@@ -1,13 +1,13 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import org.json.JSONObject;
-
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.json.JSONObject;
 //TODO delete
 public class TNTagService {
 	private static final String TAG = "TNTagService";
@@ -15,7 +15,7 @@ public class TNTagService {
 	private static TNTagService singleton = null;
 
 	private TNTagService(){
-		Log.d(TAG,"TNTagService()");
+		MLog.d(TAG,"TNTagService()");
 		TNAction.regRunner(TNActionType.TagAdd, this, "TagAdd");
 		TNAction.regRunner(TNActionType.TagDelete, this, "TagDelete");
 		TNAction.regRunner(TNActionType.TagRename, this, "TagRename");

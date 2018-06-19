@@ -1,8 +1,5 @@
 package com.thinkernote.ThinkerNote.General;
 
-import java.io.File;
-import java.util.Vector;
-
 import android.app.Activity;
 import android.text.TextUtils;
 
@@ -12,6 +9,10 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.io.File;
+import java.util.Vector;
 
 public class TNDownloadAttService {
 	private static final String TAG = "TNDownloadAttService";
@@ -62,7 +63,7 @@ public class TNDownloadAttService {
 	}
 	
 	public void start(){
-		Log.d(TAG, "start");
+		MLog.d(TAG, "start");
 		Vector<TNNoteAtt> tmpList = new Vector<TNNoteAtt>();
 		for(TNNoteAtt att : readyDownloadAtts) {
 
@@ -74,9 +75,9 @@ public class TNDownloadAttService {
 				continue;
 			}
 			if( TNUtils.isNetWork() && att.attId != -1){
-				Log.d(TAG,"downloadAtt:" + att.attId );
+				MLog.d(TAG,"downloadAtt:" + att.attId );
 				if(!TNActionUtils.isDownloadingAtt(att.attId)){
-					Log.d(TAG, "3 -> SyncNoteContent: " + att.attId);
+					MLog.d(TAG, "3 -> SyncNoteContent: " + att.attId);
 					if(startListener != null)
 						startListener.onStart(att);
 					
@@ -106,15 +107,15 @@ public class TNDownloadAttService {
 	}
 	
 	public void start(long attId){
-		Log.d(TAG, "start:" + attId);
+		MLog.d(TAG, "start:" + attId);
 		if(act == null || act.isFinishing()){
 			return;
 		}
 		if( TNUtilsDialog.checkNetwork(act) ){
 			TNNoteAtt att = mNote.getAttDataById(attId);
-			Log.d(TAG,"downloadAtt:" + att.attId );
+			MLog.d(TAG,"downloadAtt:" + att.attId );
 			if(!TNActionUtils.isDownloadingAtt(att.attId)){
-				Log.d(TAG, "3 -> SyncNoteContent: " + att.attId);
+				MLog.d(TAG, "3 -> SyncNoteContent: " + att.attId);
 				if(startListener != null)
 					startListener.onStart(att);
 				
@@ -129,14 +130,14 @@ public class TNDownloadAttService {
 	
 	public void respondSyncNoteAtt(TNAction aAction){
 		TNNoteAtt att = (TNNoteAtt)aAction.inputs.get(0);
-		Log.d(TAG, "respond:" + att.attId);
+		MLog.d(TAG, "respond:" + att.attId);
 		downloadingAtts.remove(att);
 		start();
 		if(endListener != null){
 			if(mNote.getAttDataById(att.attId) != null)
 				endListener.onEnd(aAction);
 			else
-				Log.i(TAG, "att:" + att.attId + " not in the note:" + mNote.noteId);
+				MLog.i(TAG, "att:" + att.attId + " not in the note:" + mNote.noteId);
 		}
 	}
 	

@@ -1,16 +1,16 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class TNLBSService {
 	private static final String TAG = "TNBaiduLocationService";
@@ -24,12 +24,12 @@ public class TNLBSService {
 	private BDLocation mBDLocation = null;
 	
 	private TNLBSService(){
-		Log.d(TAG, "TNBaiduLocationService()");
+		MLog.d(TAG, "TNBaiduLocationService()");
 		initBDLocationClient();	
 	}
 	
 	private void initBDLocationClient(){
-		Log.i(TAG, "init LocationClient");
+		MLog.i(TAG, "init LocationClient");
 		mLocationClient = new LocationClient(TNSettings.getInstance().appContext); // 声明LocationClient类
 		LocationClientOption option = new LocationClientOption();
 		option.setOpenGps(false); // 是否打开gps
@@ -58,7 +58,7 @@ public class TNLBSService {
 			initBDLocationClient();
 		
 		if (mLocationClient != null && !mLocationClient.isStarted()) {
-			Log.d(TAG, "startLocation");
+			MLog.d(TAG, "startLocation");
 			mLocationClient.start();
 		}
 	}
@@ -66,18 +66,18 @@ public class TNLBSService {
 	public void requestLocation(){
 		startLocation();
 		if (mLocationClient != null && mLocationClient.isStarted()) {
-			Log.d(TAG, "requestLocation");
+			MLog.d(TAG, "requestLocation");
 			try {
 				mLocationClient.requestLocation();
 			} catch (Exception e) {
-				Log.i(TAG, "requestLocation happened exception");
+				MLog.i(TAG, "requestLocation happened exception");
 			}
 		}
 	}
 	
 	public void stopLocation(){
 		if (mLocationClient != null && mLocationClient.isStarted()) {
-			Log.d(TAG, "stopLocation");
+			MLog.d(TAG, "stopLocation");
 			mLocationClient.stop();
 			mLocationClient = null;
 		}
@@ -121,7 +121,7 @@ public class TNLBSService {
 
 		@Override
 		public void onReceiveLocation(BDLocation location) {
-			Log.i(TAG, "onReceiveLocation");
+			MLog.i(TAG, "onReceiveLocation");
 			if (location == null)
 				return;
 			
@@ -149,12 +149,12 @@ public class TNLBSService {
 			} else if(location.getLocType() == 65){
 				requestLocation();
 			}
-			Log.i(TAG, sb.toString());
+			MLog.i(TAG, sb.toString());
 		}
 
 		@Override
 		public void onReceivePoi(BDLocation arg0) {
-			Log.i(TAG, "onReceivePoi");
+			MLog.i(TAG, "onReceivePoi");
 		}
 		
 	}

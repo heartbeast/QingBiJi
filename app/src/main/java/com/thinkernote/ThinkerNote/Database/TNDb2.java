@@ -1,21 +1,20 @@
 package com.thinkernote.ThinkerNote.Database;
 
-import java.util.Vector;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.BitmapFactory;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType2;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.Vector;
 
 public class TNDb2 extends SQLiteOpenHelper {
 	private static final String TAG = "TNDatabase";
@@ -56,7 +55,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase aDB) {
-		Log.d(TAG, "onCreate");
+		MLog.d(TAG, "onCreate");
 		aDB.execSQL(TNSQLString2.SETTING_CREATE_TABLE);
 		aDB.execSQL(TNSQLString2.USER_CREATE_TABLE);
 		aDB.execSQL(TNSQLString2.CAT_CREATE_TABLE);
@@ -82,7 +81,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 	
 	private void setShortContentToDB(SQLiteDatabase aDB){
 		Cursor cursor = aDB.rawQuery(TNSQLString2.NOTE_GET_ALL, null);
-		Log.i(TAG, "setShortContentToDB" + cursor.getCount());
+		MLog.i(TAG, "setShortContentToDB" + cursor.getCount());
 		
 		while(cursor.moveToNext()){
 			long noteLocalId = cursor.getLong(0);
@@ -91,7 +90,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 			args[0] = TNUtils.getBriefContent(content);
 			args[1] = noteLocalId;
 			aDB.execSQL(TNSQLString2.NOTE_UPDATE_SHORTCONTENT, args);
-			Log.i(TAG, noteLocalId + "," + args[0]);
+			MLog.i(TAG, noteLocalId + "," + args[0]);
 		}
 		
 		cursor.close();
@@ -99,7 +98,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 	
 	private void setPingYingIndexToDB(SQLiteDatabase aDB){
 		Cursor cursor = aDB.rawQuery(TNSQLString2.NOTE_GET_ALL, null);
-		Log.i(TAG, "setPingYingIndexToDB" + cursor.getCount());
+		MLog.i(TAG, "setPingYingIndexToDB" + cursor.getCount());
 		while(cursor.moveToNext()){
 			long noteLocalId = cursor.getLong(0);
 			String title = cursor.getString(2);
@@ -107,7 +106,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 			args[0] = TNUtils.getPingYinIndex(title);
 			args[1] = noteLocalId;
 			aDB.execSQL(TNSQLString2.NOTE_UPDATE_PINGYININDEX, args);
-			Log.i(TAG, noteLocalId + "," + args[0]);
+			MLog.i(TAG, noteLocalId + "," + args[0]);
 		}
 		
 		cursor.close();
@@ -115,7 +114,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 	
 	private void setStrIndexToTagDB(SQLiteDatabase aDB){
 		Cursor cursor = aDB.rawQuery(TNSQLString2.TAG_GET_ALL, null);
-		Log.i(TAG, "setStrIndexToTagDB:" + cursor.getCount());
+		MLog.i(TAG, "setStrIndexToTagDB:" + cursor.getCount());
 		while(cursor.moveToNext()){
 			long tagLocalId = cursor.getLong(0);
 			String tagName = cursor.getString(1);
@@ -123,7 +122,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 			args[0] = TNUtils.getPingYinIndex(tagName);
 			args[1] = tagLocalId;
 			aDB.execSQL(TNSQLString2.TAG_UPDATA_INDEX, args);
-			Log.i(TAG, tagLocalId + "," + args[0]);
+			MLog.i(TAG, tagLocalId + "," + args[0]);
 		}
 		
 		cursor.close();
@@ -162,7 +161,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 			allData.add(rowData);
 		}
 		cursor.close();
-		Log.d(TAG, allData.toString());
+		MLog.d(TAG, allData.toString());
 
 		return allData;
 	}
@@ -189,7 +188,7 @@ public class TNDb2 extends SQLiteOpenHelper {
 	}
 	
 	public void executeSQL(TNAction aAction){
-		Log.d(TAG, aAction.inputs.toString());
+		MLog.d(TAG, aAction.inputs.toString());
 		try{
 			String sql = (String)aAction.inputs.get(0);
 			if( sql.startsWith("SELECT")){
@@ -330,6 +329,6 @@ public class TNDb2 extends SQLiteOpenHelper {
 			arg = "`" + arg + "` ";
 			values = values + arg;
 		}
-		Log.d(TAG, sql + "\r\n" + values);
+		MLog.d(TAG, sql + "\r\n" + values);
 	}
 }

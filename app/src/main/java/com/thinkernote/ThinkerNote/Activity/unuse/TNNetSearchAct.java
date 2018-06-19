@@ -14,12 +14,12 @@ import android.widget.RadioButton;
 
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.HorizontalPager;
 import com.thinkernote.ThinkerNote.Other.HorizontalPager.OnScreenSwitchListener;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
@@ -197,7 +197,7 @@ public class TNNetSearchAct extends TNActBase implements OnClickListener, OnScre
 	
 	@SuppressWarnings("unchecked")
 	public void respondGetProject(TNAction aAction){
-		Log.i(TAG, "respondGetProject");
+		MLog.i(TAG, "respondGetProject");
 		mSyncProjectDialog.hide();
 		if(!TNHandleError.handleResult(this, aAction, true)){
 			int type = (Integer)aAction.inputs.get(1);

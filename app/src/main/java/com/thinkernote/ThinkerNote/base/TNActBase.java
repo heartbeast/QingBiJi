@@ -7,9 +7,9 @@ import com.thinkernote.ThinkerNote.Activity.TNActivityManager;
 import com.thinkernote.ThinkerNote.Activity.TNLockAct;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.Views.MenuDialog;
 
 import android.app.Activity;
@@ -32,7 +32,7 @@ public class TNActBase extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate:" + savedInstanceState);
+		MLog.d(TAG, "onCreate:" + savedInstanceState);
 		super.onCreate(savedInstanceState);	
 		System.gc();
 
@@ -48,7 +48,7 @@ public class TNActBase extends Activity {
 	}
 	
 	protected void onStart(){
-		Log.d(TAG, "onStart");
+		MLog.d(TAG, "onStart");
 		super.onStart();
 		
 		TNSettings settings = TNSettings.getInstance();
@@ -75,7 +75,7 @@ public class TNActBase extends Activity {
 
 	@Override 
 	public void finish () {
-		Log.d(TAG, "finish");
+		MLog.d(TAG, "finish");
 		TNAction.unregister(this);
 		super.finish();
 	}
@@ -89,12 +89,12 @@ public class TNActBase extends Activity {
 	
 	@Override
 	protected void onStop() {
-		Log.d(TAG, "onStop");
+		MLog.d(TAG, "onStop");
 		super.onStop();
 	}
 
 	protected void onResume(){
-		Log.d(TAG, "onResume");
+		MLog.d(TAG, "onResume");
 		
 		super.onResume();
 		
@@ -129,7 +129,7 @@ public class TNActBase extends Activity {
 			if( settings.needShowLock && !isFinishing() && !TNSettings.getInstance().isLogout){
 				if( !(TAG.equals("TNLockAct") && getTitle().equals("lock")) 
 						&& settings.lockPattern.size() > 0){
-					Log.i(TAG, "show lock");
+					MLog.i(TAG, "show lock");
 					Bundle b = new Bundle();
 					b.putInt("Type", 2);
 					b.putString("OriginalPath", settings.lockPattern.toString());
@@ -147,7 +147,7 @@ public class TNActBase extends Activity {
 	}
 
 	protected void onPause(){
-		Log.d(TAG, "onPause");
+		MLog.d(TAG, "onPause");
 		overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
 		super.onPause();
 
@@ -163,11 +163,11 @@ public class TNActBase extends Activity {
 	
 	@Override
 	public void onDestroy(){
-		Log.d(TAG, "onDestroy");
+		MLog.d(TAG, "onDestroy");
 		TNAction.unregister(this);
 		
 		for(Dialog dialog : dialogs){
-			Log.e(TAG, "dismiss:" + dialog + " showing:" +  dialog.isShowing());
+			MLog.e(TAG, "dismiss:" + dialog + " showing:" +  dialog.isShowing());
 			dialog.dismiss();
 		}
 //		dialogs.clear();
@@ -225,12 +225,12 @@ public class TNActBase extends Activity {
     //===================================新版 跳转 --结束==========================================
 
 	public void RespondChangeSkin(TNAction aAction){
-		Log.i(TAG, "RespondChangeSkin");
+		MLog.i(TAG, "RespondChangeSkin");
 		setViews();
 	}
 	
 	public void addDialog(AlertDialog dialog){
-		Log.e(TAG, "dialog: " + dialog);
+		MLog.e(TAG, "dialog: " + dialog);
 		dialogs.add(dialog);
 	}
 }

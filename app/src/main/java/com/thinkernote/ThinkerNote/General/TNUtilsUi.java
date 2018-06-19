@@ -23,6 +23,7 @@ import com.tencent.tauth.Tencent;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -506,7 +507,7 @@ public class TNUtilsUi {
 
 	public static void showNotification(Activity act, int msgId,
 			boolean isCancel) {
-		Log.d(TAG, "showNotification:" + act.getString(msgId));
+		MLog.d(TAG, "showNotification:" + act.getString(msgId));
 		String service = Context.NOTIFICATION_SERVICE;
 		final NotificationManager nm = (NotificationManager) act
 				.getSystemService(service); // 获得系统级服务，用于管理消息
@@ -546,7 +547,7 @@ public class TNUtilsUi {
 	}
 
 	public static void clearNotification(Activity act) {
-		Log.i(TAG, "clearNotification");
+		MLog.i(TAG, "clearNotification");
 		String service = Context.NOTIFICATION_SERVICE;
 		NotificationManager nm = (NotificationManager) act
 				.getSystemService(service); // 获得系统级服务，用于管理消息
@@ -604,7 +605,7 @@ public class TNUtilsUi {
 					date.getYear() + 1900, date.getMonth() + 1, date.getDate());
 		}
 
-		Log.i(TAG, "milliseconds=" + milliseconds + "now=" + now + "tzOffset="
+		MLog.i(TAG, "milliseconds=" + milliseconds + "now=" + now + "tzOffset="
 				+ tzOffset + "secToday=" + secToday + "hours=" + hours
 				+ "formated=" + formated);
 
@@ -623,7 +624,7 @@ public class TNUtilsUi {
 	}
 
 	public static void setMenuBackground(final Activity aAct) {
-		Log.d(TAG, "Enterting setMenuBackGround");
+		MLog.d(TAG, "Enterting setMenuBackGround");
 		aAct.getLayoutInflater().setFactory(new Factory() {
 
 			@Override
@@ -675,9 +676,9 @@ public class TNUtilsUi {
 		for (RunningTaskInfo task : tasks) {
 			if (task.id == act.getTaskId()) {
 				String baseActName = task.baseActivity.getClassName();
-				Log.i(TAG, "taskId=" + act.getTaskId());
-				Log.i(TAG, "baseActName=" + baseActName);
-				Log.i(TAG, "topActName" + task.topActivity.getClassName());
+				MLog.i(TAG, "taskId=" + act.getTaskId());
+				MLog.i(TAG, "baseActName=" + baseActName);
+				MLog.i(TAG, "topActName" + task.topActivity.getClassName());
 				return !baseActName
 						.startsWith("com.thinkernote.ThinkerNote.Activity");
 			}
@@ -721,7 +722,7 @@ public class TNUtilsUi {
 		if ((!baseActName.equals(baseName) && !baseActName
 				.equals("com.thinkernote.ThinkerNote.Activity.TNMainAct"))
 				|| screenOff != screenStatus) {
-			Log.i(TAG, " screenOff:" + screenStatus + " topAct:"
+			MLog.i(TAG, " screenOff:" + screenStatus + " topAct:"
 					+ task.topActivity.getClassName() + " baseAct:"
 					+ task.baseActivity.getClassName());
 			// taskId = task.id;
@@ -729,7 +730,7 @@ public class TNUtilsUi {
 			screenOff = screenStatus;
 			TNSettings settings = TNSettings.getInstance();
 			if (!settings.needShowLock) {
-				Log.i(TAG, "set needShowLock = true");
+				MLog.i(TAG, "set needShowLock = true");
 				settings.needShowLock = true;
 				settings.savePref(false);
 			}

@@ -1,5 +1,13 @@
 package com.thinkernote.ThinkerNote.General;
 
+import android.media.MediaRecorder;
+import android.media.MediaRecorder.OnErrorListener;
+import android.media.MediaRecorder.OnInfoListener;
+import android.os.Handler;
+import android.os.Message;
+
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,12 +15,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-
-import android.media.MediaRecorder;
-import android.media.MediaRecorder.OnErrorListener;
-import android.media.MediaRecorder.OnInfoListener;
-import android.os.Handler;
-import android.os.Message;
 
 public class TNRecord implements OnInfoListener, OnErrorListener{
 	private static final String TAG = "TNRecord";
@@ -47,7 +49,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	}
 
 	private void initRecord() throws IllegalStateException, IOException {
-		Log.d(TAG, "initRecord");
+		MLog.d(TAG, "initRecord");
 		if (mRecorder != null) {
 			mRecorder.stop();
 			mRecorder.release();
@@ -62,7 +64,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 		mCurrentRecordPath = getTmpPath();
 		mRecorder.setOutputFile(mCurrentRecordPath);
 		mRecorder.setMaxFileSize(MAX_FILE_SIZE - mUsedFileSize);
-		Log.d(TAG, "setMaxFileSize=" + (MAX_FILE_SIZE - mUsedFileSize));
+		MLog.d(TAG, "setMaxFileSize=" + (MAX_FILE_SIZE - mUsedFileSize));
 		mRecorder.setOnInfoListener(this);
 		mRecorder.setOnErrorListener(this);
 		mRecorder.prepare();
@@ -78,7 +80,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	public void onInfo(MediaRecorder mr, int what, int extra) {
 		switch(what){
 		case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-			Log.e(TAG, "onInfo: max file size reached");
+			MLog.e(TAG, "onInfo: max file size reached");
 			asynStop(5);
 			break;
 		}
@@ -86,7 +88,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 
 	@Override
 	public void onError(MediaRecorder mr, int what, int extra) {
-		Log.e(TAG, "record onError: what=" + what + ", extra=" + extra);
+		MLog.e(TAG, "record onError: what=" + what + ", extra=" + extra);
 //		if(what == MediaPlayer.MEDIA_ERROR_SERVER_DIED){
 //			return;
 //		}
@@ -94,7 +96,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	}
 
 	public void start() {
-		Log.d(TAG, "start");
+		MLog.d(TAG, "start");
 		// 需检查SDCrard
 		if (!TNUtilsAtt.isHasSpace()) {
 			mHandler.sendEmptyMessage(6);
@@ -117,7 +119,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	}
 
 	public void pause() {
-		Log.d(TAG, "pause");
+		MLog.d(TAG, "pause");
 		if (mState != TNRecordState.recording) {
 			return;
 		}
@@ -127,12 +129,12 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 		File f = new File(mCurrentRecordPath);
 		if(f.exists()){
 			mUsedFileSize += f.length();
-			Log.d(TAG, "used file size=" + mUsedFileSize + " path=" + mCurrentRecordPath);
+			MLog.d(TAG, "used file size=" + mUsedFileSize + " path=" + mCurrentRecordPath);
 		}
 	}
 
 	public void stop() {
-		Log.d(TAG, "stop");
+		MLog.d(TAG, "stop");
 		mState = TNRecordState.stop;
 		recordStop();
 		mergerFragments();
@@ -143,7 +145,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	}
 	
 	public void asynStop(final int what){
-		Log.d(TAG, "asynStop");
+		MLog.d(TAG, "asynStop");
 		mState = TNRecordState.stop;
 		recordStop();
 		second = 0;
@@ -163,7 +165,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 	}
 
 	public void cancle() {
-		Log.d(TAG, "cancle");
+		MLog.d(TAG, "cancle");
 		mState = TNRecordState.stop;
 		recordStop();
 		deleteListRecord();
@@ -209,7 +211,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Log.d(TAG, path);
+		MLog.d(TAG, path);
 		return path;
 	}
 
@@ -262,11 +264,11 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 
 	private void mergerFragments() {
 		// 创建音频文件,合并的文件放这里
-		Log.d(TAG, "record count=" + mRecordFragments.size());
+		MLog.d(TAG, "record count=" + mRecordFragments.size());
 		if (mRecordFragments.size() == 1) {
 			mFinalRecordPath = mRecordFragments.get(0);
 			File f = new File(mFinalRecordPath);
-			Log.d(TAG, "file length=" + f.length());
+			MLog.d(TAG, "file length=" + f.length());
 			if(!f.exists() || f.length() == 0){
 				mFinalRecordPath = null;
 			}
@@ -314,7 +316,7 @@ public class TNRecord implements OnInfoListener, OnErrorListener{
 				}
 				fileOutputStream.flush();
 				fileInputStream.close();
-				Log.d(TAG, "合成文件长度=" + outFile.length());
+				MLog.d(TAG, "合成文件长度=" + outFile.length());
 				if(outFile.length() == 0){
 					mFinalRecordPath = null;
 					outFile.delete();

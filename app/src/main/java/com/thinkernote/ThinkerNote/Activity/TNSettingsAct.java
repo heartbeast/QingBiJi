@@ -1,31 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Vector;
-
-import org.json.JSONObject;
-
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
-import com.thinkernote.ThinkerNote.Data.TNCat;
-import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
-import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
-import com.thinkernote.ThinkerNote.Data.TNUser;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
-import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote._constructer.presenter.SettingsPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ISettingsPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnSettingsListener;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -46,6 +20,31 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
+import com.thinkernote.ThinkerNote.Data.TNCat;
+import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
+import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
+import com.thinkernote.ThinkerNote.Data.TNUser;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
+import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote._constructer.presenter.SettingsPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.ISettingsPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnSettingsListener;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import org.json.JSONObject;
+
+import java.util.Vector;
 
 /**
  * 主页--设置--用户信息
@@ -420,7 +419,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
             public void onClick(DialogInterface dialog, int which) {
                 TNSettings settings = TNSettings.getInstance();
                 settings.pictureCompressionMode = pictureCompressionMode;
-                Log.i(TAG, pictureCompressionMode + "");
+                MLog.i(TAG, pictureCompressionMode + "");
                 settings.savePref(true);
                 configView();
             }
@@ -431,7 +430,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
                 "POS_BTN_CLICK", pbtn_Click, "NEG_BTN", R.string.alert_Cancel);
         AlertDialog.Builder builder = TNUtilsUi.alertDialogBuilder1(jsonData);
         pictureCompressionMode = TNSettings.getInstance().pictureCompressionMode;
-        Log.i(TAG, pictureCompressionMode + "");
+        MLog.i(TAG, pictureCompressionMode + "");
         if (pictureCompressionMode == -1) {
             pictureCompressionMode = 1;
         }

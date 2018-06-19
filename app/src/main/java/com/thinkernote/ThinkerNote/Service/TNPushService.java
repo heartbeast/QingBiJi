@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationManager;
@@ -14,12 +10,16 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.thinkernote.ThinkerNote.Activity.TNRemindAct;
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Activity.TNRemindAct;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TNPushService extends Service {
 	private static final String TAG = "TNPushService";
@@ -37,14 +37,14 @@ public class TNPushService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(TAG, "onBind");
+		MLog.i(TAG, "onBind");
 		return mBinder;
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.i(TAG, "onCreate");
+		MLog.i(TAG, "onCreate");
 //		TNAction.regResponder(TNActionType.GetPushInfo, this, "RespondGetPushInfo");
 //		TNAction.regResponder(TNActionType.SetRemindTime, this, "RespondSetRemindTime");
 		TNSettings.getInstance().serviceRuning = true;
@@ -54,19 +54,19 @@ public class TNPushService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		Log.i(TAG, "onStart");
+		MLog.i(TAG, "onStart");
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {	
-		Log.i(TAG, "onStartCommand");
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		MLog.i(TAG, "onStartCommand");
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		MLog.i(TAG, "onDestroy");
 		TNSettings.getInstance().serviceRuning = false;
 	}
 	
@@ -78,7 +78,7 @@ public class TNPushService extends Service {
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.i(TAG, "onUnbind");
+		MLog.i(TAG, "onUnbind");
 		return super.onUnbind(intent);
 	}
 
@@ -97,7 +97,7 @@ public class TNPushService extends Service {
 			@Override
 			public void run() {
 				TNSettings settings = TNSettings.getInstance();
-            	Log.i(TAG, "toGetPush:" + "userName:" + settings.username 
+				MLog.i(TAG, "toGetPush:" + "userName:" + settings.username
             			+ " password:" + settings.password
             			+ "group:" + settings.remindLockGroup + " note:" + settings.remindLockNote);
             	if(settings.username.length() > 0 
@@ -157,7 +157,7 @@ public class TNPushService extends Service {
 	}
 	
 	public void RespondGetPushInfo(TNAction aAction){
-		Log.i(TAG, "RespondGetPushInfo");
+		MLog.i(TAG, "RespondGetPushInfo");
 		if(aAction.result != TNActionResult.Finished){
 			return ;
 		}
@@ -197,7 +197,7 @@ public class TNPushService extends Service {
 					&& remindType == mOriginalRemaindType
 					&& projectId == mOriginalProjectId
 					&& status.equals(mOriginalStatus)){
-				Log.i(TAG, "no new remind");
+				MLog.i(TAG, "no new remind");
 				return ;
 			}
 			
@@ -245,12 +245,12 @@ public class TNPushService extends Service {
 				showRemainNotification(title, msg, remindType, remindTime, status);
 			}
 		}else{
-			Log.i(TAG, "no MsgRemind");
+			MLog.i(TAG, "no MsgRemind");
 		}
 	}
 	
 	public void RespondSetRemindTime(TNAction aAction){
-		Log.i(TAG, "RespondSetRemindTime");
+		MLog.i(TAG, "RespondSetRemindTime");
 		if(aAction.result == TNActionResult.Finished){
 			mOriginalNoteId = 0;
 			mOriginalRemindCount = 0;
@@ -261,7 +261,7 @@ public class TNPushService extends Service {
 	}
 	
 	private void showRemainNotification(String title, String msg, int remindType, long remindTime, String status){
-		Log.d(TAG, "showRemainNotification: title:" + title + " msg:" + msg + " remindType:" + remindType + " status:" + status);
+		MLog.d(TAG, "showRemainNotification: title:" + title + " msg:" + msg + " remindType:" + remindType + " status:" + status);
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		manager.cancel(2);
 		

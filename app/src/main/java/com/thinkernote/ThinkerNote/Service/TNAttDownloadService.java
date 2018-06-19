@@ -1,8 +1,8 @@
 package com.thinkernote.ThinkerNote.Service;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TNAttDownloadService {
 	private static String TAG = "TNAttDownloadService";
@@ -10,7 +10,7 @@ public class TNAttDownloadService {
 	private static TNAttDownloadService singleton = null;
 	
 	public TNAttDownloadService(){
-		Log.d(TAG, "TNAttDownloadService()");
+		MLog.d(TAG, "TNAttDownloadService()");
 		
 		TNAction.regRunner(TNActionType.TNHttpDownloadAtt, this, "TNHttpDownloadAtt");
 	}

@@ -1,22 +1,9 @@
 package com.thinkernote.ThinkerNote.OAuth2;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicHeader;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNHttpUtils;
 import com.thinkernote.ThinkerNote.General.TNSettings;
@@ -26,6 +13,19 @@ import com.thinkernote.ThinkerNote.Network.TNSocketNote;
 import com.thinkernote.ThinkerNote.Network.TNSocketTag;
 import com.thinkernote.ThinkerNote.Network.TNSocketUser;
 import com.thinkernote.ThinkerNote.OAuth2.TNHttpHelper.RestHttpException;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicHeader;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -40,7 +40,7 @@ public class TNOAuth2 {
 	private TNHttpHelper httpHelper;
 
 	private TNOAuth2() {
-		Log.d(TAG, "TNAttService()");
+		MLog.d(TAG, "TNAttService()");
 		TNAction.regRunner(TNActionType.TNOpenUrl, this, "TNOpenUrl");
 
 		handleMap = new Hashtable<TNActionType, TNAction.TNRunner>();
@@ -134,8 +134,8 @@ public class TNOAuth2 {
 				}
 			}else
 				result = TNHttpUtils.getEntityContent(tnEntity);
-			
-			Log.d(TAG, "<<<rcv:" + result);
+
+			MLog.d(TAG, "<<<rcv:" + result);
 
 			if (result != null) {
 				if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE") || method.equals("UPLOAD") || (method.equals("GET")&&!cmd.startsWith("attachment/"))) {
@@ -213,7 +213,7 @@ public class TNOAuth2 {
 
 	public TNHttpEntity tryOpenUrl(Context context, String method, String host,
 			JSONObject jsonData) throws Exception {
-		Log.d(TAG, ">>>send:" + jsonData);
+		MLog.d(TAG, ">>>send:" + jsonData);
 		TNHttpEntity entity = null;
 		httpHelper = new TNHttpHelper(TNSettings.getInstance().appContext);
 		if (method.equals("GET")) {
@@ -231,7 +231,7 @@ public class TNOAuth2 {
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						Log.e(TAG, "add header: key" + key + " value=" + value);
+						MLog.e(TAG, "add header: key" + key + " value=" + value);
 						headers.add(new BasicHeader(key, value));
 					}
 				}else{

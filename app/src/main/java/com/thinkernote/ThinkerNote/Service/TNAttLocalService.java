@@ -1,8 +1,5 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.io.File;
-import java.util.Vector;
-
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -10,9 +7,12 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.io.File;
+import java.util.Vector;
 
 public class TNAttLocalService {
 	private static final String TAG = "TNAttService";
@@ -20,7 +20,7 @@ public class TNAttLocalService {
 	private static TNAttLocalService singleton = null;
 
 	private TNAttLocalService(){
-		Log.d(TAG,"TNAttService()");
+		MLog.d(TAG,"TNAttService()");
 		TNAction.regRunner(TNActionType.AttLocalSave, this, "AttLocalSave");
 		TNAction.regRunner(TNActionType.AttLocalDelete, this, "AttLocalDelete");
 	}
@@ -88,7 +88,7 @@ public class TNAttLocalService {
 						//tPath = tPath + TNUtilsAtt.getAttSuffix(att.type);
 						TNUtilsAtt.copyFile(att.path, tPath);
 						TNUtilsAtt.recursionDeleteDir(new File(att.path));
-						Log.d(TAG, att.path + " >> " + tPath + "(" + att.digest + ")");
+						MLog.d(TAG, att.path + " >> " + tPath + "(" + att.digest + ")");
 
 						// update db
 						TNAction.runAction(TNActionType.Db_Execute,

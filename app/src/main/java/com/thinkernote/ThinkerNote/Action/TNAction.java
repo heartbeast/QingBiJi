@@ -10,7 +10,6 @@ import java.util.Vector;
 import junit.framework.Assert;
 import android.os.AsyncTask;
 
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
 
@@ -274,7 +273,7 @@ public class TNAction {
 				root.asyncTaskObj != null);
 		if( root.asyncTaskObj != null ){
 			result = TNActionResult.Waitting;
-			Log.d(TAG,"(waitting....)" + toString());
+			MLog.d(TAG,"(waitting....)" + toString());
 			while(result == TNActionResult.Waitting){
 				try {
 					Thread.sleep(50);
@@ -284,7 +283,7 @@ public class TNAction {
 			}
 			Assert.assertTrue("failed status == TNActionResult.Working", 
 					result == TNActionResult.Working);
-			Log.d(TAG,"(resume....)" + toString());
+			MLog.d(TAG,"(resume....)" + toString());
 		}
 	}
 	
@@ -383,9 +382,9 @@ public class TNAction {
 		}else{	
 			// Log
 			if(root.asyncTaskObj != null)
-				Log.d(TAG,"($run....)" + aAction.toString());
+				MLog.d(TAG,"($run....)" + aAction.toString());
 			else
-				Log.d(TAG,"(run....)" + aAction.toString());
+				MLog.d(TAG,"(run....)" + aAction.toString());
 	
 			// 执行任务
 			aAction.result = TNActionResult.Working;
@@ -406,7 +405,7 @@ public class TNAction {
 	// Action完成后响应
 	private static void respondActionImp(TNAction aAction, Object aProgress){
 		// Log
-		Log.d(TAG, "(respond)" + aAction.toString() + " 【Progress: " + aProgress + "】");
+		MLog.d(TAG, "(respond)" + aAction.toString() + " 【Progress: " + aProgress + "】");
 		
 		// call respond method
 		TNActionCenter center = TNActionCenter.getInstance();
@@ -511,7 +510,7 @@ public class TNAction {
 		
 		@Override
 		protected void onPostExecute(TNAction result) {
-			Log.d(TAG,"onPostExecute:" + mAction.type );
+			MLog.d(TAG,"onPostExecute:" + mAction.type );
 			
 			TNActionCenter center = TNActionCenter.getInstance();
 			synchronized(center.actions){

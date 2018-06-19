@@ -12,10 +12,10 @@ import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Data.TNUser;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 /**
  * 本地数据库
@@ -237,7 +237,7 @@ public class TNDbUtils {
 		note.creatorNick = data.get(17);
 		note.thumbnail = data.get(18);
 		note.contentDigest = data.get(19);
-		Log.d(TAG, "note-------------------------syncState:" + note.syncState);
+		MLog.d(TAG, "note-------------------------syncState:" + note.syncState);
 		
 		Vector<TNNoteAtt> atts = getAttrsByNoteLocalId(note.noteLocalId);
 		

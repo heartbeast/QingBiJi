@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Vector;
-
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -23,19 +19,23 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import org.json.JSONObject;
+
+import java.util.Vector;
 
 /**
  * 请选择文件夹list
@@ -114,7 +114,7 @@ public class TNCatListAct extends TNActBase
 	
 	@Override
 	public boolean onKeyDown (int keyCode, KeyEvent event){
-		Log.i(TAG, "keyCode:" + keyCode + event);
+		MLog.i(TAG, "keyCode:" + keyCode + event);
 		if (keyCode==KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) { 
 			if( mOriginalCatId != mSelectCatId){
 				confirmSaveDialog();

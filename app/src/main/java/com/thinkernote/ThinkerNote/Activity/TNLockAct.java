@@ -1,23 +1,23 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Other.LockPatternView;
-import com.thinkernote.ThinkerNote.Other.LockPatternView.OnLockPatternListener;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Other.LockPatternView;
+import com.thinkernote.ThinkerNote.Other.LockPatternView.OnLockPatternListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 图案解锁界面
@@ -108,12 +108,12 @@ public class TNLockAct extends TNActBase
 
 	@Override
 	public void onInputFilished(Queue<Integer> path, boolean match) {
-		Log.i(TAG, "path=" + path + match);
+		MLog.i(TAG, "path=" + path + match);
 		mPath = path;
 		if( mType == 2 ){
 			if(mPath.equals(mOriginalPath)){
 				TNSettings settings = TNSettings.getInstance();
-	    		Log.i(TAG, "set needShowLock = false");
+				MLog.i(TAG, "set needShowLock = false");
 				settings.needShowLock = false;
 				settings.savePref(false);
 				finish();

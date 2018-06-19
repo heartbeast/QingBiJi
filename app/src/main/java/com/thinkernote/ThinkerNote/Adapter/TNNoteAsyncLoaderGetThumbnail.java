@@ -6,12 +6,10 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TNNoteAsyncLoaderGetThumbnail extends
 		AsyncTask<Object, Integer, Object> {
@@ -29,7 +27,7 @@ public class TNNoteAsyncLoaderGetThumbnail extends
 		TNNote note = (TNNote) mView.getTag();
 		if (note != null) {
 			try {
-				Log.i(TAG, "noteid" + note.noteId);
+				MLog.i(TAG, "noteid" + note.noteId);
 				int width = BIG_THUMBNAIL_WIDTH;
 				int height = BIG_THUMBNAIL_HEIGHT;
 

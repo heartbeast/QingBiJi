@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,12 +19,12 @@ import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 import java.util.Vector;
@@ -176,7 +177,7 @@ public class TNAboutAct extends TNActBase implements OnClickListener,
 				clickCount = 0;
 			}
 		}
-		Log.d(TAG, "shortClick:count=" + clickCount + " time" + t + " -" + currTime);
+		MLog.d(TAG, "shortClick:count=" + clickCount + " time" + t + " -" + currTime);
 		currTime = t;
 		if(clickCount == 2){
 			clickCount = 0;
@@ -185,8 +186,8 @@ public class TNAboutAct extends TNActBase implements OnClickListener,
 		clickCount++;
 		if(clickCount > 4){
 			clickCount = 0;
-			Log.d(TAG, "Open debug mode");
-			Log.DEBUG = true;
+			MLog.d(TAG, "Open debug mode");
+			MLog.DEBUG = true;
 			getSettings(true);
 			configView();
 		}

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     //    useLibrary 'org.apache.http.legacy'//API 23 弃用 HttpClient替换方案
-    compileSdkVersion 21//用哪个 Android SDK 版本编译你的应用
+    compileSdkVersion 22//用哪个 Android SDK 版本编译你的应用
     buildToolsVersion '27.0.3'
 
     defaultConfig {
@@ -48,7 +48,6 @@ dependencies {
     implementation files('libs/commons-lang3-3.1.jar')
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     //    implementation 'jp.wasabeef:richeditor-android:1.2.2'
-
     //---------------------------------使用最新网络框架--开始（不可缺少的依赖）----------------------------------------
     //=============okhttp3相关==============
     //local： https://github.com/square/okhttp
@@ -76,9 +75,7 @@ dependencies {
     //注意不要引错包，使用下边的，而不是上边的
     implementation 'io.reactivex:rxjava:1.3.8'
     implementation 'io.reactivex:rxandroid:1.2.1'
-
     //    ---------------------------------使用最新网络框架--结束----------------------------------------
-
 }
 //repositories {
 //    jcenter()

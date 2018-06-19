@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 
 public class TNUtilsSkin {
@@ -330,7 +331,7 @@ public class TNUtilsSkin {
 			}
 			
 			if( fullpath != null){
-				Log.i("getDrawable", fullpath);
+				MLog.i("getDrawable", fullpath);
 				
 				Options opts = new BitmapFactory.Options();
 				opts.inJustDecodeBounds = true;
@@ -351,7 +352,7 @@ public class TNUtilsSkin {
 				
 			}else if( new File(themePath + filename + ".9.png").exists() ){
 				fullpath = themePath + filename + ".9.png";
-				Log.i("getDrawable", fullpath);
+				MLog.i("getDrawable", fullpath);
 	    		Bitmap bitmap = BitmapFactory.decodeFile(fullpath);
 	    		if( bitmap != null){
 	    			byte[] chunk = bitmap.getNinePatchChunk();
@@ -385,7 +386,7 @@ public class TNUtilsSkin {
 			}
 			
 			if( fullpath != null){
-				Log.i(TAG, fullpath);
+				MLog.i(TAG, fullpath);
 				
 				Options opts = new BitmapFactory.Options();opts.inJustDecodeBounds = true;
 				BitmapFactory.decodeFile(fullpath, opts);
@@ -419,7 +420,7 @@ public class TNUtilsSkin {
 	
 	//从assets中获取定制皮肤
 	public static void setAssetsSkins(String skinName){
-		Log.i("TNUtilsSkin", "setAssetsSkins" + skinName);
+		MLog.i("TNUtilsSkin", "setAssetsSkins" + skinName);
 		if(skinName.equals("default"))
 			return;
 		

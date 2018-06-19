@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Vector;
-
-import org.json.JSONObject;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +10,6 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
@@ -22,14 +17,19 @@ import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import org.json.JSONObject;
+
+import java.util.Vector;
 
 // TODO
 public class TNCatInfoAct extends TNActBase
@@ -159,7 +159,7 @@ public class TNCatInfoAct extends TNActBase
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		if( requestCode == R.string.catinfo_group){
 			if(resultCode == RESULT_OK){
-				Log.i(TAG,"selectedId = " + data.getLongExtra("SelectedCatId", 0));
+				MLog.i(TAG,"selectedId = " + data.getLongExtra("SelectedCatId", 0));
 				long selectId = data.getLongExtra("SelectedCatId", 0);
 				mCurrentCat.pCatId = selectId;
 				configView();

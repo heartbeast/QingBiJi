@@ -1,41 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.json.JSONObject;
-
-import com.iflytek.speech.RecognizerResult;
-import com.iflytek.speech.SpeechConfig.RATE;
-import com.iflytek.speech.SpeechError;
-import com.iflytek.ui.RecognizerDialog;
-import com.iflytek.ui.RecognizerDialogListener;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNActionUtils;
-import com.thinkernote.ThinkerNote.General.TNConst;
-import com.thinkernote.ThinkerNote.General.TNRecord;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
-import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
-import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
-import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
-import com.thinkernote.ThinkerNote.Service.TNLBSService;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ProgressDialog;
@@ -67,6 +31,42 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.iflytek.speech.RecognizerResult;
+import com.iflytek.speech.SpeechConfig.RATE;
+import com.iflytek.speech.SpeechError;
+import com.iflytek.ui.RecognizerDialog;
+import com.iflytek.ui.RecognizerDialogListener;
+import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNActionUtils;
+import com.thinkernote.ThinkerNote.General.TNConst;
+import com.thinkernote.ThinkerNote.General.TNRecord;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
+import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
+import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
+import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
+import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Service.TNLBSService;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 主页--写笔记界面
@@ -133,7 +133,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 				TNUtilsUi.alert(TNNoteEditAct.this, R.string.alert_NoteEdit_Record_Interrupt);
 			} else if (msg.what == 6) {//空间不够
 				TNUtilsUi.alert(TNNoteEditAct.this, R.string.alert_NoSDCard);
-				Log.e(TAG, "record faild: no space");
+				MLog.e(TAG, "record faild: no space");
 				showToolbar("note");
 			} else if(msg.what == 7){//异步停止录音
 				handleProgressDialog("hide");
@@ -185,7 +185,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 		ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		RunningTaskInfo task = am.getRunningTasks(1).get(0);
 		String baseName = task.baseActivity.getClassName();
-		Log.e(TAG, "baseActivity = " + baseName);
+		MLog.e(TAG, "baseActivity = " + baseName);
 
 		if (savedInstanceState == null) {
 			initNote();
@@ -201,7 +201,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 			if (uri != null)
 				mCameraUri = uri;
 
-			Log.i(TAG, "onCreate" + mNote);
+			MLog.i(TAG, "onCreate" + mNote);
 		}
 		startTimer();
 
@@ -251,7 +251,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 			if (it != null && it.getAction() != null) {
 				Bundle extras = it.getExtras();
 				if (extras.containsKey(Intent.EXTRA_STREAM)) {
-					Log.i(TAG, "uri++=" + extras.get(Intent.EXTRA_STREAM));
+					MLog.i(TAG, "uri++=" + extras.get(Intent.EXTRA_STREAM));
 					Object extraStream = extras.get(Intent.EXTRA_STREAM);
 					if (Uri.class.isInstance(extraStream)) {
 						Uri uri = (Uri) extraStream;
@@ -271,7 +271,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 				}
 				if (extras.containsKey(Intent.EXTRA_SUBJECT)) {
 					Object subject = extras.get(Intent.EXTRA_SUBJECT);
-					Log.i(TAG, "subject++=" + subject);
+					MLog.i(TAG, "subject++=" + subject);
 					if (subject == null) {
 						mNote.title = "";
 					} else
@@ -279,7 +279,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 				}
 				if (extras.containsKey(Intent.EXTRA_TEXT)) {
 					Object text = extras.get(Intent.EXTRA_TEXT);
-					Log.i(TAG, "text++=" + text);
+					MLog.i(TAG, "text++=" + text);
 					if (text == null)
 						mNote.content = "";
 					else
@@ -305,7 +305,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 			newnote.atts.addAll(mNote.atts);
 			newnote.createTime = mNote.createTime;
 			if (mNote.isEditable()) {
-				Log.i(TAG, mNote.content);
+				MLog.i(TAG, mNote.content);
 				newnote.content = mNote.getPlainText();
 			} else {
 				newnote.setMappingAndPlainText();
@@ -364,20 +364,20 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 		outBundle.putParcelable("CAMERA_URI", mCameraUri);
 		outBundle.putBoolean("IS_OTHER_ACT", mIsStartOtherAct);
 
-		Log.i(TAG, "onSaveInstanceState");
+		MLog.i(TAG, "onSaveInstanceState");
 		super.onSaveInstanceState(outBundle);
 	}
 
 	@Override
 	public void onRestoreInstanceState(Bundle outBundle) {
 		super.onRestoreInstanceState(outBundle);
-		Log.i(TAG, "onRestoreInstanceState");
+		MLog.i(TAG, "onRestoreInstanceState");
 
 		mNote = (TNNote) outBundle.getSerializable("NOTE");
 		mCameraUri = outBundle.getParcelable("CAMERA_URI");
 		mIsStartOtherAct = outBundle.getBoolean("IS_OTHER_ACT");
 
-		Log.i(TAG, "onRestoreInstanceState" + mNote);
+		MLog.i(TAG, "onRestoreInstanceState" + mNote);
 	}
 
 	@Override
@@ -772,7 +772,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
-		Log.i(TAG,
+		MLog.i(TAG,
 				"onFocusChange" + v + hasFocus
 						+ ((EditText) v).getSelectionStart());
 		if (v.getId() == R.id.noteedit_input_title && !hasFocus) {
@@ -803,19 +803,19 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
-		Log.e(TAG, "str:" + s + " start:" + start + " count:" + count
+		MLog.e(TAG, "str:" + s + " start:" + start + " count:" + count
 				+ " after:" + after);
 	}
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		Log.e(TAG, "str:" + s + " start:" + start + " before:" + before
+		MLog.e(TAG, "str:" + s + " start:" + start + " before:" + before
 				+ " count:" + count);
 	}
 
 	@Override
 	public void onEnd(SpeechError error) {
-		Log.i(TAG, "iat onEnd:" + error);
+		MLog.i(TAG, "iat onEnd:" + error);
 		if (error != null) {
 			TNUtilsUi.showToast(error.toString());
 		}
@@ -827,7 +827,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 		for (RecognizerResult recognizerResult : results) {
 			builder.append(recognizerResult.text);
 		}
-		Log.i(TAG, "iat:" + builder.toString());
+		MLog.i(TAG, "iat:" + builder.toString());
 
 		EditText currentText = null;
 		if (mTitleView.isFocused()) {
@@ -848,7 +848,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.w(TAG, "onActivityResult:" + requestCode + "," + resultCode + ","
+		MLog.w(TAG, "onActivityResult:" + requestCode + "," + resultCode + ","
 				+ data);
 
 		if (resultCode != RESULT_OK
@@ -880,15 +880,15 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 		} else if (requestCode == R.id.noteedit_doodle) {
 			addAtt(data.getStringExtra("TuYa"), false);
 		}
-		Log.d(TAG, "onActivityResult end");
+		MLog.d(TAG, "onActivityResult end");
 	}
 
 	private void addAtt(final String path, boolean delete) {
 		if (path == null) {
-			Log.e(TAG, "addAtt path is NULL");
+			MLog.e(TAG, "addAtt path is NULL");
 			return;
 		}
-		Log.i(TAG, "srcpath: " + path);
+		MLog.i(TAG, "srcpath: " + path);
 
 		if (mNote.atts.size() > 200) {
 			TNUtilsUi.alert(this, R.string.alert_Att_too_Much);
@@ -1008,7 +1008,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 				Message message = new Message();
 				message.what = 1;
 				mHandler.sendMessage(message);
-				Log.i(TAG, "sendMessage savenote");
+				MLog.i(TAG, "sendMessage savenote");
 			}
 		};
 		mTimer.schedule(mTimerTask, 60 * 1000, 60 * 1000);

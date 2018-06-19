@@ -1,21 +1,21 @@
 package com.thinkernote.ThinkerNote.Data;
 
-import java.io.Serializable;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import com.baidu.location.BDLocation;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import com.thinkernote.ThinkerNote.Service.TNLBSService;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.io.Serializable;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TNNote implements Serializable{
 	/**
@@ -68,7 +68,7 @@ public class TNNote implements Serializable{
 	public Vector<Integer> mapping;
 	
 	public static TNNote newNote(){
-		Log.d(TAG, "newNote");
+		MLog.d(TAG, "newNote");
 		TNNote note = new TNNote();
 		note.noteLocalId = -1;
 		note.title = "";
@@ -109,7 +109,7 @@ public class TNNote implements Serializable{
 	}
 
 	public boolean isEditable(){
-		Log.d(TAG, "isEditable:" + content.length() + "|" + atts.size());
+		MLog.d(TAG, "isEditable:" + content.length() + "|" + atts.size());
 		String str = content;
 		if( atts.size() > 0){
 			int f = str.indexOf("<p><tn-media");
@@ -201,8 +201,8 @@ public class TNNote implements Serializable{
 		else{//新笔记保存时，同时点返回，可能产生noteLocalId>0并且originalNote=null的情况
 			isModified = false;
 		}
-		
-		Log.i(TAG, "isModified " + noteLocalId + originalNote + isModified);
+
+		MLog.i(TAG, "isModified " + noteLocalId + originalNote + isModified);
 		return isModified;
 	}
 	
@@ -292,8 +292,8 @@ public class TNNote implements Serializable{
 		
 		resetTitle();
 		lastUpdate = (int) (System.currentTimeMillis() / 1000);
-		
-		Log.d(TAG, "content:" + content);
+
+		MLog.d(TAG, "content:" + content);
 	}
 	
 	public String makeHtml(int width){
@@ -387,7 +387,7 @@ public class TNNote implements Serializable{
 		for (TNNoteAtt att : atts) {
 			String s = String.format("<tn-media att-id=\"%s\" hash=\"%s\"></tn-media>", att.attId, att.digest);
 			//web端复制粘贴同一个附件是，只会增加tn-media，而附件不会增加，故在此使用replaceAll替换相同的tn-media，以便能将所有tn-media显示出来
-			Log.d(TAG, mHtml);
+			MLog.d(TAG, mHtml);
 			mHtml = mHtml.replaceAll(s, replaceHtmlOfAtt(att));
 			String s2 = String.format("<tn-media hash=\"%s\" />", att.digest);
 			mHtml = mHtml.replaceAll(s2, replaceHtmlOfAtt(att));
@@ -397,12 +397,12 @@ public class TNNote implements Serializable{
 			
 		String sourceText = "";
 		mHtml = String.format(htmlFormat, title, TNUtils.formatDateToWeeks(createTime), tagStr, mHtml, sourceText);
-		Log.d(TAG, "html:" + mHtml);
+		MLog.d(TAG, "html:" + mHtml);
 		return mHtml;
 	}
 	
 	private String replaceHtmlOfAtt(TNNoteAtt att){
-		Log.d(TAG, "replaceHtmlOfAtt");
+		MLog.d(TAG, "replaceHtmlOfAtt");
 		String t = null;
 		// file exist at local
 		if ( !TextUtils.isEmpty(att.path) && att.syncState != 1){

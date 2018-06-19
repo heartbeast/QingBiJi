@@ -1,9 +1,6 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.util.ArrayList;
-import java.util.Vector;
-
-import org.json.JSONObject;
+import android.text.TextUtils;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -11,14 +8,16 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import android.text.TextUtils;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class TNNoteService {
 	private static final String TAG = "TNNoteService";
@@ -26,7 +25,7 @@ public class TNNoteService {
 	private static TNNoteService singleton = null;
 
 	private TNNoteService(){
-		Log.d(TAG,"TNNoteService()");
+		MLog.d(TAG,"TNNoteService()");
 		TNAction.regRunner(TNActionType.NoteAdd, this, "NoteAdd");
 		TNAction.regRunner(TNActionType.NoteEdit, this, "NoteEdit");
 		TNAction.regRunner(TNActionType.NoteDelete, this, "NoteDelete");

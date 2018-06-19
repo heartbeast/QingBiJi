@@ -1,44 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.io.File;
-import java.lang.reflect.Method;
-
-import org.json.JSONObject;
-
-import com.iflytek.speech.SpeechError;
-import com.iflytek.speech.SynthesizerPlayer;
-import com.iflytek.speech.SynthesizerPlayerListener;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
-import com.tencent.tauth.UiError;
-import com.thinkernote.ThinkerNote.General.TNActionUtils;
-import com.thinkernote.ThinkerNote.General.TNConst;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadEndListener;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadStartListener;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
-import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
-import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
-import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.INoteViewPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -69,6 +30,45 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.iflytek.speech.SpeechError;
+import com.iflytek.speech.SynthesizerPlayer;
+import com.iflytek.speech.SynthesizerPlayerListener;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNActionUtils;
+import com.thinkernote.ThinkerNote.General.TNConst;
+import com.thinkernote.ThinkerNote.General.TNDownloadAttService;
+import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadEndListener;
+import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadStartListener;
+import com.thinkernote.ThinkerNote.General.TNHandleError;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
+import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
+import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
+import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.INoteViewPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.lang.reflect.Method;
 
 /**
  * 笔记详情
@@ -123,7 +123,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 s = String.format(s, att.attName, att.size / 1024 + "K");
                 mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
                         att.attId, s));
-                Log.d(TAG, "start javascript:loading");
+                MLog.d(TAG, "start javascript:loading");
                 mWebView.loadUrl("javascript:loading()");
             } else if (msg.what == 3) {
                 DisplayMetrics dm = new DisplayMetrics();
@@ -207,7 +207,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d(TAG, "onPageFinished:" + url);
+                MLog.d(TAG, "onPageFinished:" + url);
                 super.onPageFinished(view, url);
 
                 view.loadUrl("javascript:loading()");
@@ -216,7 +216,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.d(TAG, "shouldOverrideUrlLoading:" + url);
+                MLog.d(TAG, "shouldOverrideUrlLoading:" + url);
                 super.shouldOverrideUrlLoading(view, url);
 
                 if (url.startsWith("http:") || url.startsWith("https:")) {
@@ -337,7 +337,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 TNUtilsUi.alert(this, R.string.alert_NoteView_NetNotWork);
             } else {
                 mWebView.loadDataWithBaseURL("", getString(R.string.getingcontent), "text/html", "utf-8", null);
-                Log.i(TAG, "1 -> SyncNoteContent");
+                MLog.i(TAG, "1 -> SyncNoteContent");
                 pGetNote(mNote.noteId);
 
             }
@@ -412,7 +412,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
 
             default:
-                Log.d(TAG, "onCreateContextMenu default");
+                MLog.d(TAG, "onCreateContextMenu default");
                 break;
         }
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -718,7 +718,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     }
 
     public void respondSyncNoteAtt(TNAction aAction) {
-        Log.i(TAG, "respondSyncNoteAtt: " + aAction.type + " isInFront: "
+        MLog.i(TAG, "respondSyncNoteAtt: " + aAction.type + " isInFront: "
                 + isInFront);
         if (isInFront) {
             if (!TNHandleError.handleResult(this, aAction)) {
@@ -876,7 +876,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     }
 
     private void startAutoDownload() {
-        Log.d(TAG, "startAutoDownload");
+        MLog.d(TAG, "startAutoDownload");
         if (!TNUtils.isNetWork())
             return;
 
@@ -1002,7 +1002,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     // -------------------------------------------------------------------------------
     @Override
     public void onEnd(SpeechError error) {
-        Log.i(TAG, "onEnd error:" + error);
+        MLog.i(TAG, "onEnd error:" + error);
 
         if (error == null) {
             mStartPos = mEndPos;
@@ -1021,7 +1021,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onBufferPercent(int percent, int beginPos, int endPos) {
-        Log.i(TAG, "onBufferPercent:" + percent + "," + beginPos + "," + endPos);
+        MLog.i(TAG, "onBufferPercent:" + percent + "," + beginPos + "," + endPos);
         ProgressBar pb = (ProgressBar) findViewById(R.id.noteview_read_progressbar);
         pb.setSecondaryProgress(percent);
 
@@ -1030,19 +1030,19 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onPlayBegin() {
-        Log.i(TAG, "onPlayBegin:" + mSynthesizerPlayer.getState());
+        MLog.i(TAG, "onPlayBegin:" + mSynthesizerPlayer.getState());
     }
 
 
     @Override
     public void onPlayPaused() {
-        Log.i(TAG, "onPlayPaused:" + mSynthesizerPlayer.getState());
+        MLog.i(TAG, "onPlayPaused:" + mSynthesizerPlayer.getState());
     }
 
 
     @Override
     public void onPlayPercent(int percent, int beginPos, int endPos) {
-        Log.i(TAG, "onPlayPercent:" + percent + "," + beginPos + "," + endPos);
+        MLog.i(TAG, "onPlayPercent:" + percent + "," + beginPos + "," + endPos);
         ProgressBar pb = (ProgressBar) findViewById(R.id.noteview_read_progressbar);
         pb.setProgress(percent);
     }
@@ -1050,7 +1050,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onPlayResumed() {
-        Log.i(TAG, "onPlayResumed:" + mSynthesizerPlayer.getState());
+        MLog.i(TAG, "onPlayResumed:" + mSynthesizerPlayer.getState());
 
     }
 
@@ -1063,7 +1063,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
          * loadUrl on the UI thread.
          */
         public void downloadAtt(long id) {
-            Log.d(TAG, "downloadAtt:" + id);
+            MLog.d(TAG, "downloadAtt:" + id);
             TNDownloadAttService.getInstance().start(id);
         }
 
@@ -1072,7 +1072,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
             // Log.d(TAG, "curAtt.type" + mCurAtt.type
             // + "curAtt.uploadFlag" + mCurAtt.uploadFlag);
-            Log.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
+            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
             // 此处会报一个Only the original thread that created a view hierarchy can
             // touch its views
             // 原因未知，故使用handle处理
@@ -1085,7 +1085,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
 
         public void showSource(String html) {
-            Log.e("HTML", html);
+            MLog.e("HTML", html);
         }
     }
 

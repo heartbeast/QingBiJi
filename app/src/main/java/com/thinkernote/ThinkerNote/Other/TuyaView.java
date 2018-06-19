@@ -16,7 +16,7 @@ import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TuyaView extends View {
 //    private static final float MINP = 0.25f;
@@ -52,7 +52,7 @@ public class TuyaView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        Log.i("onSizeChanged", w+","+h+","+oldw+","+oldh);
+        MLog.i("onSizeChanged", w+","+h+","+oldw+","+oldh);
     }
     
     @Override

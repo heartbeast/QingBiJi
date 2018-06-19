@@ -4,10 +4,10 @@ import java.util.Vector;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -47,7 +47,7 @@ public class TNDb extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase aDB) {
-		Log.d(TAG, "onCreate");
+		MLog.d(TAG, "onCreate");
 		aDB.execSQL(TNSQLString.USER_CREATE_TABLE);
 		aDB.execSQL(TNSQLString.CAT_CREATE_TABLE);
 		aDB.execSQL(TNSQLString.TAG_CREATE_TABLE);
@@ -119,7 +119,7 @@ public class TNDb extends SQLiteOpenHelper {
 			allData.add(rowData);
 		}
 		cursor.close();
-		Log.d(TAG, allData.toString());
+		MLog.d(TAG, allData.toString());
 
 		return allData;
 	}
@@ -146,7 +146,7 @@ public class TNDb extends SQLiteOpenHelper {
 	}
 	
 	public void executeSQL(TNAction aAction){
-		Log.d(TAG, aAction.inputs.toString());
+		MLog.d(TAG, aAction.inputs.toString());
 		try{
 			String sql = (String)aAction.inputs.get(0);
 			if( sql.startsWith("SELECT")){
@@ -240,6 +240,6 @@ public class TNDb extends SQLiteOpenHelper {
 			arg = "`" + arg + "` ";
 			values = values + arg;
 		}
-		Log.d(TAG, sql + "\r\n" + values);
+		MLog.d(TAG, sql + "\r\n" + values);
 	}
 }

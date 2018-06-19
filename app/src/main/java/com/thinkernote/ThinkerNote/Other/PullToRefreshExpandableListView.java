@@ -17,10 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class PullToRefreshExpandableListView extends ExpandableListView implements OnScrollListener {
 	private static final String TAG = "PullToRefreshExpandableListView";
@@ -98,7 +98,7 @@ public class PullToRefreshExpandableListView extends ExpandableListView implemen
 		headView.setPadding(0, -1 * headContentHeight, 0, 0);
 		headView.invalidate();
 
-		Log.v(TAG, "size:  width:" + headContentWidth + " height:"
+		MLog.v(TAG, "size:  width:" + headContentWidth + " height:"
 				+ headContentHeight);
 
 		addHeaderView(headView, null, false);

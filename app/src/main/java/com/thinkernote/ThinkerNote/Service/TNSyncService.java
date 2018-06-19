@@ -1,21 +1,21 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.util.Vector;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.Vector;
 
 public class TNSyncService {
 	private static final String TAG = "TNAttService";
@@ -23,7 +23,7 @@ public class TNSyncService {
 	private static volatile TNSyncService singleton = null;
 
 	private TNSyncService(){
-		Log.d(TAG,"TNAttService()");
+		MLog.d(TAG,"TNAttService()");
 		TNAction.regRunner(TNActionType.Synchronize, this, "Synchronize");
 		TNAction.regRunner(TNActionType.SynchronizeEdit, this, "SynchronizeEdit");
 		TNAction.regRunner(TNActionType.SynchronizeCat, this, "SynchronizeCat");
@@ -185,7 +185,7 @@ public class TNSyncService {
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
-				Log.e("Synchronize", "==================================================Synchronize");
+				MLog.e("Synchronize", "==================================================Synchronize");
 			}
 
 			//同步回收站的笔记
@@ -343,7 +343,7 @@ public class TNSyncService {
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
-				Log.e("SynchronizeEdit", "==================================================SynchronizeEdit");
+				MLog.e("SynchronizeEdit", "==================================================SynchronizeEdit");
 			}
 
 			aAction.finished();
@@ -440,7 +440,7 @@ public class TNSyncService {
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
-				Log.e("SynchronizeCat", "==================================================SynchronizeCat");
+				MLog.e("SynchronizeCat", "==================================================SynchronizeCat");
 			}
 
 			Vector<TNNote> allLocalNotes = TNDbUtils.getNoteListByCatId(TNSettings.getInstance().userId, catId, TNSettings.getInstance().sort, TNConst.MAX_PAGE_SIZE);

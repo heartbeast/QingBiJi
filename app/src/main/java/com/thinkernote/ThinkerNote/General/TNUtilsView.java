@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Data.TNUser;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TNUtilsView {
 	private static final String TAG = "TNUtilsView";
@@ -25,17 +26,17 @@ public class TNUtilsView {
 		view.setDrawingCacheEnabled(true);
 	    Bitmap bmp = view.getDrawingCache();
 	    if(bmp == null){
-	    	Log.e(TAG, "tuya bitmap is null");
+			MLog.e(TAG, "tuya bitmap is null");
 	    	return null;
 	    }
 	    String path = TNUtilsAtt.SaveBitmapToImage(bmp);
-	    Log.d(TAG, "view to image: " + path);
+		MLog.d(TAG, "view to image: " + path);
 	    view.destroyDrawingCache();
 	    return path;
     }
 	
 	public static String saveViewToImage(View view, String path, int width, int height){
-		Log.d(TAG, "layout to image: " + path);
+		MLog.d(TAG, "layout to image: " + path);
 		view.setDrawingCacheEnabled(true);
 		view.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), 
 				MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));

@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class ColorPickerDialog extends Dialog {
 	private final boolean debug = true;
@@ -195,11 +195,11 @@ public class ColorPickerDialog extends Dialog {
                             unit += 1;
                         }
 	               		mCenterPaint.setColor(interpCircleColor(mCircleColors, unit));
-	               		if(debug) Log.v(TAG, "鑹茬幆鍐�, 鍧愭爣: " + x + "," + y);
+	               		if(debug) MLog.v(TAG, "鑹茬幆鍐�, 鍧愭爣: " + x + "," + y);
                 	}else if(downInRect && inRect) {//down鍦ㄦ笎鍙樻柟鍧楀唴, 涓攎ove涔熷湪娓愬彉鏂瑰潡鍐�
                 		mCenterPaint.setColor(interpRectColor(mRectColors, x));
                 	}
-                	if(debug) Log.v(TAG, "[MOVE] 楂樹寒: " + highlightCenter + "寰寒: " + highlightCenterLittle + " 涓績: " + inCenter);
+                	if(debug) MLog.v(TAG, "[MOVE] 楂樹寒: " + highlightCenter + "寰寒: " + highlightCenterLittle + " 涓績: " + inCenter);
                 	if((highlightCenter && inCenter) || (highlightCenterLittle && inCenter)) {//鐐瑰嚮涓績鍦�, 褰撳墠绉诲姩鍦ㄤ腑蹇冨渾
                 		highlightCenter = true;
                 		highlightCenterLittle = false;

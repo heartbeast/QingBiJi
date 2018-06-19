@@ -27,12 +27,12 @@ import com.thinkernote.ThinkerNote.Activity.TNFileListAct;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
@@ -176,7 +176,7 @@ public class TNAttListAct extends TNActBase implements OnClickListener,
 
 	private void addAtt(String path){
 		if(path == null){
-			Log.e(TAG, "addAtt path is NULL");
+			MLog.e(TAG, "addAtt path is NULL");
 			return;
 		}
 		File file = new File(path);

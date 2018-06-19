@@ -1,6 +1,6 @@
 package com.thinkernote.ThinkerNote.Other;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -26,7 +26,7 @@ public class TNLinearLayout extends LinearLayout {
 	
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		Log.d("TNLinearLayout", "Handling Keyboard Window shown");
+		MLog.d("TNLinearLayout", "Handling Keyboard Window shown");
 
 //		int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
 //		int actualHeight = getHeight();

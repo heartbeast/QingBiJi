@@ -16,13 +16,13 @@ import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsTag;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.TextEditPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ITextEditPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
@@ -82,7 +82,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
         mOriginalText = b.getString("OriginalText");
         mParentId = b.getLong("ParentId");
         mIsLeaf = b.getInt("IsLeaf");
-        Log.i(TAG, mTextType + mHint + mOriginalText + mParentId + mIsLeaf);
+        MLog.i(TAG, mTextType + mHint + mOriginalText + mParentId + mIsLeaf);
 
         if (mTextType.equals("cat_add")) {
             ((TextView) findViewById(R.id.textedit_back)).setText("新增文件夹");
@@ -299,7 +299,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.i(TAG, "keyCode:" + keyCode + event);
+        MLog.i(TAG, "keyCode:" + keyCode + event);
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0
                 && !mTextType.equals("serch_project")) {
             back();
@@ -310,7 +310,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        Log.i(TAG, "keyCode:" + keyCode + event);
+        MLog.i(TAG, "keyCode:" + keyCode + event);
         if (keyCode == KeyEvent.KEYCODE_ENTER
                 && event.getRepeatCount() == 0
                 && event.getAction() == 1) {

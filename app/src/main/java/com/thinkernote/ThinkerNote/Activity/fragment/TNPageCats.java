@@ -1,7 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity.fragment;
 
-import java.util.Vector;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -24,24 +22,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Activity.TNNoteEditAct;
 import com.thinkernote.ThinkerNote.Activity.TNNoteListAct;
 import com.thinkernote.ThinkerNote.Activity.TNNoteViewAct;
 import com.thinkernote.ThinkerNote.Activity.TNPagerAct;
 import com.thinkernote.ThinkerNote.Activity.TNTextEditAct;
-import com.thinkernote.ThinkerNote.base.TNChildViewBase;
-import com.thinkernote.ThinkerNote.General.TNActionUtils;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Adapter.TNCatViewHolder;
 import com.thinkernote.ThinkerNote.Adapter.TNNoteViewHolder;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
+import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
@@ -49,6 +44,11 @@ import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView;
 import com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView.OnRefreshListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNChildViewBase;
+
+import java.util.Vector;
 
 /**
  * 我的笔记--文件夹frag
@@ -226,7 +226,7 @@ public class TNPageCats extends TNChildViewBase implements
 		long packed = mCatListView.getExpandableListPosition(position);
 		int groupPosition = ExpandableListView.getPackedPositionGroup(packed);
 		int childPosition = ExpandableListView.getPackedPositionChild(packed);
-		Log.i(TAG, "groupPosition=" + groupPosition + " childPosition="
+		MLog.i(TAG, "groupPosition=" + groupPosition + " childPosition="
 				+ childPosition);
 		if(groupPosition < 0 || childPosition < 0){
 			return true;
@@ -235,7 +235,7 @@ public class TNPageCats extends TNChildViewBase implements
 		if(g.groupId == 0){
 			TNCat cat = g.cats.get(childPosition);
 			if( cat.catId > 0) {
-				Log.i(TAG, "onLongClick:" + cat.catId);
+				MLog.i(TAG, "onLongClick:" + cat.catId);
 				mBundle.putSerializable("currentCat", cat);
 				if (cat.catId == TNSettings.getInstance().defaultCatId) 
 					mActivity.addCatMenu(R.layout.menu_folder_two);
@@ -392,7 +392,7 @@ public class TNPageCats extends TNChildViewBase implements
 					try {
 						holder = (TNCatViewHolder) convertView.getTag();
 					} catch (ClassCastException e) {
-						Log.i(TAG, "cat holder ClassCastException");
+						MLog.i(TAG, "cat holder ClassCastException");
 						holder = new TNCatViewHolder();
 						LayoutInflater layoutInflater = (LayoutInflater) mActivity
 								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -435,7 +435,7 @@ public class TNPageCats extends TNChildViewBase implements
 					try {
 						holder = (TNNoteViewHolder) convertView.getTag();
 					} catch (ClassCastException e) {
-						Log.i(TAG, "note holder ClassCastException");
+						MLog.i(TAG, "note holder ClassCastException");
 						holder = new TNNoteViewHolder();
 						LayoutInflater layoutInflater = (LayoutInflater) mActivity
 								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -531,7 +531,7 @@ public class TNPageCats extends TNChildViewBase implements
 	}
 	
 	private void getNativeCatList() {
-		Log.i(TAG, "getCatlist");
+		MLog.i(TAG, "getCatlist");
 		mCatList.clear();
 		mNoteList.clear();
 		if (mPCat.catId == -1) {
@@ -553,7 +553,7 @@ public class TNPageCats extends TNChildViewBase implements
 	 * 从网络获取数据
 	 */
 	private void getCatList() {
-		Log.i(TAG, "getCatlist");
+		MLog.i(TAG, "getCatlist");
 		mCatList.clear();
 		mNoteList.clear();
 		if (mPCat.catId == -1) {

@@ -3,9 +3,9 @@ package com.thinkernote.ThinkerNote.Database;
 import java.util.Vector;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType2;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TNDbUtils2 {
 	private static final String TAG = "TNDbUtils";
@@ -32,7 +32,7 @@ public class TNDbUtils2 {
 		
 		if(TNDb2.getSize(action) > 0){
 			long userLocalId = Long.valueOf(TNDb2.getData(action, 0, 0));
-			Log.i(TAG, "getUserLocalId userLocalId = " + userLocalId);
+			MLog.i(TAG, "getUserLocalId userLocalId = " + userLocalId);
 			return userLocalId;
 		}else
 			return -1;
@@ -373,7 +373,7 @@ public class TNDbUtils2 {
 		TNAction action = TNAction.runAction(TNActionType2.Db_Execute, 
 				TNSQLString2.USER_SELECT_SYNC_REVISION,
 				TNSettings.getInstance().userId);
-		Log.i(TAG, "userLocalId: " + TNSettings.getInstance().userId);
+		MLog.i(TAG, "userLocalId: " + TNSettings.getInstance().userId);
 		return Long.valueOf(TNDb2.getData(action, 0, 3));
 	}
 	
@@ -451,7 +451,7 @@ public class TNDbUtils2 {
 	
 	//恢复cat本身及其系列父文件夹
 	public static void recoverParentCats(long catLocalId){
-		Log.i(TAG, "recoverParentCats");
+		MLog.i(TAG, "recoverParentCats");
 		TNAction.runAction(TNActionType2.Db_Execute, 
 				TNSQLString2.CAT_UPDATE_TRASH,
 				0, catLocalId);

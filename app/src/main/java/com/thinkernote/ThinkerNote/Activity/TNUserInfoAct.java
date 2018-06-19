@@ -1,10 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.LinkedList;
-import java.util.Vector;
-
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -29,25 +24,28 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.UserInfoPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.IUserInfoPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+
+import org.json.JSONObject;
+
+import java.util.LinkedList;
+import java.util.Vector;
 
 /**
  * 主页--设置界面
@@ -291,7 +289,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
                     pb.getMax() / 1024f / 1024f,
                     100f * pb.getProgress() / pb.getMax()));
         } else if (aAction.result == TNActionResult.Finished) {
-            Log.d(TAG, "respondUpdateSoftware finished");
+            MLog.d(TAG, "respondUpdateSoftware finished");
             Dialog dialog = (Dialog) aAction.inputs.get(1);
             dialog.dismiss();
             String filePath = (String) aAction.outputs.get(0);

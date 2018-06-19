@@ -6,6 +6,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
 public class TNDialogPreference extends DialogPreference {
 	private static final String TAG = "TNDialogPreference";
 
@@ -20,7 +22,7 @@ public class TNDialogPreference extends DialogPreference {
 	}
 	
 	public void onClick (DialogInterface dialog, int which){
-		Log.d(TAG, dialog.toString() + ":" + which );
+		MLog.d(TAG, dialog.toString() + ":" + which );
 		if( mOnClickListener != null ){
 			mOnClickListener.onClick(dialog, which);
 		}

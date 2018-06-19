@@ -117,6 +117,18 @@ public class MLog {
         }
     }
 
+    public static void v(Object... message) {
+        if (isCanLog()) {
+            Log.v(TAG, getLogcat(message));
+        }
+    }
+
+    public static void v(int message) {
+        if (isCanLog()) {
+            Log.v(TAG, getLogMessage(String.valueOf(message)));
+        }
+    }
+
     public static String getLogMessage(String message) {
         //        String timeFor24 = LFDateTimeUtils.getTimeForSS(new Date(System.currentTimeMillis()));
         return "time--".concat(System.currentTimeMillis() + "").concat("--").concat(message);

@@ -1,34 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Vector;
-
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
-import com.thinkernote.ThinkerNote.Data.TNCat;
-import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
-import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
-import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Views.ArrayWheelAdapter;
-import com.thinkernote.ThinkerNote.Views.OnWheelChangedListener;
-import com.thinkernote.ThinkerNote.Views.WheelView;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -45,6 +16,35 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.LinearLayout;
+
+import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
+import com.thinkernote.ThinkerNote.Data.TNCat;
+import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
+import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
+import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.Views.ArrayWheelAdapter;
+import com.thinkernote.ThinkerNote.Views.OnWheelChangedListener;
+import com.thinkernote.ThinkerNote.Views.WheelView;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Vector;
 
 /**
  * menu 属性
@@ -180,7 +180,7 @@ public class TNNoteInfoAct extends TNActBase implements OnClickListener, OnChild
 			break;
 
 		default:
-			Log.d(TAG, "onCreateContextMenu default");
+			MLog.d(TAG, "onCreateContextMenu default");
 			break;
 		}
 		super.onCreateContextMenu(menu, v, menuInfo);

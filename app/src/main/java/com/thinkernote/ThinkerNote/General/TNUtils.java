@@ -1,5 +1,32 @@
 package com.thinkernote.ThinkerNote.General;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.apache.http.util.EncodingUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,33 +57,6 @@ import java.util.zip.ZipInputStream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.http.util.EncodingUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-import android.util.Base64;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.thinkernote.ThinkerNote.Data.TNNote;
-
 public class TNUtils {
 	private static final String TAG = "TNUtils";
 
@@ -70,11 +70,11 @@ public class TNUtils {
 	public static final String PUNCTUATION_REGEX = "[,.!?，？！，]";
 
 	public static void showObject(Object aObj) {
-		Log.d(TAG, aObj.getClass().toString() + " \tValue:" + aObj.toString());
+		MLog.d(TAG, aObj.getClass().toString() + " \tValue:" + aObj.toString());
 	}
 
 	public static void showViews(View aView, String prefix) {
-		Log.d(TAG, String.format("%s%s:(%d,%d)-(%d,%d)", prefix, aView
+		MLog.d(TAG, String.format("%s%s:(%d,%d)-(%d,%d)", prefix, aView
 				.getClass().toString(), aView.getLeft(), aView.getTop(), aView
 				.getWidth(), aView.getHeight()));
 
@@ -257,7 +257,7 @@ public class TNUtils {
 	}
 
 	public static String getClient() {
-		Log.d(TAG, "BOARD:" + Build.BOARD + "\r\nBRAND:" + Build.BRAND
+		MLog.d(TAG, "BOARD:" + Build.BOARD + "\r\nBRAND:" + Build.BRAND
 				+ "\r\nDEVICE:" + Build.DEVICE + "\r\nDISPLAY:" + Build.DISPLAY
 				+ "\r\nFINGERPRINT:" + Build.FINGERPRINT + "\r\nHOST:"
 				+ Build.HOST + "\r\nID:" + Build.ID + "\r\nMODEL:"
@@ -289,7 +289,7 @@ public class TNUtils {
         sb.append("\nSimState = " + tm.getSimState());
         sb.append("\nSubscriberId(IMSI) = " + tm.getSubscriberId());
         sb.append("\nVoiceMailNumber = " + tm.getVoiceMailNumber());
-        Log.d(TAG, sb.toString()); 
+		MLog.d(TAG, sb.toString());
         return sb.toString();
 	}
 	
@@ -347,13 +347,13 @@ public class TNUtils {
 		// content://sms/failed 发送失败
 		// content://sms/queued 待发送列表
 		ContentResolver cr = getAppContext().getContentResolver();
-		Log.d(TAG, "maincats_icons_sync");
+		MLog.d(TAG, "maincats_icons_sync");
 		String[] uris = { "content://sms/inbox", "content://sms/sent",
 				"content://sms/draft", "content://sms/outbox",
 				"content://sms/failed", "content://sms/queued",
 				"content://sms/sim" };
 		for (int i = 0; i < uris.length; i++) {
-			Log.d(TAG, uris[i]);
+			MLog.d(TAG, uris[i]);
 			Uri uri = Uri.parse(uris[i]);
 			Cursor cur = cr.query(uri, null, null, null, null);
 			if (cur.moveToFirst()) {
@@ -361,7 +361,7 @@ public class TNUtils {
 					for (int j = 0; j < cur.getColumnCount(); j++) {
 						String info = "name:" + cur.getColumnName(j) + "="
 								+ cur.getString(j);
-						Log.d("====>", info);
+						MLog.d("====>", info);
 					}
 				} while (cur.moveToNext());
 			}
@@ -373,7 +373,7 @@ public class TNUtils {
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (networkInfo != null && networkInfo.isConnected()) {
-			Log.i(TAG,
+			MLog.i(TAG,
 					networkInfo.getTypeName() + " "
 							+ networkInfo.getSubtypeName());
 			return true;
@@ -386,7 +386,7 @@ public class TNUtils {
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (networkInfo != null && networkInfo.isConnected()) {
-			Log.i(TAG,
+			MLog.i(TAG,
 					networkInfo.getTypeName() + " "
 							+ networkInfo.getSubtypeName());
 			if (networkInfo.getTypeName().equals("WIFI") || networkInfo.getTypeName().equals("4G")) {
@@ -401,7 +401,7 @@ public class TNUtils {
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (networkInfo != null && networkInfo.isConnected()) {
-			Log.i(TAG,
+			MLog.i(TAG,
 					networkInfo.getTypeName() + " "
 							+ networkInfo.getSubtypeName());
 //			原来可以手动设置在什么网络下自动同步
@@ -434,21 +434,21 @@ public class TNUtils {
 						String SID = (String) sid[i].toString().subSequence(
 								cid_directory.length() - 4,
 								cid_directory.length());
-						Log.d(TAG, " SID of MMC = " + SID);
+						MLog.d(TAG, " SID of MMC = " + SID);
 						break;
 					}
 				}
 				BufferedReader CID = new BufferedReader(new FileReader(
 						cid_directory + "/cid"));
 				String sd_cid = CID.readLine();
-				Log.d(TAG, "CID of the MMC = " + sd_cid);
+				MLog.d(TAG, "CID of the MMC = " + sd_cid);
 
 			} catch (Exception e) {
-				Log.e(TAG, "Can not read SD-card cid");
+				MLog.e(TAG, "Can not read SD-card cid");
 			}
 
 		} else {
-			Log.d(TAG, "External Storage Not available!!");
+			MLog.d(TAG, "External Storage Not available!!");
 		}
 	}
 
@@ -641,7 +641,7 @@ public class TNUtils {
 					date.getMonth() + 1, date.getDate());
 		}
 
-		Log.i(TAG, "milliseconds=" + milliseconds + "now=" + now + "tzOffset="
+		MLog.i(TAG, "milliseconds=" + milliseconds + "now=" + now + "tzOffset="
 				+ tzOffset + "secToday=" + secToday + "hours=" + hours
 				+ "formated=" + formated);
 
@@ -649,7 +649,7 @@ public class TNUtils {
 	}
 
 	public static void unzip(String filePath, String outputDirectory) {
-		Log.i("unzip", "srcPath:" + filePath + " outDirectory:"
+		MLog.i("unzip", "srcPath:" + filePath + " outDirectory:"
 				+ outputDirectory);
 		try {
 			FileInputStream zipFileName = null;
@@ -720,7 +720,7 @@ public class TNUtils {
 	}
 
 	public static String getNewWeiboImage(String path) {
-		Log.i(TAG, "srcPath:" + path);
+		MLog.i(TAG, "srcPath:" + path);
 		File file = new File(path);
 		if (!file.exists()) {
 			return "";
@@ -730,7 +730,7 @@ public class TNUtils {
 			newPath = TNUtilsAtt.getTempPath(file.getName());
 			TNUtilsAtt.compressionPicture(file, newPath);
 		}
-		Log.i(TAG, "newPath:" + newPath);
+		MLog.i(TAG, "newPath:" + newPath);
 		return newPath;
 	}
 
@@ -768,7 +768,7 @@ public class TNUtils {
 				while ((str = br.readLine()) != null) {
 					sb.append(str);
 				}
-				Log.d("devkey", sb.toString());
+				MLog.d("devkey", sb.toString());
 				br.close();
 				return sb.toString();
 			} catch (FileNotFoundException e) {

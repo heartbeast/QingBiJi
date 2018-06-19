@@ -1,9 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Vector;
-
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
@@ -27,7 +22,6 @@ import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
@@ -40,11 +34,17 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.PullToRefresh.PullToRefreshBase.OnLastItemVisibleListener;
 import com.thinkernote.ThinkerNote.PullToRefresh.PullToRefreshBase.OnRefreshListener;
 import com.thinkernote.ThinkerNote.PullToRefresh.PullToRefreshListView;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteListPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.INoteListPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteListListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
+
+import org.json.JSONObject;
+
+import java.util.Vector;
 
 /**
  * 重要的类
@@ -244,7 +244,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
 
             case R.id.notelist_home: {
-                Log.d(TAG, "want to go home...");
+                MLog.d(TAG, "want to go home...");
                 finish();
                 break;
             }
@@ -392,7 +392,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
     private void setButtonsAndNoteList() {
-        Log.i(TAG, "setButtons " + mNotes);
+        MLog.i(TAG, "setButtons " + mNotes);
         String title = null;
         switch (mListType) {
             case 1:

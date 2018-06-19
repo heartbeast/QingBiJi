@@ -1,20 +1,20 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.io.File;
-
 import android.graphics.BitmapFactory;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.io.File;
 
 public class TNAttService {
 	private static final String TAG = "TNAttService";
@@ -22,7 +22,7 @@ public class TNAttService {
 	private static TNAttService singleton = null;
 
 	private TNAttService(){
-		Log.d(TAG,"TNAttService()");
+		MLog.d(TAG,"TNAttService()");
 		TNAction.regRunner(TNActionType.SyncNoteAtt, this, "SyncNoteAtt");
 	}
 	

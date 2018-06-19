@@ -1,17 +1,6 @@
 package com.thinkernote.ThinkerNote.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
+import android.text.TextUtils;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -19,7 +8,6 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
@@ -27,7 +15,18 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import android.text.TextUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class TNUserService {
 	private static final String TAG = "TNUserService";
@@ -37,7 +36,7 @@ public class TNUserService {
 	//-------------------------------------------------------------------------------
 	// Singleton
 	private TNUserService(){
-		Log.d(TAG,"TNUserService()");
+		MLog.d(TAG,"TNUserService()");
 		TNAction.regRunner(TNActionType.Register, this, "Register");
 		TNAction.regRunner(TNActionType.Captcha, this, "Captcha");
 		TNAction.regRunner(TNActionType.VerifyCode, this, "VerifyCode");
@@ -444,7 +443,7 @@ public class TNUserService {
 			}
 			fos.close();
 			in.close();
-			Log.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
+			MLog.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
 			aAction.finished(myTempFile.getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();

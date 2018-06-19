@@ -1,11 +1,13 @@
 package com.thinkernote.ThinkerNote.General;
 
-import java.util.Queue;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.Queue;
 
 /**
  * 全局用户信息类
@@ -135,7 +137,7 @@ public class TNSettings {
 	}
 	
 	public boolean isTNTokenActivie(){
-		Log.i(TAG, "userId" + userId + "tokenStatus=" + tokenStatus + " accessToken=" + tnAccessToken + " uniqueId=" + uniqueId);
+		MLog.i(TAG, "userId" + userId + "tokenStatus=" + tokenStatus + " accessToken=" + tnAccessToken + " uniqueId=" + uniqueId);
 		if(tokenStatus == 1 && tnAccessToken != null && tnAccessToken.length() > 0){
 			if(userType > 0){
 				if(uniqueId != null && uniqueId.length() > 0)
@@ -202,7 +204,7 @@ public class TNSettings {
 		remindLockNote = sp.getBoolean(username + "remindLockNote", true);
 		showDialogType = sp.getInt(username + "showDialogType", 0x00);
 
-		Log.i(TAG, "readPref OK " + firstLaunch);
+		MLog.i(TAG, "readPref OK " + firstLaunch);
 	}
 	
 	public void savePref(boolean saveUserInfo){
@@ -259,7 +261,7 @@ public class TNSettings {
 		}
 		
 		editor.commit();
-		Log.i(TAG, "savePref OK " + firstLaunch);
+		MLog.i(TAG, "savePref OK " + firstLaunch);
 	}
 	
 }

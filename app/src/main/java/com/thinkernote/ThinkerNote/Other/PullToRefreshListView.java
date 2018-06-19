@@ -17,9 +17,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
@@ -99,7 +99,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		headView.setPadding(0, -1 * headContentHeight, 0, 0);
 		headView.invalidate();
 
-		Log.v(TAG, "size:  width:" + headContentWidth + " height:"
+		MLog.v(TAG, "size:  width:" + headContentWidth + " height:"
 				+ headContentHeight);
 
 		addHeaderView(headView, null, false);

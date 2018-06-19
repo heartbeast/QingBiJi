@@ -1,8 +1,5 @@
 package com.thinkernote.ThinkerNote.Other;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -20,7 +17,10 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * QuickAction dialog.
@@ -166,7 +166,7 @@ public class QuickAction extends PopupWindows implements OnDismissListener {
 		container.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.i("setOnClickListener", "onClick " + v);
+				MLog.i("setOnClickListener", "onClick " + v);
 				if (mItemClickListener != null) {
                     mItemClickListener.onItemClick(QuickAction.this, pos, actionId);
                 }
@@ -252,7 +252,7 @@ public class QuickAction extends PopupWindows implements OnDismissListener {
 		boolean onTop		= true;
 		
 		// display on bottom
-		Log.i("show","anchorRect="+ anchorRect +
+		MLog.i("show","anchorRect="+ anchorRect +
 				",rootHeight=" + rootHeight + 
 				",anchor.getTop()=" + anchor.getTop());
 //		if (rootHeight > anchor.getTop()) {
@@ -304,7 +304,7 @@ public class QuickAction extends PopupWindows implements OnDismissListener {
 					
 			break;
 		}
-		Log.i("setAnimationStyle", "Style=" + mWindow.getAnimationStyle());
+		MLog.i("setAnimationStyle", "Style=" + mWindow.getAnimationStyle());
 	}
 	
 	/**

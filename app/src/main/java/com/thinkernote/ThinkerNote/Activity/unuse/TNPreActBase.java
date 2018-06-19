@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
 import com.baidu.mobstat.StatService;
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
 /**
  * TODO 未使用
  */
@@ -23,7 +24,7 @@ public class TNPreActBase extends PreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate:" + savedInstanceState);
+		MLog.d(TAG, "onCreate:" + savedInstanceState);
 		super.onCreate(savedInstanceState);		
 		System.gc();
 		
@@ -36,7 +37,7 @@ public class TNPreActBase extends PreferenceActivity {
 	}
 	
 	protected void onStart(){
-		Log.d(TAG, "onStart");
+		MLog.d(TAG, "onStart");
 		super.onStart();
 		
 		TNSettings settings = TNSettings.getInstance();
@@ -49,14 +50,14 @@ public class TNPreActBase extends PreferenceActivity {
 	
 	@Override 
 	public void finish () {
-		Log.d(TAG, "finish");
+		MLog.d(TAG, "finish");
 		TNAction.unregister(this);
 		
 		super.finish();
 	}
 
 	protected void onResume(){
-		Log.d(TAG, "onResume");
+		MLog.d(TAG, "onResume");
 		super.onResume();
 
 		//百度
@@ -81,7 +82,7 @@ public class TNPreActBase extends PreferenceActivity {
 		if( settings.needShowLock){
 			if( !TAG.equals("TNLockAct") && !TAG.equals("TNSplashAct")
 					&& settings.lockPattern.size() > 0){
-				Log.i(TAG, "show lock");
+				MLog.i(TAG, "show lock");
 				Bundle b = new Bundle();
 				b.putInt("Type", 2);
 				b.putString("OriginalPath", settings.lockPattern.toString());
@@ -97,7 +98,7 @@ public class TNPreActBase extends PreferenceActivity {
 	protected void setViews(){}
 
 	protected void onPause(){
-		Log.d(TAG, "onPause");
+		MLog.d(TAG, "onPause");
 		overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
 		super.onPause();
 		
@@ -113,7 +114,7 @@ public class TNPreActBase extends PreferenceActivity {
 
 	@Override
 	public void onDestroy(){
-		Log.d(TAG, "onDestroy");
+		MLog.d(TAG, "onDestroy");
 		TNAction.unregister(this);
 		super.onDestroy();
 	}
@@ -150,7 +151,7 @@ public class TNPreActBase extends PreferenceActivity {
 	}
 	
 	public void RespondChangeSkin(TNAction aAction){
-		Log.i(TAG, "RespondChangeSkin");
+		MLog.i(TAG, "RespondChangeSkin");
 		setViews();
 	}
 }

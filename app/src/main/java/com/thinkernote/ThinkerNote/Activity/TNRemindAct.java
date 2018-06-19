@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
@@ -18,7 +18,7 @@ public class TNRemindAct extends TNActBase {
 		Intent i = getIntent();		
 		if(i.hasExtra("Type")){
 			if(i.getStringExtra("Type").equals("MsgRemaind")){
-				Log.i(TAG, "to setRemindTime");
+				MLog.i(TAG, "to setRemindTime");
 //				TNAction.runActionAsync(TNActionType.SetRemindTime, i.getLongExtra("RemindTime", 0));
 			}
 		}

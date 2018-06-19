@@ -8,9 +8,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class SeekBarPreference extends DialogPreference implements  
 	OnSeekBarChangeListener {  
@@ -41,12 +41,12 @@ public class SeekBarPreference extends DialogPreference implements
 	@Override  
 	protected void onDialogClosed(boolean positiveResult) {  
 		if (positiveResult) {
-			Log.i("Dialog closed", "You click positive button");  
+			MLog.i("Dialog closed", "You click positive button");
 			if(callback != null){
 				callback.run(seekBar.getProgress());
 			}
-		} else {  
-			Log.i("Dialog closed", "You click negative button");  
+		} else {
+			MLog.i("Dialog closed", "You click negative button");
 		}  
 	}  
 	

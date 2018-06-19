@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.General.Log;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 
 public class PoPuMenuView extends PopupWindows {
@@ -77,7 +77,7 @@ public class PoPuMenuView extends PopupWindows {
 		boolean onBottom = true;
 
 		// display on bottom
-		Log.i("show", "anchorRect=" + anchorRect + ",rootHeight=" + rootHeight
+		MLog.i("show", "anchorRect=" + anchorRect + ",rootHeight=" + rootHeight
 				+ ",anchor.getTop()=" + anchor.getTop());
 		if (rootHeight > anchorRect.top) {
 			yPos = anchorRect.bottom - 10;
@@ -93,10 +93,10 @@ public class PoPuMenuView extends PopupWindows {
 	
 	private void setAnimationStyle(int screenWidth, int anchorXPos, boolean onBottom){
 		if(anchorXPos < screenWidth/2){
-			Log.d("PoPuMenuView", "int left onBottom=" + onBottom);
+			MLog.d("PoPuMenuView", "int left onBottom=" + onBottom);
 			mWindow.setAnimationStyle((onBottom) ? R.style.AnimationFade_Bottom_left : R.style.AnimationFade_Top_left );
 		}else{
-			Log.d("PoPuMenuView", "int right onBottom=" + onBottom);
+			MLog.d("PoPuMenuView", "int right onBottom=" + onBottom);
 			mWindow.setAnimationStyle((onBottom) ? R.style.AnimationFade_Bottom_right : R.style.AnimationFade_Top_right);
 		}
 	}

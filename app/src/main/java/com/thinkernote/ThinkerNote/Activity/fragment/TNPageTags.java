@@ -1,7 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity.fragment;
 
-import java.util.Vector;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
@@ -19,24 +17,26 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Activity.TNNoteListAct;
 import com.thinkernote.ThinkerNote.Activity.TNPagerAct;
-import com.thinkernote.ThinkerNote.base.TNChildViewBase;
 import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.General.TNActionUtils;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.General.TNActionUtils;
+import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView;
 import com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView.OnHeadViewVisibleChangeListener;
 import com.thinkernote.ThinkerNote.Other.PullToRefreshExpandableListView.OnRefreshListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNChildViewBase;
+
+import java.util.Vector;
 
 /**
  * 我的笔记--标签frag
@@ -175,7 +175,7 @@ OnScrollListener, OnHeadViewVisibleChangeListener, OnChildClickListener {
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v,
 			int groupPosition, int childPosition, long id) {
-		Log.i(TAG, "onChildClick id = " + id);
+		MLog.i(TAG, "onChildClick id = " + id);
 		TNTag tag = mGroups.get(groupPosition).tags.get(childPosition);
 		Bundle b = new Bundle();
 		b.putLong("UserId",
@@ -228,7 +228,7 @@ OnScrollListener, OnHeadViewVisibleChangeListener, OnChildClickListener {
 				.getPackedPositionGroup(packed);
 		int childPosition = PullToRefreshExpandableListView
 				.getPackedPositionChild(packed);
-		Log.i(TAG, "groupPosition=" + groupPosition + " childPosition="
+		MLog.i(TAG, "groupPosition=" + groupPosition + " childPosition="
 				+ childPosition);
 
 		TNTag  tag = mGroups.get(groupPosition).tags.get(childPosition);

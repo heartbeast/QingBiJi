@@ -1,13 +1,11 @@
 package com.thinkernote.ThinkerNote.General;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.thinkernote.ThinkerNote.OAuth2.TNHttpEntity;
+import com.thinkernote.ThinkerNote.OAuth2.TNHttpHelper.RestHttpException;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -18,11 +16,14 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import com.thinkernote.ThinkerNote.OAuth2.TNHttpEntity;
-import com.thinkernote.ThinkerNote.OAuth2.TNHttpHelper.RestHttpException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * HttpClient工具类
@@ -48,12 +49,12 @@ public class TNHttpUtils {
 	}
 
 	public static String getHttpsEntityContent(TNHttpEntity tnEntity) {
-		Log.d(TAG, "getHttpsEntityContent");
+		MLog.d(TAG, "getHttpsEntityContent");
 		String result = "";
 		HttpEntity entity = tnEntity.getEntity();
 		Header header = entity.getContentType();
 		if (header != null)
-			Log.e(TAG, "contentType:" + header.getValue());
+			MLog.e(TAG, "contentType:" + header.getValue());
 
 		InputStream inputStream;
 		try {
@@ -79,11 +80,11 @@ public class TNHttpUtils {
 	}
 
 	public static Object getEntityContent(TNHttpEntity tnEntity) {
-		Log.d(TAG, "getEntityContent");
+		MLog.d(TAG, "getEntityContent");
 		HttpEntity entity = tnEntity.getEntity();
 		Header header = entity.getContentType();
 		if (header != null)
-			Log.e(TAG, "contentType:" + header.getValue());
+			MLog.e(TAG, "contentType:" + header.getValue());
 		try {
 			if (header != null && header.getValue().startsWith("image")) {
 				InputStream is = entity.getContent();
@@ -105,7 +106,7 @@ public class TNHttpUtils {
 
 	public static String getEntityToFile(TNHttpEntity tnEntity, String outPath)
 			throws RestHttpException, Exception {
-		Log.d(TAG, "getEntityToFile");
+		MLog.d(TAG, "getEntityToFile");
 		HttpEntity entity = tnEntity.getEntity();
 		Header header = entity.getContentType();
 		String value = null;
@@ -115,10 +116,10 @@ public class TNHttpUtils {
 		if (header == null 
 				|| value.indexOf("application/json") >= 0) {
 			String result = EntityUtils.toString(entity, "UTF-8");
-			Log.e(TAG, result);
+			MLog.e(TAG, result);
 			throw new RestHttpException(200, result);
 		}
-		Log.e(TAG, "contentType:" + value);
+		MLog.e(TAG, "contentType:" + value);
 
 		File f = new File(outPath);
 		if (!f.exists()) {
@@ -154,7 +155,7 @@ public class TNHttpUtils {
 				e.printStackTrace();
 			}
 		}
-		Log.i("makeUrlParams", sb.toString());
+		MLog.i("makeUrlParams", sb.toString());
 		return sb.toString();
 	}
 }

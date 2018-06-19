@@ -1,17 +1,16 @@
 package com.thinkernote.ThinkerNote.Service;
 
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.DBHelper.CatDbHelper;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.Log;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class TNCatService {
 	private static final String TAG = "TNCatService";
@@ -19,7 +18,7 @@ public class TNCatService {
 	private static TNCatService singleton = null;
 
 	private TNCatService(){
-		Log.d(TAG,"TNCatService()");
+		MLog.d(TAG,"TNCatService()");
 		TNAction.regRunner(TNActionType.GetAllFolders, this, "GetAllFolders");
 		TNAction.regRunner(TNActionType.FolderAdd, this, "FolderAdd");
 		TNAction.regRunner(TNActionType.FolderEdit, this, "FolderEdit");
