@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IPayModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
@@ -31,8 +32,9 @@ public class PayModuleImpl implements IPayModule {
 
     @Override
     public void mAlipay(final OnPayListener listener, String mAmount, String mType) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .alipay(mAmount,mType)//接口方法
+                .alipay(mAmount,mType,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -64,8 +66,9 @@ public class PayModuleImpl implements IPayModule {
 
     @Override
     public void mWxpay(final OnPayListener listener, String mAmount, String mType) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .wxpay(mAmount,mType)//接口方法
+                .wxpay(mAmount,mType,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IBindAccountModule;
 import com.thinkernote.ThinkerNote._interface.m.IBindPhoneModule;
@@ -30,8 +31,9 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
 
     @Override
     public void mVcode(final OnBindPhoneListener listener, final String phone, String name, String answer, String mNonce, String mHashKey) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.NoCacheBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .postVerifyCode4(phone, name,answer,mNonce,mHashKey)//接口方法
+                .postVerifyCode4(phone, name,answer,mNonce,mHashKey,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -65,8 +67,9 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
 
     @Override
     public void mVerifyPic(final OnBindPhoneListener listener) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .getVerifyPic()//接口方法
+                .getVerifyPic(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -100,8 +103,9 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
 
     @Override
     public void mBindNewPhone(final OnBindPhoneListener listener, final String phone, String vcode, String ps) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .changePhone(phone,ps,vcode)//接口方法
+                .changePhone(phone,ps,vcode,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -135,8 +139,9 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
 
     @Override
     public void mGetUserInfo(final OnBindPhoneListener listener) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .getUserInfo()//接口方法
+                .getUserInfo(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

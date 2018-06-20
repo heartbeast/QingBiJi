@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IReportModule;
 import com.thinkernote.ThinkerNote._interface.m.ITextEditModule;
@@ -35,9 +36,9 @@ public class ReportModuleImpl implements IReportModule {
      */
     @Override
     public void mFeedBackPic(final OnReportListener listener, List<String> fileList, final String content, final String email) {
-
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .upLoadPic()//接口方法
+                .upLoadPic(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -70,9 +71,9 @@ public class ReportModuleImpl implements IReportModule {
 
     @Override
     public void mFeedBack(final OnReportListener listener, final String content, long pid, final String email) {
-
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .feedBack(content,pid,email)//接口方法
+                .feedBack(content,pid,email,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITagInfoModule;
 import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
@@ -30,8 +31,9 @@ public class TagInfoModuleImpl implements ITagInfoModule {
 
     @Override
     public void mTagDelete(final OnTagInfoListener listener, final long pid) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .deleteTag(pid)//接口方法
+                .deleteTag(pid,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

@@ -33,6 +33,7 @@ import rx.Observable;
  * 具体的操作，需要看MVP下的M层操作
  * <p>
  * Observable引用：import rx.Observable
+ * 接口说明：所有的接口都有固定参数 token(除 登录/注册两个接口);
  */
 
 public interface MyHttpService {
@@ -303,7 +304,7 @@ public interface MyHttpService {
             @Field("phone") String phone
             , @Field("password") String password
             , @Field("vcode") String vcode
-            , @Field("session_token") String session_token);
+    );
 
     /**
      * 13 修改手机号
@@ -399,7 +400,7 @@ public interface MyHttpService {
      * @return
      */
     @POST(URLUtils.Home.UPLOAD_PIC)
-    Observable<CommonBean> upLoadPic( @Field("session_token") String session_token);
+    Observable<CommonBean> upLoadPic(@Field("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------
@@ -539,19 +540,6 @@ public interface MyHttpService {
             , @Field("pagesize") int pagesize
             , @Field("sortord") String sortord
             , @Field("session_token") String session_token);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**

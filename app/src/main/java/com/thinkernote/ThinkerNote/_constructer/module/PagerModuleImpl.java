@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IPagerModule;
 import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
@@ -28,9 +29,9 @@ public class PagerModuleImpl implements IPagerModule {
 
     @Override
     public void mSetDefaultFolder(final OnPagerListener listener, long folderID) {
-
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .setDefaultFolder(folderID)//接口方法
+                .setDefaultFolder(folderID,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -62,8 +63,9 @@ public class PagerModuleImpl implements IPagerModule {
 
     @Override
     public void mDeleteTag(final OnPagerListener listener, final long tagID) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .deleteTag(tagID)//接口方法
+                .deleteTag(tagID,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

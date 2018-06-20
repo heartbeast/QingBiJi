@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
 import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
@@ -31,8 +32,9 @@ public class TagListModuleImpl implements ITagListModule {
 
     @Override
     public void mTagList(final OnCommonListener listener) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .getTagList()//接口方法
+                .getTagList(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

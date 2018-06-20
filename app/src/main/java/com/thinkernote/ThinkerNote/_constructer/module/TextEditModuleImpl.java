@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITextEditModule;
 import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
@@ -30,9 +31,10 @@ public class TextEditModuleImpl implements ITextEditModule {
 
     @Override
     public void pFolderAdd(final OnTextEditListener listener,long pid, String text) {
+        TNSettings settings = TNSettings.getInstance();
         if (pid==-1){
             MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                    .folderAdd(text)//接口方法
+                    .folderAdd(text,settings.token)//接口方法
                     .subscribeOn(Schedulers.io())//固定样式
                     .unsubscribeOn(Schedulers.io())//固定样式
                     .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -63,7 +65,7 @@ public class TextEditModuleImpl implements ITextEditModule {
                     });
         }else {
             MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                    .folderAdd(text,pid)//接口方法
+                    .folderAdd(text,pid,settings.token)//接口方法
                     .subscribeOn(Schedulers.io())//固定样式
                     .unsubscribeOn(Schedulers.io())//固定样式
                     .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -98,8 +100,9 @@ public class TextEditModuleImpl implements ITextEditModule {
 
     @Override
     public void pFolderRename(final OnTextEditListener listener, final long pid, final String text) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .folderRename(text,pid)//接口方法
+                .folderRename(text,pid,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -132,8 +135,9 @@ public class TextEditModuleImpl implements ITextEditModule {
 
     @Override
     public void pTagAdd(final OnTextEditListener listener, String text) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .tagAdd(text)//接口方法
+                .tagAdd(text,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -166,8 +170,9 @@ public class TextEditModuleImpl implements ITextEditModule {
 
     @Override
     public void pTagRename(final OnTextEditListener listener, final long pid, final String text) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .tagRename(text,pid)//接口方法
+                .tagRename(text,pid,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

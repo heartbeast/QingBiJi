@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.INoteViewModule;
 import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
@@ -29,8 +30,9 @@ public class NoteViewModuleImpl implements INoteViewModule {
 
     @Override
     public void mGetNote(final OnNoteViewListener listener, long noteId) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .getNote(noteId)//接口方法
+                .getNote(noteId,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

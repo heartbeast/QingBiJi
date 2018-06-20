@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IBindAccountModule;
 import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
@@ -27,8 +28,9 @@ public class BindAcccountModuleImpl implements IBindAccountModule{
 
     @Override
     public void mVerifyCode(final OnBindAccountListener listener, String phone, String t) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.NoCacheBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .postVerifyCode2(phone, t)//接口方法
+                .postVerifyCode2(phone, t,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -62,8 +64,9 @@ public class BindAcccountModuleImpl implements IBindAccountModule{
 
     @Override
     public void mLoginBind(final OnBindAccountListener listener, int btype, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone, String vcode, String sign) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginBindPhone(btype, bid,name,accessToken,refreshToken,currentTime,phone,vcode,sign)//接口方法
+                .postLoginBindPhone(btype, bid,name,accessToken,refreshToken,currentTime,phone,vcode,sign,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -97,8 +100,9 @@ public class BindAcccountModuleImpl implements IBindAccountModule{
 
     @Override
     public void autoLoginAferBind(final OnBindAccountListener listener, int btype, final String bid, final long stamp, String sign ) {
+        TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginQQ(btype, bid,stamp,sign)//接口方法
+                .postLoginQQ(btype, bid,stamp,sign,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
