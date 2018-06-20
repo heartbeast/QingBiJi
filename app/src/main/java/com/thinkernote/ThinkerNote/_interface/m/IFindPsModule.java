@@ -15,4 +15,6 @@ public interface IFindPsModule {
     void submit(OnFindPsListener onFindPsListener, String phone, String ps, String vcode);
 
     void autoLogin(OnFindPsListener onFindPsListener, String phone, String ps);
+
+    void mProfile(OnFindPsListener onFindPsListeners);
 }

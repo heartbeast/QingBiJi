@@ -3,8 +3,9 @@ package com.thinkernote.ThinkerNote.bean;
 import java.io.Serializable;
 
 /**
- * 该形式是{code msg {内容}}
- * 更新 使用
+ * 该形式是{code:"", msg:"", Profile:{内容}}
+ *
+ * proFileBean更新使用
  */
 
 public class CommonBean2<T> implements Serializable {

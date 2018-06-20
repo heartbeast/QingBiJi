@@ -2,6 +2,8 @@ package com.thinkernote.ThinkerNote.Activity;
 
 import org.json.JSONObject;
 
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
@@ -16,6 +18,8 @@ import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 
 import android.app.ProgressDialog;
@@ -60,6 +64,8 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
     //
     private IFindPsPresener presener;
     private VerifyPicBean verifyPicBean;//验证码数据
+    private LoginBean loginBean;
+    private ProfileBean profileBean;
 
 
     @Override
@@ -293,7 +299,7 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
         }
     }
 
-    //找回密码 自动登录
+    //找回密码 触发登录接口
     private void autoLogin() {
         if (mType == 1) {
             presener.autoLogin(mPhone, mPsw);
@@ -301,6 +307,10 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
             presener.autoLogin(mEmail, mPsw);
         }
     }
+    private void updateProfile() {
+        presener.pProfile();
+    }
+
 
     //-------------------------------------接口回调------------------------------------------
 
@@ -365,20 +375,80 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
 
     @Override
     public void onAutoLoginSuccess(Object obj) {
+        loginBean = (LoginBean) obj;
+        TNSettings settings = TNSettings.getInstance();
+        settings.isLogout = false;
+
+        //
+        settings.password = mPsw;
+        settings.userId = loginBean.getUser_id();
+        settings.username = loginBean.getUsername();
+        settings.token = loginBean.getToken();
+        settings.expertTime = loginBean.getExpire_at();
+        if (TextUtils.isEmpty(settings.loginname)) {
+            settings.loginname = loginBean.getUsername();
+        }
+        settings.savePref(false);
+        //更新
+        updateProfile();
+
+
+    }
+
+    @Override
+    public void onAutoLoginFailed(String msg, Exception e) {
+        mProgressDialog.hide();
+        TNUtilsUi.showToast(msg);
+
+    }
+
+    @Override
+    public void onProfileSuccess(Object obj) {
+        profileBean = (ProfileBean) obj;
+
         mProgressDialog.hide();
         //
         TNSettings settings = TNSettings.getInstance();
+        long userId = TNDbUtils.getUserId(settings.username);
+
+        settings.phone = profileBean.getPhone();
+        settings.email = profileBean.getEmail();
+        settings.defaultCatId = profileBean.getDefault_folder();
+
+        if (userId != settings.userId) {
+            //清空user表
+            UserDbHelper.clearUsers();
+        }
+
+        JSONObject user = TNUtils.makeJSON(
+                "username", settings.username,
+                "password", settings.password,
+                "userEmail", settings.email,
+                "phone", settings.phone,
+                "userId", settings.userId,
+                "emailVerify", profileBean.getEmailverify(),
+                "totalSpace", profileBean.getTotal_space(),
+                "usedSpace", profileBean.getUsed_space());
+
+        //更新user表
+        UserDbHelper.addOrUpdateUser(user);
+
+        //
         settings.isLogout = false;
+        settings.savePref(false);
+
+        //
         settings.firstLaunch = false;
         settings.loginname = mType == 1 ? mPhone : mEmail;
         settings.password = mPsw;
         settings.savePref(false);
         startActivity(TNMainAct.class);
         finish();
+
     }
 
     @Override
-    public void onAutoLoginFailed(String msg, Exception e) {
+    public void onProfileFailed(String msg, Exception e) {
         mProgressDialog.hide();
         TNUtilsUi.showToast(msg);
     }

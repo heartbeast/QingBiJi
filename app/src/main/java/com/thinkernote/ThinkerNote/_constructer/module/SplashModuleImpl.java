@@ -2,12 +2,17 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
 import com.thinkernote.ThinkerNote._interface.m.ITagInfoModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.CommonBean2;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;
@@ -27,33 +32,68 @@ public class SplashModuleImpl implements ISplashModule {
     }
 
     @Override
-    public void mLogin(final OnCommonListener listener, String name, String ps) {
+    public void mLogin(final OnSplashListener listener, String name, String ps) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginNormal(name,ps)//接口方法
+                .postLoginNormal(name, ps)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<LoginBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "upgrade--onCompleted");
+                        MLog.d(TAG, "mLogin--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("upgrade 异常onError:" + e.toString());
+                        MLog.e("mLogin 异常onError:" + e.toString());
                         listener.onFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "upgrade-onNext");
+                    public void onNext(LoginBean bean) {
+                        MLog.d(TAG, "mLogin-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
                             listener.onSuccess(bean);
                         } else {
                             listener.onFailed(bean.getMessage(), null);
+                        }
+                    }
+                });
+    }
+
+
+    @Override
+    public void mProFile(final OnSplashListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .LogNormalProfile(settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mProFile--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mProFile 异常onError:" + e.toString());
+                        listener.onProfileFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean2<ProfileBean> bean) {
+                        MLog.d(TAG, "mProFile-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onProfileSuccess(bean.getProfile());
+                        } else {
+                            listener.onProfileFailed(bean.getMsg(), null);
                         }
                     }
                 });

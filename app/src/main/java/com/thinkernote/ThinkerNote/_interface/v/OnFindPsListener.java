@@ -24,4 +24,9 @@ public interface OnFindPsListener {
     void onAutoLoginSuccess(Object obj);
 
     void onAutoLoginFailed(String msg, Exception e);
+
+    void onProfileSuccess(Object obj);
+
+    void onProfileFailed(String msg, Exception e);
+
 }

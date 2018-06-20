@@ -24,6 +24,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -48,19 +49,11 @@ public interface MyHttpService {
 
     /**
      * （1）retrofit+okhttp+Rxjava默认构建样式（header+token+无缓存）
+     * 非get接口调用
      */
     class Builder {
         public static MyHttpService getHttpServer() {
             return HttpUtils.getInstance().getDefaultServer(MyHttpService.class);
-        }
-    }
-
-    /**
-     * （2）retrofit+okhttp+Rxjava样式+接口要求带token验证
-     */
-    class TokenBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getTokenServer(MyHttpService.class);
         }
     }
 
@@ -73,15 +66,7 @@ public interface MyHttpService {
         }
     }
 
-    /**
-     * （3）get方式调用：header+token+无缓存
-     * 登录和注册不可调用
-     */
-    class GETBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
-        }
-    }
+
 
     /**
      * （3）get方式调用：header+token
@@ -154,7 +139,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.PROFILE)
-    Observable<CommonBean2<ProfileBean>> LogNormalProfile(@Field("session_token") String session_token);
+    Observable<CommonBean2<ProfileBean>> LogNormalProfile(@Query("session_token") String session_token);
 
     /**
      * 03 sina登录
@@ -245,7 +230,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.VERIFY_PIC)
-    Observable<VerifyPicBean> getVerifyPic(@Field("session_token") String session_token);
+    Observable<VerifyPicBean> getVerifyPic(@Query("session_token") String session_token);
 
 
     /**
@@ -325,7 +310,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.USER_INFO)
-    Observable<CommonBean> getUserInfo(@Field("session_token") String session_token);
+    Observable<CommonBean> getUserInfo(@Query("session_token") String session_token);
 
     /**
      * 15 退出登录
@@ -333,7 +318,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.LOGOUT)
-    Observable<CommonBean> logout(@Field("session_token") String session_token);
+    Observable<CommonBean> logout(@Query("session_token") String session_token);
 
 
     //-------------------------------------------------main相关----------------------------------------------------
@@ -344,7 +329,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Home.UPGRADE)
-    Observable<CommonBean1<MainUpgradeBean>> upgrade(@Field("session_token") String session_token);
+    Observable<CommonBean1<MainUpgradeBean>> upgrade(@Query("session_token") String session_token);
 
 
     /**
@@ -353,7 +338,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Home.UPGRADE)
-    Observable<CommonBean1<MainUpgradeBean>> synchronizeData(@Field("session_token") String session_token);
+    Observable<CommonBean1<MainUpgradeBean>> synchronizeData(@Query("session_token") String session_token);
 
     /**
      * feedBack
@@ -469,7 +454,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Note.TAGLIST)
-    Observable<CommonBean> getTagList(@Field("session_token") String session_token);
+    Observable<CommonBean> getTagList(@Query("session_token") String session_token);
 
 
     /**
@@ -477,10 +462,9 @@ public interface MyHttpService {
      *
      * @return
      */
-    @FormUrlEncoded
     @GET(URLUtils.Note.NOTE)
-    Observable<CommonBean> getNote(@Field("note_id") long note_id
-            , @Field("session_token") String session_token);
+    Observable<CommonBean> getNote(@Query("note_id") long note_id
+            , @Query("session_token") String session_token);
 
 
     /**
@@ -517,14 +501,13 @@ public interface MyHttpService {
      *
      * @return
      */
-    @FormUrlEncoded
     @GET(URLUtils.Note.NOTE_LIST_FOLDERID)
     Observable<NoteListBean> getNoteListByFolderId(
-            @Field("folder_id") long folder_id
-            , @Field("pagenum") int pagenum
-            , @Field("pagesize") int pagesize
-            , @Field("sortord") String sortord
-            , @Field("session_token") String session_token);
+            @Query("folder_id") long folder_id
+            , @Query("pagenum") int pagenum
+            , @Query("pagesize") int pagesize
+            , @Query("sortord") String sortord
+            , @Query("session_token") String session_token);
 
 
     /**
@@ -532,15 +515,13 @@ public interface MyHttpService {
      *
      * @return
      */
-    @FormUrlEncoded
     @GET(URLUtils.Note.NOTE_LIST_TAGID)
     Observable<NoteListBean> getNoteListByTagId(
-            @Field("folder_id") long folder_id
-            , @Field("pagenum") int pagenum
-            , @Field("pagesize") int pagesize
-            , @Field("sortord") String sortord
-            , @Field("session_token") String session_token);
-
+            @Query("folder_id") long folder_id
+            , @Query("pagenum") int pagenum
+            , @Query("pagesize") int pagesize
+            , @Query("sortord") String sortord
+            , @Query("session_token") String session_token);
 
     /**
      * 01轮播图 表单的使用方式，post

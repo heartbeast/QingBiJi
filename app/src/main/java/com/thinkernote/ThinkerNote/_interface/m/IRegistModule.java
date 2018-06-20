@@ -14,8 +14,10 @@ public interface IRegistModule {
 
     void submitForgetPs(OnRegistListener OnRegistListener, String phone, String ps, String vcode);
 
+    void bindPhone(OnRegistListener OnRegistListener, int mUserType, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone,String vcode,String sign);
+
     void autoLogin(OnRegistListener OnRegistListener, String phone, String ps);
 
-    void bindPhone(OnRegistListener OnRegistListener, int mUserType, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone,String vcode,String sign);
+    void mProfile(OnRegistListener OnRegistListener);
 
 }

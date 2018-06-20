@@ -48,18 +48,23 @@ public class RegistPresenterImpl implements IRegistPresener, OnRegistListener {
         module.submitForgetPs(this, phone, ps, vcode);
     }
 
+
+    @Override
+    public void bindPhone(int mUserType, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone, String vcode) {
+        String sign = "access_token=" + accessToken + "&bid=" + bid + "&btype=" + mUserType + "&name=" + name + "&phone=" + phone + "&refresh_token=" + refreshToken + "&stamp=" + currentTime + "&vcode=" + vcode + "qingbiji";
+
+        module.bindPhone(this, mUserType, bid, name, accessToken, refreshToken, currentTime, phone, vcode, TNUtils.toMd5(sign).toLowerCase());
+    }
+
     @Override
     public void autoLogin(String phoneOrEmail, String ps) {
         module.autoLogin(this, phoneOrEmail, ps);
     }
 
     @Override
-    public void bindPhone(int mUserType, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone,String vcode) {
-        String sign = "access_token=" + accessToken + "&bid=" + bid + "&btype=" + mUserType + "&name=" + name + "&phone=" + phone + "&refresh_token=" + refreshToken + "&stamp=" + currentTime + "&vcode=" + vcode + "qingbiji";
-
-        module.bindPhone(this, mUserType, bid, name, accessToken, refreshToken, currentTime, phone, vcode,TNUtils.toMd5(sign).toLowerCase());
+    public void pProfile() {
+        module.mProfile(this);
     }
-
 
     //==========================结果回调==============================
     @Override
@@ -121,6 +126,16 @@ public class RegistPresenterImpl implements IRegistPresener, OnRegistListener {
     @Override
     public void onBindPhoneFailed(String msg, Exception e) {
         onView.onBindPhoneFailed(msg, e);
+    }
+
+    @Override
+    public void onProfileSuccess(Object obj) {
+        onView.onProfileSuccess(obj);
+    }
+
+    @Override
+    public void onProfileFailed(String msg, Exception e) {
+        onView.onProfileFailed(msg, e);
     }
 
 

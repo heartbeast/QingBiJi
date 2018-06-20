@@ -30,7 +30,7 @@ public class SettingsModuleImpl implements ISettingsModule {
     @Override
     public void mgetProfile(final OnSettingsListener listener) {
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .getUserInfo(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

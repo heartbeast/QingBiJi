@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNUser;
@@ -22,21 +24,27 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.SplashPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 
 /**
  * 启动页/欢迎页
- * TODO
  */
-public class TNSplashAct extends TNActBase implements OnCommonListener {
+public class TNSplashAct extends TNActBase implements OnSplashListener {
 
     // Class members
     //-------------------------------------------------------------------------------
     private boolean isRunning = false;
     private Bundle extraBundle = null;
+    private String passWord;
 
     // p
-    ISplashPresener presener;
+   private ISplashPresener presener;
+   private LoginBean loginBean;
+   private ProfileBean profileBean;
+
 
     // Activity methods
     //-------------------------------------------------------------------------------
@@ -129,7 +137,8 @@ public class TNSplashAct extends TNActBase implements OnCommonListener {
                     }
                     finish();
                 } else if ((settings.expertTime != 0) && (settings.expertTime * 1000 - System.currentTimeMillis() < 0)) {
-                    login(settings.loginname, settings.password);
+                    passWord = settings.password;//回调中需要使用
+                    login(settings.loginname, passWord);
 
                 } else {
                     startActivity(TNLoginAct.class, extraBundle);
@@ -145,12 +154,81 @@ public class TNSplashAct extends TNActBase implements OnCommonListener {
         presener.plogin(name, ps);
     }
 
+    private void updateProfile() {
+        presener.pUpdataProfile();
+    }
 
     //-----------------------------------接口返回回调-------------------------------------
     @Override
     public void onSuccess(Object obj) {
+        loginBean = (LoginBean) obj;
+
+        TNSettings settings = TNSettings.getInstance();
+        settings.isLogout = false;
+
+        //
+        settings.password = passWord;
+        settings.userId = loginBean.getUser_id();
+        settings.username = loginBean.getUsername();
+        settings.token = loginBean.getToken();
+        settings.expertTime = loginBean.getExpire_at();
+        if (TextUtils.isEmpty(settings.loginname)) {
+            settings.loginname = loginBean.getUsername();
+        }
+        settings.savePref(false);
+        //更新
+        updateProfile();
+
+
+    }
+
+    @Override
+    public void onFailed(String msg, Exception e) {
+        MLog.e(msg);
+        TNSettings settings = TNSettings.getInstance();
+        Bundle b = new Bundle();
+        settings.isLogout = true;
+        settings.savePref(false);
+        startActivity(TNLoginAct.class, b);
+        finish();
+    }
+
+
+    @Override
+    public void onProfileSuccess(Object obj) {
+        profileBean = (ProfileBean) obj;
+        //
+        TNSettings settings = TNSettings.getInstance();
+        long userId = TNDbUtils.getUserId(settings.username);
+
+        settings.phone = profileBean.getPhone();
+        settings.email = profileBean.getEmail();
+        settings.defaultCatId = profileBean.getDefault_folder();
+
+        if (userId != settings.userId) {
+            //清空user表
+            UserDbHelper.clearUsers();
+        }
+
+        JSONObject user = TNUtils.makeJSON(
+                "username", settings.username,
+                "password", settings.password,
+                "userEmail", settings.email,
+                "phone", settings.phone,
+                "userId", settings.userId,
+                "emailVerify", profileBean.getEmailverify(),
+                "totalSpace", profileBean.getTotal_space(),
+                "usedSpace", profileBean.getUsed_space());
+
+        //更新user表
+        UserDbHelper.addOrUpdateUser(user);
+
+        //
+        settings.isLogout = false;
+        settings.savePref(false);
+
+        //onProfileSuccess中调用
         if (!runExtraIntent()) {
-            TNSettings settings = TNSettings.getInstance();
             Bundle b = new Bundle();
             settings.isLogout = false;
             settings.savePref(false);
@@ -160,7 +238,7 @@ public class TNSplashAct extends TNActBase implements OnCommonListener {
     }
 
     @Override
-    public void onFailed(String msg, Exception e) {
+    public void onProfileFailed(String msg, Exception e) {
         MLog.e(msg);
         TNSettings settings = TNSettings.getInstance();
         Bundle b = new Bundle();

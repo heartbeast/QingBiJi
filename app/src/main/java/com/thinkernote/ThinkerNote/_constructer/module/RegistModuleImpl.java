@@ -7,6 +7,9 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IRegistModule;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.CommonBean2;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
@@ -29,7 +32,7 @@ public class RegistModuleImpl implements IRegistModule {
     @Override
     public void getVerifyPic(final OnRegistListener listener) {
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .getVerifyPic(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
@@ -169,40 +172,6 @@ public class RegistModuleImpl implements IRegistModule {
                 });
     }
 
-    @Override
-    public void autoLogin(final OnRegistListener listener, String phone, String ps) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginNormal(phone, ps)//接口方法
-                .subscribeOn(Schedulers.io())//固定样式
-                .unsubscribeOn(Schedulers.io())//固定样式
-                .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
-                    @Override
-                    public void onCompleted() {
-                        MLog.d("login--onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MLog.e("login--异常onError:" + e.toString());
-                        listener.onAutoLoginFailed("异常", new Exception("接口异常！"));
-                    }
-
-                    @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d("login-onNext");
-
-                        //处理返回结果
-                        if (bean.getCode() == 0) {
-                            MLog.d("login-成功");
-                            listener.onAutoLoginSuccess(bean);
-                        } else {
-                            listener.onAutoLoginFailed(bean.getMessage(), null);
-                        }
-                    }
-
-                });
-    }
 
     @Override
     public void bindPhone(final OnRegistListener listener, int mUserType, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone, String vcode, String sign) {
@@ -239,4 +208,73 @@ public class RegistModuleImpl implements IRegistModule {
 
                 });
     }
+    @Override
+    public void autoLogin(final OnRegistListener listener, String phone, String ps) {
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .postLoginNormal(phone, ps)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<LoginBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d("login--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("login--异常onError:" + e.toString());
+                        listener.onAutoLoginFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(LoginBean bean) {
+                        MLog.d("login-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            MLog.d("login-成功");
+                            listener.onAutoLoginSuccess(bean);
+                        } else {
+                            listener.onAutoLoginFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
+
+    @Override
+    public void mProfile(final OnRegistListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .LogNormalProfile(settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mProFile--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mProFile 异常onError:" + e.toString());
+                        listener.onProfileFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean2<ProfileBean> bean) {
+                        MLog.d(TAG, "mProFile-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onProfileSuccess(bean.getProfile());
+                        } else {
+                            listener.onProfileFailed(bean.getMsg(), null);
+                        }
+                    }
+                });
+    }
+
 }

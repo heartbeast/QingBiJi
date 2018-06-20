@@ -1,11 +1,12 @@
 package com.thinkernote.ThinkerNote._interface.m;
 
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
-import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
+import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
 
 /**
  *  m层interface
  */
 public interface ISplashModule {
-    void mLogin(OnCommonListener listener, String name, String ps);
+    void mLogin(OnSplashListener listener, String name, String ps);
+
+    void mProFile(OnSplashListener listener);
 }

@@ -20,9 +20,12 @@ import org.json.JSONObject;
  * handle_Login
  * handle_LoginThird
  * handle_Profile
+ * TODO 登录结束的处理
  */
 public class TNSocketUser {
+
 	private static final String TAG = "TNSocketUser";
+
 	public static void handle_Login(TNAction aAction){
 		MLog.i(TAG, "handle_LOGIN");
 		JSONObject inputs = (JSONObject)aAction.inputs.get(2);

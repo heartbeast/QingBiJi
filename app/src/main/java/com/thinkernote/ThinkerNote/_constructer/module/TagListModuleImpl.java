@@ -33,7 +33,7 @@ public class TagListModuleImpl implements ITagListModule {
     @Override
     public void mTagList(final OnCommonListener listener) {
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .getTagList(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

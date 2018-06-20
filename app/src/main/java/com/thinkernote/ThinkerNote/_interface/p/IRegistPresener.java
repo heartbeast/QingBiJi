@@ -8,7 +8,8 @@ public interface IRegistPresener {
     void phoneVerifyCode(String mPhone, String name, String mAnswer, String mNonce, String mHashKey);
     void submitRegister(String phone, String ps, String vcode);
     void submitForgotPassword(String phone, String ps, String vcode);
-    void autoLogin(String phoneOrEmail, String ps);
     void bindPhone(int mUserType,String bid,String name,String accessToken,String refreshToken,long currentTime,String phone,String Vcode );
+    void autoLogin(String phoneOrEmail, String ps);
+    void pProfile();
 
 }

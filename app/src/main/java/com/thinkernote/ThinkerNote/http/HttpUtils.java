@@ -89,34 +89,22 @@ public class HttpUtils {
 
     /**
      * 01 Retrofit构建 默认样式：Retrofit+okhttp
+     *
+     * header+token+无缓存
      */
     public <T> T getDefaultServer(Class<T> clz) {
         if (https == null) {
             synchronized (HttpUtils.class) {
                 https = getDefaultBuilder(URLUtils.API_BASE_URL).build().create(clz);
-//                https = getMYBuilder(URLUtils.API_BASE_URL).build().create(clz);
             }
         }
         initCache();//再设置一遍，可以注销
         return (T) https;
     }
 
-    /**
-     * 02 Retrofit构建:Retrofit+okhttp,添加token验证
-     */
-
-    public <T> T getTokenServer(Class<T> clz) {
-        if (https == null) {
-            synchronized (HttpUtils.class) {
-                https = getTokenBuilder(URLUtils.API_BASE_URL).build().create(clz);
-            }
-        }
-        initCache();//再设置一遍，可以注销
-        return (T) https;
-    }
 
     /**
-     * 04 Retrofit构建:Retrofit+okhttp,添加token验证
+     * 04 Retrofit构建:Retrofit+okhttp
      */
 
     public <T> T getNoCacheServer(Class<T> clz) {
@@ -174,37 +162,17 @@ public class HttpUtils {
 
     //================================= Retrofit构建 可以根据自己缓存需要，灵活设置====================================
 
-    /**
-     * 调用以前接口的样式
-     *
-     * @param apiUrl
-     * @return
-     */
-    private Retrofit.Builder getMYBuilder(String apiUrl) {
-
-        //retrofit配置 可用链式结构
-        Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(getDefaultOkhttp());//设置okhttp3（重点），不设置走默认的 getMyOkHttp()
-        builder.baseUrl(apiUrl);//设置远程地址
-        builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
-        builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
-        //builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
-        //builder.addConverterFactory(JsonResultConvertFactory.create());    //04:自定义的json解析器处理不规范json
-
-        builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create()); //Rx
-        return builder;
-    }
-
 
     /**
      * 00 retrofit接口，不用okhttp
      * （可用链式结构，但需要返回处理build()，就不用链式）
+     * TODO 未做
      */
     private Retrofit.Builder getDefaultRetrofit(String apiUrl) {
 
         //retrofit配置
         Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(getDefaultOkhttp());//retrofit本身就可以异步处理接口，不用okhttp TODO 未做
+        builder.client(getDefaultOkhttp());//retrofit本身就可以异步处理接口，不用okhttp
         builder.baseUrl(apiUrl);//设置远程地址
         builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
         builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
@@ -234,26 +202,6 @@ public class HttpUtils {
         return builder;
     }
 
-    /**
-     * 02 retrofit配置
-     * （可用链式结构，但需要返回处理build()，就不用链式）
-     * 有token验证
-     */
-    private Retrofit.Builder getTokenBuilder(String apiUrl) {
-
-        //retrofit配置 可用链式结构
-        Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(getTokenOkHttp());//设置okhttp3（重点），不设置走默认的
-        builder.baseUrl(apiUrl);//设置远程地址
-
-        //官方的json解析，要求格式必须规范才不会异常，但后台的不一定规范，这就要求自定义一个解析器避免这个情况
-        builder.addConverterFactory(GsonConverterFactory.create());//将规范的gson及解析成实体
-        //        builder.addConverterFactory(JsonResultConvertFactory.create());//自定义的json解析器
-
-
-        builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create()); //Rx
-        return builder;
-    }
 
     /**
      * 03 put接口使用

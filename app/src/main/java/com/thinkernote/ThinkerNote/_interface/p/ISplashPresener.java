@@ -5,5 +5,6 @@ package com.thinkernote.ThinkerNote._interface.p;
  */
 public interface ISplashPresener {
     void plogin(String name,String ps);
+    void pUpdataProfile();
 
 }

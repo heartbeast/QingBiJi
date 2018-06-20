@@ -9,4 +9,5 @@ public interface IFindPsPresener {
     void mailVerifyCode(String mEmail,String name);
     void submit(String phone,String ps,String vcode);
     void autoLogin(String phoneOrEmail,String ps);
+    void pProfile();
 }

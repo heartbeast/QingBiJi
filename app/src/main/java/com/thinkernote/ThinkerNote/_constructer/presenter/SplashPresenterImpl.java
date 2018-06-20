@@ -9,18 +9,19 @@ import com.thinkernote.ThinkerNote._interface.m.ITagInfoModule;
 import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
 import com.thinkernote.ThinkerNote._interface.p.ITagInfoPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
 
 /**
- *  p层 具体实现
+ * p层 具体实现
  */
-public class SplashPresenterImpl implements ISplashPresener, OnCommonListener {
+public class SplashPresenterImpl implements ISplashPresener, OnSplashListener {
     private Context context;
-    private OnCommonListener onView;
+    private OnSplashListener onView;
     //p层调用M层方法
     private ISplashModule module;
 
-    public SplashPresenterImpl(Context context, OnCommonListener logListener) {
+    public SplashPresenterImpl(Context context, OnSplashListener logListener) {
         this.context = context;
         this.onView = logListener;
 
@@ -32,8 +33,13 @@ public class SplashPresenterImpl implements ISplashPresener, OnCommonListener {
 
     @Override
     public void plogin(String name, String ps) {
-        module.mLogin(this,name,ps);
+        module.mLogin(this, name, ps);
 
+    }
+
+    @Override
+    public void pUpdataProfile() {
+        module.mProFile(this);
     }
     //==========================结果回调==============================
 
@@ -47,6 +53,15 @@ public class SplashPresenterImpl implements ISplashPresener, OnCommonListener {
         onView.onFailed(msg, e);
     }
 
+    @Override
+    public void onProfileSuccess(Object obj) {
+        onView.onProfileSuccess(obj);
+    }
+
+    @Override
+    public void onProfileFailed(String msg, Exception e) {
+        onView.onProfileFailed(msg, e);
+    }
 
 
 }
