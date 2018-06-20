@@ -322,7 +322,45 @@ public class TNDb2 extends SQLiteOpenHelper {
 			endTransaction();
 		}
 	}
-	
+
+	/**
+	 * 新方式 sjy 0620
+	 */
+	public void DBReset(){
+		beginTransaction();
+		try {
+			//drop tables
+			getInstance().db.execSQL(TNSQLString2.SETTING_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.USER_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.CAT_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.TAG_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.NOTE_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.NOTETAG_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.ATT_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.BINDING_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.PROJECT_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.COMMENT_DROP_TABLE);
+			getInstance().db.execSQL(TNSQLString2.UNREADNOTE_DROP_TABLE);
+
+			//create tables
+			getInstance().db.execSQL(TNSQLString2.SETTING_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.USER_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.CAT_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.TAG_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.NOTE_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.NOTETAG_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.ATT_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.BINDING_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.PROJECT_CREATE_TABLE);
+			getInstance().db.execSQL(TNSQLString2.COMMENT_CREATE_TABLE_NEW);
+			getInstance().db.execSQL(TNSQLString2.UNREADNOTE_CREATE_TABLE_NEW);
+
+			setTransactionSuccessful();
+		}finally{
+			endTransaction();
+		}
+	}
+
 	private void printSql(String sql, String[] args) {
 		String values = "";
 		for (String arg : args) {

@@ -16,8 +16,8 @@ public interface OnBindPhoneListener {
 
     void onBindFailed(String msg, Exception e);
 
-    void onUserInfoSuccess(Object obj);
+    void onProfileSuccess(Object obj);
 
-    void onUserInfoFailed(String msg, Exception e);
+    void onProfileFailed(String msg, Exception e);
 
 }

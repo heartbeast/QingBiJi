@@ -154,7 +154,7 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
                     @Override
                     public void onError(Throwable e) {
                         MLog.e("phone 异常onError:" + e.toString());
-                        listener.onUserInfoFailed("异常"  ,new Exception("接口异常！"));
+                        listener.onProfileFailed("异常"  ,new Exception("接口异常！"));
                     }
 
                     @Override
@@ -164,9 +164,9 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
                         //处理返回结果
                         if (bean.getCode() == 0) {
                             MLog.d(TAG, "phone-成功");
-                            listener.onUserInfoSuccess(bean);
+                            listener.onProfileSuccess(bean);
                         } else{
-                            listener.onUserInfoFailed(bean.getMessage(),null);
+                            listener.onProfileFailed(bean.getMessage(),null);
                         }
                     }
 

@@ -1,43 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import org.apache.http.Header;
-import org.json.JSONObject;
-
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
-import com.tencent.tauth.UiError;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNConst;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Other.TNLinearLayout;
-import com.thinkernote.ThinkerNote.Other.TNLinearLayout.TNLinearLayoutListener;
-import com.thinkernote.ThinkerNote.Utils.MLog;
-import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-import com.thinkernote.ThinkerNote._constructer.presenter.LogPresenterImpl;
-import com.thinkernote.ThinkerNote.bean.login.LoginBean;
-import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.Weibo;
-import com.weibo.sdk.android.WeiboAuthListener;
-import com.weibo.sdk.android.WeiboDialogError;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.sso.SsoHandler;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,6 +10,41 @@ import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNConst;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.Other.TNLinearLayout;
+import com.thinkernote.ThinkerNote.Other.TNLinearLayout.TNLinearLayoutListener;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.Utils.TNActivityManager;
+import com.thinkernote.ThinkerNote._constructer.presenter.LogPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.weibo.sdk.android.Oauth2AccessToken;
+import com.weibo.sdk.android.Weibo;
+import com.weibo.sdk.android.WeiboAuthListener;
+import com.weibo.sdk.android.WeiboDialogError;
+import com.weibo.sdk.android.WeiboException;
+import com.weibo.sdk.android.sso.SsoHandler;
+
+import org.apache.http.Header;
+import org.json.JSONObject;
 
 /**
  * sjy 0607

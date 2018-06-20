@@ -39,7 +39,7 @@ public class BindPhonePresenterImpl implements IBindPhonePresener, OnBindPhoneLi
     }
 
     @Override
-    public void pGetUserInfo() {
+    public void pRrofile() {
         module.mGetUserInfo(this);
     }
 
@@ -83,13 +83,13 @@ public class BindPhonePresenterImpl implements IBindPhonePresener, OnBindPhoneLi
     }
 
     @Override
-    public void onUserInfoSuccess(Object obj) {
-        onView.onUserInfoSuccess(obj);
+    public void onProfileSuccess(Object obj) {
+        onView.onProfileSuccess(obj);
     }
 
     @Override
-    public void onUserInfoFailed(String msg, Exception e) {
-        onView.onUserInfoFailed(msg,e);
+    public void onProfileFailed(String msg, Exception e) {
+        onView.onProfileFailed(msg,e);
     }
 
 

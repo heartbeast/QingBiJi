@@ -15,6 +15,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * 已不再使用
+ */
 public class TNDb extends SQLiteOpenHelper {
 	private static final String TAG = "TNDatabase";
 	private static TNDb singleton = null;

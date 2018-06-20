@@ -1,27 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import org.json.JSONObject;
-
-import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
-import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.Utils.MLog;
-import com.thinkernote.ThinkerNote._constructer.presenter.FindPsPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
-import com.thinkernote.ThinkerNote.base.TNActBase;
-import com.thinkernote.ThinkerNote.bean.CommonBean;
-import com.thinkernote.ThinkerNote.bean.login.LoginBean;
-import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
-import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
-
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -39,6 +17,24 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote._constructer.presenter.FindPsPresenterImpl;
+import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
+import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
+import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
+
+import org.json.JSONObject;
 
 /**
  * 忘记密码 sjy 0612

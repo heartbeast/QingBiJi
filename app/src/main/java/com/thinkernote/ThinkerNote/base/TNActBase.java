@@ -3,7 +3,7 @@ package com.thinkernote.ThinkerNote.base;
 import java.util.Vector;
 
 import com.baidu.mobstat.StatService;
-import com.thinkernote.ThinkerNote.Activity.TNActivityManager;
+import com.thinkernote.ThinkerNote.Utils.TNActivityManager;
 import com.thinkernote.ThinkerNote.Activity.TNLockAct;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;

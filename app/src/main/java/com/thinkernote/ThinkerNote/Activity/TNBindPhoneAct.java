@@ -1,7 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import org.json.JSONObject;
-
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -17,15 +15,12 @@ import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.BindPhonePresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresener;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
@@ -34,7 +29,7 @@ import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 
 /**
- * 主界面，绑定新手机号
+ * 主界面-绑定新手机号/设置-修改手机号
  * 说明：登录进入主界面后，仍未绑定手机号，则再次绑定
  */
 public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindPhoneListener {
@@ -52,7 +47,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	private String mAnswer;
 
 	//
-	IBindPhonePresener presener;
+	private IBindPhonePresener presener;
 	private VerifyPicBean verifyPicBean;//验证码数据
 
 	@Override
@@ -62,13 +57,6 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 		setViews();	
 		
 		initView();
-
-		//TODO
-		TNAction.regResponder(TNActionType.ChangePhone, this, "respondChangePhone");
-		TNAction.regResponder(TNActionType.VerifyCode, this, "respondVerifyCode");
-		TNAction.regResponder(TNActionType.Profile, this, "respondProfile");
-		TNAction.regResponder(TNActionType.Captcha, this, "respondCaptcha");
-
 		presener = new BindPhonePresenterImpl(this, this);
 
 		getVerifyPic();
@@ -218,27 +206,10 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 
 	private void submit() {
 		presener.pSubmit(mPhone,mVCode,mPassword);
-
-		// TODO
-//		TNAction.runActionAsync(TNActionType.ChangePhone, mPhone, mVCode, mPassword);
 	}
 
-	//TODO
-	public void respondChangePhone(TNAction aAction) {
-		if (!TNHandleError.handleResult(this, aAction)) {
-			TNSettings settings = TNSettings.getInstance();
-			settings.loginname = (String)aAction.inputs.get(0);
-			settings.savePref(false);
-			getUserInfo();
-		} else {
-			mProgressDialog.hide();
-		}
-	}
-
-	private void getUserInfo() {
-		presener.pGetUserInfo();
-		//TODO
-//		TNAction.runActionAsync(TNActionType.Profile);
+	private void pProfile() {
+		presener.pRrofile();
 	}
 
 
@@ -285,7 +256,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 		settings.savePref(false);
 		TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_PHONE, phone, settings.userId);
 		//
-		getUserInfo();
+		pProfile();
 	}
 
 	@Override
@@ -294,7 +265,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	}
 
 	@Override
-	public void onUserInfoSuccess(Object obj) {
+	public void onProfileSuccess(Object obj) {
 		mProgressDialog.hide();
 		if (!"change".equals(mType)) {
 			Bundle b = new Bundle();
@@ -305,7 +276,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	}
 
 	@Override
-	public void onUserInfoFailed(String msg, Exception e) {
+	public void onProfileFailed(String msg, Exception e) {
 		mProgressDialog.hide();
 		TNUtilsUi.showToast(msg);
 	}

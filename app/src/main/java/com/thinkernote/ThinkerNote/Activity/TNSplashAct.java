@@ -1,7 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,23 +9,22 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 
 import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNUser;
+import com.thinkernote.ThinkerNote.Database.TNDb2;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.SplashPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+
+import org.json.JSONObject;
 
 /**
  * 启动页/欢迎页
@@ -41,9 +38,9 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
     private String passWord;
 
     // p
-   private ISplashPresener presener;
-   private LoginBean loginBean;
-   private ProfileBean profileBean;
+    private ISplashPresener presener;
+    private LoginBean loginBean;
+    private ProfileBean profileBean;
 
 
     // Activity methods
@@ -76,17 +73,17 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
         }
     }
 
-    // configView
-    //-------------------------------------------------------------------------------
     protected void configView() {
         if (TNSettings.getInstance().hasDbError) {
-            DialogInterface.OnClickListener pbtn_Click =
+            //监听
+            DialogInterface.OnClickListener onClickListener =
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //TODO
-                            TNAction.runAction(TNActionType.DBReset);
 
+                            //重置 数据库
+
+                            resetDb();
                             startRun();
                             TNSettings.getInstance().hasDbError = false;
                             TNSettings.getInstance().savePref(false);
@@ -98,8 +95,7 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
                     "TITLE", R.string.alert_Title,
                     "MESSAGE", R.string.alert_DBErrorHint,
                     "POS_BTN", R.string.alert_Uninstall,
-                    "POS_BTN_CLICK", pbtn_Click
-            );
+                    "POS_BTN_CLICK", onClickListener);
             AlertDialog ad = TNUtilsUi.alertDialogBuilder(jsonData);
             ad.setCanceledOnTouchOutside(false);
             ad.setCancelable(false);
@@ -109,14 +105,14 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // 屏蔽任何按键
-        return true;
+    /**
+     * 重置数据库
+     */
+    private void resetDb() {
+        TNDb2.getInstance().DBReset();
     }
 
-    // Private methods
-    //-------------------------------------------------------------------------------
+
     private void startRun() {
         if (isRunning) return;
         isRunning = true;
@@ -147,6 +143,12 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
                 isRunning = false;
             }
         }, 2000);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 屏蔽任何按键
+        return true;
     }
 
     //-----------------------------------p层调用-------------------------------------
