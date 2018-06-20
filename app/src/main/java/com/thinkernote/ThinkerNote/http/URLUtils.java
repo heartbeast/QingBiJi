@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote.http;
 
 /**
  * URL 统一管理类
+ * 说明：登录+注册接口不添加token
  */
 
 public class URLUtils {

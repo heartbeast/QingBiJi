@@ -28,7 +28,7 @@ public class SettingsModuleImpl implements ISettingsModule {
 
     @Override
     public void mgetProfile(final OnSettingsListener listener) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
                 .getUserInfo()//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

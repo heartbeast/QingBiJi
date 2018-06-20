@@ -38,11 +38,15 @@ import rx.Observable;
 public interface MyHttpService {
 
     /**
+     * 说明本app接口需求：
+     * 1所有get有header
+     * 2除登录 注册，所有接口有token
+     * 3所有put方式有特殊header
      ********************************************--构建不同的网络框架，满足不同的接口需求--********************************************************
      */
 
     /**
-     * （1）retrofit+okhttp+Rxjava默认构建样式（没有复杂的样式要求）
+     * （1）retrofit+okhttp+Rxjava默认构建样式（header+token+无缓存）
      */
     class Builder {
         public static MyHttpService getHttpServer() {
@@ -60,11 +64,41 @@ public interface MyHttpService {
     }
 
     /**
-     * （3）retrofit+okhttp+Rxjava样式+缓存接口
+     * （3）put方式调用
      */
-    class CacheBuilder {
+    class PUTBuilder {
         public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getCacheServer(MyHttpService.class);
+            return HttpUtils.getInstance().getPUTServer(MyHttpService.class);
+        }
+    }
+
+    /**
+     * （3）get方式调用：header+token+无缓存
+     * 登录和注册不可调用
+     */
+    class GETBuilder {
+        public static MyHttpService getHttpServer() {
+            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
+        }
+    }
+
+    /**
+     * （3）get方式调用：header+token
+     * 登录和注册不可调用
+     */
+    class POSTBuilder {
+        public static MyHttpService getHttpServer() {
+            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
+        }
+    }
+
+    /**
+     * （3）get方式调用：header
+     * 登录和注册专用
+     */
+    class PostNoTokenBuilder {
+        public static MyHttpService getHttpServer() {
+            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
         }
     }
 
@@ -76,16 +110,6 @@ public interface MyHttpService {
             return HttpUtils.getInstance().getNoCacheServer(MyHttpService.class);
         }
     }
-
-    /**
-     * （5）retrofit+okhttp+Rxjava样式+特殊header接口
-     */
-    class HeaderBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getHeaderServer(MyHttpService.class);
-        }
-    }
-    //...需要的样式 灵活添加
 
 
     /**
@@ -120,6 +144,7 @@ public interface MyHttpService {
             , @Field("bid") String password
             , @Field("stamp") long stamp
             , @Field("sign") String sign
+            , @Field("session_token") String session_token
     );
 
     /**
@@ -128,9 +153,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.PROFILE)
-    Observable<CommonBean2<ProfileBean>> LogNormalProfile(
-
-    );
+    Observable<CommonBean2<ProfileBean>> LogNormalProfile(@Field("session_token") String session_token);
 
     /**
      * 03 sina登录
@@ -144,6 +167,7 @@ public interface MyHttpService {
             , @Field("bid") String password
             , @Field("stamp") long stamp
             , @Field("sign") String sign
+            , @Field("session_token") String session_token
     );
 
     /**
@@ -158,6 +182,7 @@ public interface MyHttpService {
             , @Field("bid") String password
             , @Field("stamp") long stamp
             , @Field("sign") String sign
+            , @Field("session_token") String session_token
     );
 
 
@@ -173,6 +198,7 @@ public interface MyHttpService {
     Observable<CommonBean> postVerifyCode2(
             @Field("phone") String phone
             , @Field("t") String t
+            , @Field("session_token") String session_token
     );
 
     /**
@@ -192,6 +218,7 @@ public interface MyHttpService {
             , @Field("phone") String phone
             , @Field("vcode") String vcode
             , @Field("sign") String sign
+            , @Field("session_token") String session_token
     );
 
     /**
@@ -206,6 +233,7 @@ public interface MyHttpService {
             , @Field("bid") String password
             , @Field("stamp") long stamp
             , @Field("sign") String sign
+            , @Field("session_token") String session_token
     );
 
     // 08--11忘记密码
@@ -216,7 +244,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.VERIFY_PIC)
-    Observable<VerifyPicBean> getVerifyPic();
+    Observable<VerifyPicBean> getVerifyPic(@Field("session_token") String session_token);
 
 
     /**
@@ -231,7 +259,10 @@ public interface MyHttpService {
             , @Field("t") String t
             , @Field("answer") String answer
             , @Field("nonce") String nonce
-            , @Field("hashkey") String hashkey);
+            , @Field("hashkey") String hashkey
+            , @Field("session_token") String session_token
+    );
+
 
     /**
      * 10 邮箱验证码
@@ -242,7 +273,8 @@ public interface MyHttpService {
     @POST(URLUtils.Log.EMAIL_QUERFY_CODE)
     Observable<VerifyPicBean> emailVerifyCode(
             @Field("email") String btphoneype
-            , @Field("t") String t);
+            , @Field("t") String t
+            , @Field("session_token") String session_token);
 
     // 11--12注册
 
@@ -256,7 +288,8 @@ public interface MyHttpService {
     Observable<VerifyPicBean> findPsSubmit(
             @Field("phone") String phone
             , @Field("password") String password
-            , @Field("vcode") String vcode);
+            , @Field("vcode") String vcode
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -269,7 +302,8 @@ public interface MyHttpService {
     Observable<VerifyPicBean> registSubmit(
             @Field("phone") String phone
             , @Field("password") String password
-            , @Field("vcode") String vcode);
+            , @Field("vcode") String vcode
+            , @Field("session_token") String session_token);
 
     /**
      * 13 修改手机号
@@ -281,7 +315,8 @@ public interface MyHttpService {
     Observable<CommonBean> changePhone(
             @Field("phone") String phone
             , @Field("password") String password
-            , @Field("vcode") String vcode);
+            , @Field("vcode") String vcode
+            , @Field("session_token") String session_token);
 
     /**
      * 14 获取用户信息
@@ -289,7 +324,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.USER_INFO)
-    Observable<CommonBean> getUserInfo();
+    Observable<CommonBean> getUserInfo(@Field("session_token") String session_token);
 
     /**
      * 15 退出登录
@@ -297,7 +332,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Log.LOGOUT)
-    Observable<CommonBean> logout();
+    Observable<CommonBean> logout(@Field("session_token") String session_token);
 
 
     //-------------------------------------------------main相关----------------------------------------------------
@@ -308,7 +343,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Home.UPGRADE)
-    Observable<CommonBean1<MainUpgradeBean>> upgrade();
+    Observable<CommonBean1<MainUpgradeBean>> upgrade(@Field("session_token") String session_token);
 
 
     /**
@@ -317,7 +352,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Home.UPGRADE)
-    Observable<CommonBean1<MainUpgradeBean>> synchronizeData();
+    Observable<CommonBean1<MainUpgradeBean>> synchronizeData(@Field("session_token") String session_token);
 
     /**
      * feedBack
@@ -329,10 +364,11 @@ public interface MyHttpService {
     Observable<CommonBean> feedBack(
             @Field("content") String content
             , @Field("pic_id") long pic
-            , @Field("email") String email);
+            , @Field("email") String email
+            , @Field("session_token") String session_token);
 
     /**
-     *支付宝支付
+     * 支付宝支付
      *
      * @return
      */
@@ -340,11 +376,12 @@ public interface MyHttpService {
     @POST(URLUtils.Home.PAY_TIP)
     Observable<CommonBean1<AlipayBean>> alipay(
             @Field("amount") String amount
-            , @Field("channel") String channel);
+            , @Field("channel") String channel
+            , @Field("session_token") String session_token);
 
 
     /**
-     *微信支付
+     * 微信支付
      *
      * @return
      */
@@ -352,7 +389,8 @@ public interface MyHttpService {
     @POST(URLUtils.Home.PAY_TIP)
     Observable<WxpayBean> wxpay(
             @Field("amount") String amount
-            , @Field("channel") String channel);
+            , @Field("channel") String channel
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -361,7 +399,7 @@ public interface MyHttpService {
      * @return
      */
     @POST(URLUtils.Home.UPLOAD_PIC)
-    Observable<CommonBean> upLoadPic();
+    Observable<CommonBean> upLoadPic( @Field("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------
@@ -373,7 +411,8 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Note.TAG)
-    Observable<CommonBean> tagAdd(@Field("name") String phone);
+    Observable<CommonBean> tagAdd(@Field("name") String phone
+            , @Field("session_token") String session_token);
 
     /**
      * 新建 文件
@@ -382,7 +421,8 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Note.FOLDER)
-    Observable<CommonBean> folderAdd(@Field("name") String phone);
+    Observable<CommonBean> folderAdd(@Field("name") String phone
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -394,7 +434,8 @@ public interface MyHttpService {
     @POST(URLUtils.Note.FOLDER)
     Observable<CommonBean> folderAdd(
             @Field("name") String phone
-            , @Field("pid") long pid);
+            , @Field("pid") long pid
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -406,7 +447,8 @@ public interface MyHttpService {
     @PUT(URLUtils.Note.FOLDER)
     Observable<CommonBean> folderRename(
             @Field("name") String phone
-            , @Field("folder_id") long pid);
+            , @Field("folder_id") long pid
+            , @Field("session_token") String session_token);
 
     /**
      * 标签rename
@@ -417,7 +459,8 @@ public interface MyHttpService {
     @PUT(URLUtils.Note.TAG)
     Observable<CommonBean> tagRename(
             @Field("name") String phone
-            , @Field("tag_id") long pid);
+            , @Field("tag_id") long pid
+            , @Field("session_token") String session_token);
 
     /**
      * TagList
@@ -425,7 +468,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Note.TAGLIST)
-    Observable<CommonBean> getTagList();
+    Observable<CommonBean> getTagList(@Field("session_token") String session_token);
 
 
     /**
@@ -435,7 +478,8 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @GET(URLUtils.Note.NOTE)
-    Observable<CommonBean> getNote(@Field("note_id") long note_id);
+    Observable<CommonBean> getNote(@Field("note_id") long note_id
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -444,7 +488,8 @@ public interface MyHttpService {
      * @return
      */
     @DELETE(URLUtils.Note.TAG)
-    Observable<CommonBean> deleteTag(@Field("tag_id") long tag_id);
+    Observable<CommonBean> deleteTag(@Field("tag_id") long tag_id
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -453,7 +498,8 @@ public interface MyHttpService {
      * @return
      */
     @PUT(URLUtils.Note.DEFAULT_FOLDER)
-    Observable<CommonBean> setDefaultFolder(@Field("folder_id") long pid);
+    Observable<CommonBean> setDefaultFolder(@Field("folder_id") long pid
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -462,9 +508,7 @@ public interface MyHttpService {
      * @return
      */
     @POST(URLUtils.Note.VERIFY_EMAIL)
-    Observable<CommonBean> verifyEmail();
-
-
+    Observable<CommonBean> verifyEmail(@Field("session_token") String session_token);
 
 
     /**
@@ -478,8 +522,8 @@ public interface MyHttpService {
             @Field("folder_id") long folder_id
             , @Field("pagenum") int pagenum
             , @Field("pagesize") int pagesize
-            , @Field("sortord") String sortord);
-
+            , @Field("sortord") String sortord
+            , @Field("session_token") String session_token);
 
 
     /**
@@ -493,7 +537,15 @@ public interface MyHttpService {
             @Field("folder_id") long folder_id
             , @Field("pagenum") int pagenum
             , @Field("pagesize") int pagesize
-            , @Field("sortord") String sortord);
+            , @Field("sortord") String sortord
+            , @Field("session_token") String session_token);
+
+
+
+
+
+
+
 
 
 

@@ -29,7 +29,7 @@ public class NoteViewModuleImpl implements INoteViewModule {
 
     @Override
     public void mGetNote(final OnNoteViewListener listener, long noteId) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
                 .getNote(noteId)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

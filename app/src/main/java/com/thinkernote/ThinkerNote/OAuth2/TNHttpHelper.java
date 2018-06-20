@@ -96,12 +96,6 @@ public class TNHttpHelper {
         }
     }
 
-    public TNHttpEntity doGet(String url) throws RestHttpException, HttpException {
-        MLog.i("doGet", "url=" + url);
-        final HttpGet request = new HttpGet(url);
-        return execute(request);
-    }
-
     public TNHttpEntity doGet(String url, Vector<Header> headers) throws RestHttpException, HttpException {
         MLog.i("doGet", "url=" + url);
         final HttpGet request = new HttpGet(url);

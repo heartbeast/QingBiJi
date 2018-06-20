@@ -31,7 +31,7 @@ public class UserInfoModuleImpl implements IUserInfoModule {
 
     @Override
     public void mLogout(final OnUserinfoListener listener) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
                 .logout()//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
@@ -66,7 +66,7 @@ public class UserInfoModuleImpl implements IUserInfoModule {
 
     @Override
     public void mUpgrade(final OnUserinfoListener listener) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
                 .upgrade()//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

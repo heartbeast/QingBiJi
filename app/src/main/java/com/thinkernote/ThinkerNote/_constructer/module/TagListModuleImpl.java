@@ -31,7 +31,7 @@ public class TagListModuleImpl implements ITagListModule {
 
     @Override
     public void mTagList(final OnCommonListener listener) {
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.GETBuilder.getHttpServer()//固定样式，可自定义其他网络
                 .getTagList()//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

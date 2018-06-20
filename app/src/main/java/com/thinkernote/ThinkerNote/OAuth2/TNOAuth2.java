@@ -81,20 +81,24 @@ public class TNOAuth2 {
         }
     }
 
+    // TODO
     public void TNOpenUrl(TNAction aAction) {
         Context context = TNSettings.getInstance().appContext;
         String method = (String) aAction.inputs.get(0);
-        String cmd = (String) aAction.inputs.get(1);
-        String url = TNOAUTH_ACTION_UTL_BASE + cmd;
-        MLog.d("TNOAuth2--TNOpenUrl", "url=" + url);
+        String cmd = (String) aAction.inputs.get(1);//相对路径
+        String url = TNOAUTH_ACTION_UTL_BASE + cmd;//完整路径
+
+        //上传图片
         JSONObject json = null;
         String outPath = null;
-        if (aAction.inputs.size() > 2) {
+        if (aAction.inputs.size() > 2) {//上传图片使用
             if (cmd.startsWith("attachment/"))
                 outPath = (String) aAction.inputs.get(2);
             else
                 json = (JSONObject) aAction.inputs.get(2);
         }
+
+        //type
         TNActionType type = null;
         if (aAction.inputs.size() > 3) {
             type = (TNActionType) aAction.inputs.get(3);
@@ -102,9 +106,10 @@ public class TNOAuth2 {
 
         String errorCode = null;
         int count = getLoopCount(cmd);
+        //
         while (count > 0) {
             count--;
-
+            //TODO token
             json = addUserParams(cmd, json);
             TNHttpEntity tnEntity = null;
             try {
@@ -173,48 +178,6 @@ public class TNOAuth2 {
         aAction.failed(errorCode);
     }
 
-    private int getLoopCount(String cmd) {
-        if (cmd.equals("reportInvalidUrl")) {
-            return 3;
-        }
-        return 1;
-    }
-
-    private JSONObject addUserParams(String cmd, JSONObject params) {
-        if (cmd.equals("api/login") || cmd.equals("api/register")) {
-            return params;
-        } else {
-            if (params == null) {
-                params = new JSONObject();
-            }
-
-            TNSettings settings = TNSettings.getInstance();
-            try {
-                params.put("session_token", settings.token);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return params;
-        }
-    }
-
-    private String handleError(Context context, JSONObject data) {
-        try {
-            int resultCode = Integer.valueOf(data.get("code").toString());
-            if (resultCode != 0) {
-                String errorCode = data.get("msg").toString();
-                return errorCode;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return context.getResources().getString(R.string.alert_Net_UnknownError);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return context.getResources().getString(R.string.alert_Net_UnknownError);
-        }
-        return null;
-    }
-
     //	具体 httpClient的调用
     public TNHttpEntity tryOpenUrl(Context context, String method, String host,
                                    JSONObject jsonData) throws Exception {
@@ -279,6 +242,57 @@ public class TNOAuth2 {
         }
 
         return entity;
+    }
+
+    private int getLoopCount(String cmd) {
+        if (cmd.equals("reportInvalidUrl")) {
+            return 3;
+        }
+        return 1;
+    }
+
+    /**
+     * 设置token
+     *
+     * 登录/注册不加token
+     *
+     * @param cmd
+     * @param params
+     * @return
+     */
+    private JSONObject addUserParams(String cmd, JSONObject params) {
+        if (cmd.equals("api/login") || cmd.equals("api/register")) {
+            return params;
+        } else {
+            if (params == null) {
+                params = new JSONObject();
+            }
+
+            TNSettings settings = TNSettings.getInstance();
+            try {
+                params.put("session_token", settings.token);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return params;
+        }
+    }
+
+    private String handleError(Context context, JSONObject data) {
+        try {
+            int resultCode = Integer.valueOf(data.get("code").toString());
+            if (resultCode != 0) {
+                String errorCode = data.get("msg").toString();
+                return errorCode;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return context.getResources().getString(R.string.alert_Net_UnknownError);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return context.getResources().getString(R.string.alert_Net_UnknownError);
+        }
+        return null;
     }
 
 }
