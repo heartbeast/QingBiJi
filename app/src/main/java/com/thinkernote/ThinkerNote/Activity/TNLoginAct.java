@@ -88,10 +88,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         TNActivityManager.getInstance().finishOtherActivity(this);
-        // TODO
-        TNAction.regResponder(TNActionType.Login, this, "respondLogin");
-        TNAction.regResponder(TNActionType.LoginThird, this, "respondLoginThird");
-
         initView();
         //初始化 p
         logPresener = new LogPresenterImpl(this, this);
@@ -272,7 +268,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
                 s = split[1];
                 String unionId = s;
                 //
-                pLoginQQ(3, unionId, System.currentTimeMillis(), accessToken, refreshToken, "QQ" + System.currentTimeMillis());
+                pLoginThird(3, unionId, System.currentTimeMillis(), accessToken, refreshToken, "QQ" + System.currentTimeMillis());
             }
 
             @Override
@@ -319,7 +315,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             String uid = values.getString("uid");
             mAccessToken = new Oauth2AccessToken(access_token, expires_in);
             if (mAccessToken.isSessionValid()) {
-                pLoginSina(2, uid, System.currentTimeMillis(), access_token, refresh_token, "sina" + System.currentTimeMillis());
+                pLoginThird(2, uid, System.currentTimeMillis(), access_token, refresh_token, "sina" + System.currentTimeMillis());
             } else {
                 mLoginingDialog.hide();
                 Toast.makeText(getApplicationContext(), "Auth Fail", Toast.LENGTH_LONG).show();
@@ -363,7 +359,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             String nickName = data.getStringExtra("nickName");
             MLog.d("登录返回结果处理" + nickName);
             //微信登录
-            pLoginWechat(9, uid, System.currentTimeMillis(), access_token, refresh_token, nickName);
+            pLoginThird(9, uid, System.currentTimeMillis(), access_token, refresh_token, nickName);
 
         } else {
             //qq
@@ -394,19 +390,9 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         logPresener.loginNormal(name, ps);
     }
 
-    //qq登录
-    private void pLoginQQ(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
-        logPresener.loginQQ(aArray, unionId, currentTime, accessToken, refreshToken, name);
-    }
-
-    //sina 登录
-    private void pLoginSina(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
-        logPresener.loginSina(aArray, unionId, currentTime, accessToken, refreshToken, name);
-    }
-
-    //wechat 登录
-    private void pLoginWechat(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
-        logPresener.loginWechat(aArray, unionId, currentTime, accessToken, refreshToken, name);
+    //第三方登录  qq登录/sina 登录/wechat 登录
+    private void pLoginThird(int btype, String type, long currentTime, String accessToken, String refreshToken, String name) {
+        logPresener.loginThird(btype, type, currentTime, accessToken, refreshToken, name);
     }
 
     private void updateProfile() {
@@ -453,93 +439,42 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         }
     }
 
-    //qq登录
     @Override
-    public void onLoginQQSuccess(Object obj) {
-        mLoginingDialog.hide();
-        //
+    public void onLoginThirdSuccess(Object obj) {
+        loginBean = (LoginBean) obj;
+
         TNSettings settings = TNSettings.getInstance();
         settings.isLogout = false;
-        settings.firstLaunch = false;
-        settings.savePref(false);
-        startActivity(TNMainAct.class);
-        finish();
-    }
 
-    @Override
-    public void onLoginQQFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
-        mLoginingDialog.hide();
-        if (msg.equals("用户未绑定轻笔记")) {//登录的参数还需要使用，所以在回调中再返回
-            Bundle b = new Bundle();
-            b.putString("type", "third");
-            b.putInt("bType", 3);
-            b.putString("bid", bid);
-            b.putLong("stamp", currentTime);
-            b.putString("accessToken", accessToken);
-            b.putString("refreshToken", refreshToken);
-            b.putString("name", name);
-            startActivity(TNBindAccountAct.class, b);//绑定手机号
-        } else {
-            TNUtilsUi.alert(this, msg);
+        //
+        settings.password = mPassword;
+        settings.userId = loginBean.getUser_id();
+        settings.username = loginBean.getUsername();
+        settings.token = loginBean.getToken();
+        settings.expertTime = loginBean.getExpire_at();
+        if (TextUtils.isEmpty(settings.loginname)) {
+            settings.loginname = loginBean.getUsername();
         }
-    }
-
-    //微信
-    @Override
-    public void onLoginWechatSuccess(Object obj) {
-        mLoginingDialog.hide();
-        //
-        TNSettings settings = TNSettings.getInstance();
-        settings.isLogout = false;
-        settings.firstLaunch = false;
         settings.savePref(false);
-        startActivity(TNMainAct.class);
-        finish();
+        //更新
+        updateProfile();
+
+
     }
 
     @Override
-    public void onLoginWechatFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
+    public void onLoginThirdFailed(String msg, Exception e, String bid, int btype, long currentTime, String accessToken, String refreshToken, String name) {
         mLoginingDialog.hide();
         if (msg.equals("用户未绑定轻笔记")) {//登录的参数还需要使用，所以在回调中再返回
             Bundle b = new Bundle();
             b.putString("type", "third");
-            b.putInt("bType", 9);
+            b.putInt("bType", btype);
             b.putString("bid", bid);
             b.putLong("stamp", currentTime);
             b.putString("accessToken", accessToken);
             b.putString("refreshToken", refreshToken);
             b.putString("name", name);
-            startActivity(TNBindAccountAct.class, b);//绑定手机号
-        } else {
-            TNUtilsUi.alert(this, msg);
-        }
-    }
-
-    //新浪
-    @Override
-    public void onLoginSinaSuccess(Object obj) {
-        mLoginingDialog.hide();
-        //
-        TNSettings settings = TNSettings.getInstance();
-        settings.isLogout = false;
-        settings.firstLaunch = false;
-        settings.savePref(false);
-        startActivity(TNMainAct.class);
-        finish();
-    }
-
-    @Override
-    public void onLoginSinaFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
-        mLoginingDialog.hide();
-        if (msg.equals("用户未绑定轻笔记")) {//登录的参数还需要使用，所以在回调中再返回
-            Bundle b = new Bundle();
-            b.putString("type", "third");
-            b.putInt("bType", 2);
-            b.putString("bid", bid);
-            b.putLong("stamp", currentTime);
-            b.putString("accessToken", accessToken);
-            b.putString("refreshToken", refreshToken);
-            b.putString("name", name);
+            b.putString("password",mPassword);
             startActivity(TNBindAccountAct.class, b);//绑定手机号
         } else {
             TNUtilsUi.alert(this, msg);
@@ -580,9 +515,9 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
 
         //
         settings.isLogout = false;
+        settings.firstLaunch = false;
         settings.savePref(false);
 
-        //
         startActivity(TNMainAct.class);
         finish();
     }
@@ -592,45 +527,5 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         mLoginingDialog.hide();
         profileBean = null;
     }
-
-    //-------------------------------------------------------------------------------
-
-    public void respondLoginThird(TNAction aAction) {
-        if (aAction.inputs.size() != 6)
-            return;
-        mLoginingDialog.hide();
-        MLog.d("第三方登录返回==" + aAction.result + "--" + TNActionResult.Finished);
-        if (aAction.result == TNActionResult.Finished) {
-            TNSettings settings = TNSettings.getInstance();
-            settings.isLogout = false;
-            settings.firstLaunch = false;
-            settings.savePref(false);
-            startActivity(TNMainAct.class);
-            finish();
-        } else {
-            int bType = (Integer) aAction.inputs.get(0);
-            String bid = (String) aAction.inputs.get(1);
-            long stamp = (Long) aAction.inputs.get(2);
-            String outputs = (String) aAction.outputs.get(0);
-            if ("用户未绑定轻笔记".equals(outputs)) {
-                String accessToken = (String) aAction.inputs.get(3);
-                String refreshToken = (String) aAction.inputs.get(4);
-                String name = (String) aAction.inputs.get(5);
-                Bundle b = new Bundle();
-                b.putString("type", "third");
-                b.putInt("bType", bType);
-                b.putString("bid", bid);
-                b.putLong("stamp", stamp);
-                b.putString("accessToken", accessToken);
-                b.putString("refreshToken", refreshToken);
-                b.putString("name", name);
-//				runActivity("TNRegistAct", b);
-                startActivity(TNBindAccountAct.class, b);
-            } else {
-                TNHandleError.handleResult(TNLoginAct.this, aAction);
-            }
-        }
-    }
-    //-------------------------------------------------------------------------------
 
 }

@@ -8,5 +8,5 @@ public interface IBindAccountPresener {
 
     void pBind(int btype, String bid, String name, String accessToken, String refreshToken, long currentTime, String phone, String vcode,String bindName);
     void pAutoLogAfterBind(int btype, String bid, String name, String accessToken, String refreshToken, long currentTime,String bindName);
-
+    void pProfile();
 }

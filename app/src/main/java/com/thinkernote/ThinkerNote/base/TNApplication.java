@@ -24,7 +24,7 @@ import com.thinkernote.ThinkerNote.Service.TNTagService;
 import com.thinkernote.ThinkerNote.Service.TNUserService;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.http.HttpUtils;
-import com.thinkernote.ThinkerNote.http.wechat.WeichatHttpUtils;
+import com.thinkernote.ThinkerNote.http.third.WeichatHttpUtils;
 
 /**
  * sjy 0607

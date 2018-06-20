@@ -30,22 +30,9 @@ public class LogPresenterImpl implements ILogPresener, OnLogListener {
     }
 
     @Override
-    public void loginQQ(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
+    public void loginThird(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
         String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
-        logModule.loginQQ(this
-                , aArray
-                , unionId
-                , currentTime
-                , TNUtils.toMd5(sign).toLowerCase()
-                , accessToken
-                , refreshToken
-                , name);
-    }
-
-    @Override
-    public void loginWechat(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
-        String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
-        logModule.loginWechat(this
+        logModule.loginThird(this
                 , aArray
                 , unionId
                 , currentTime
@@ -61,19 +48,6 @@ public class LogPresenterImpl implements ILogPresener, OnLogListener {
         logModule.mProfile(this);
     }
 
-    @Override
-    public void loginSina(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String name) {
-        String sign = "bid=" + unionId + "&btype=" + aArray + "&stamp=" + currentTime + "qingbiji";
-        logModule.loginSina(this
-                , aArray
-                , unionId
-                , currentTime
-                , TNUtils.toMd5(sign).toLowerCase()
-                , accessToken
-                , refreshToken
-                , name);
-    }
-
     //==========================结果回调==============================
     @Override
     public void onLoginNormalSuccess(Object obj) {
@@ -86,34 +60,13 @@ public class LogPresenterImpl implements ILogPresener, OnLogListener {
     }
 
     @Override
-    public void onLoginQQSuccess(Object obj) {
-        onLogView.onLoginQQSuccess(obj);
+    public void onLoginThirdSuccess(Object obj) {
+        onLogView.onLoginThirdSuccess(obj);
     }
 
     @Override
-    public void onLoginQQFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
-        onLogView.onLoginQQFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
-    }
-
-    @Override
-    public void onLoginWechatSuccess(Object obj) {
-        onLogView.onLoginWechatSuccess(obj);
-    }
-
-    @Override
-    public void onLoginWechatFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
-        onLogView.onLoginWechatFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
-
-    }
-
-    @Override
-    public void onLoginSinaSuccess(Object obj) {
-        onLogView.onLoginSinaSuccess(obj);
-    }
-
-    @Override
-    public void onLoginSinaFailed(String msg, Exception e, String bid, long currentTime, String accessToken, String refreshToken, String name) {
-        onLogView.onLoginSinaFailed(msg, e, bid, currentTime, accessToken, refreshToken, name);
+    public void onLoginThirdFailed(String msg, Exception e, String bid, int btype, long currentTime, String accessToken, String refreshToken, String name) {
+        onLogView.onLoginThirdFailed(msg, e, bid, btype, currentTime, accessToken, refreshToken, name);
     }
 
     @Override

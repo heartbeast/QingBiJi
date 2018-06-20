@@ -34,7 +34,7 @@ public class SplashModuleImpl implements ISplashModule {
     @Override
     public void mLogin(final OnSplashListener listener, String name, String ps) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginNormal(name, ps)//接口方法
+                .loginNormal(name, ps)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -63,7 +63,6 @@ public class SplashModuleImpl implements ISplashModule {
                     }
                 });
     }
-
 
     @Override
     public void mProFile(final OnSplashListener listener) {

@@ -11,7 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
@@ -20,6 +23,10 @@ import com.thinkernote.ThinkerNote._constructer.presenter.BindAccountPresenterIm
 import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.login.LoginBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+
+import org.json.JSONObject;
 
 /**
  * 使用第三方登录，需要绑定手机号 sjy 06-11
@@ -37,7 +44,9 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
 
 
     //
-    IBindAccountPresener presener;
+    private IBindAccountPresener presener;
+    private LoginBean loginBean;
+    private ProfileBean profileBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +196,11 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
                 , "bindAccount");
 
     }
+
+    //更新登录信息
+    private void updateProfile() {
+        presener.pProfile();
+    }
     //-----------------------------------接口返回的回调--------------------------------------------
 
     @Override
@@ -212,14 +226,69 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
 
     @Override
     public void onBindFailed(String msg, Exception e) {
-        TNUtilsUi.alert(this,msg);
+        TNUtilsUi.alert(this, msg);
     }
 
     @Override
     public void onAutoLogSuccess(Object obj) {
+        loginBean = (LoginBean) obj;
 
         TNSettings settings = TNSettings.getInstance();
         settings.isLogout = false;
+
+        //
+        settings.password = mBundle.getString("password");
+        settings.userId = loginBean.getUser_id();
+        settings.username = loginBean.getUsername();
+        settings.token = loginBean.getToken();
+        settings.expertTime = loginBean.getExpire_at();
+        if (TextUtils.isEmpty(settings.loginname)) {
+            settings.loginname = loginBean.getUsername();
+        }
+        settings.savePref(false);
+        //更新
+        updateProfile();
+
+
+    }
+
+    @Override
+    public void onAutoLogFailed(String msg, Exception e) {
+        TNUtilsUi.showToast(msg);
+    }
+
+    @Override
+    public void onLogProfileSuccess(Object obj) {
+        profileBean = (ProfileBean) obj;
+        //
+        TNSettings settings = TNSettings.getInstance();
+        long userId = TNDbUtils.getUserId(settings.username);
+
+        settings.phone = profileBean.getPhone();
+        settings.email = profileBean.getEmail();
+        settings.defaultCatId = profileBean.getDefault_folder();
+
+        if (userId != settings.userId) {
+            //清空user表
+            UserDbHelper.clearUsers();
+        }
+
+        JSONObject user = TNUtils.makeJSON(
+                "username", settings.username,
+                "password", settings.password,
+                "userEmail", settings.email,
+                "phone", settings.phone,
+                "userId", settings.userId,
+                "emailVerify", profileBean.getEmailverify(),
+                "totalSpace", profileBean.getTotal_space(),
+                "usedSpace", profileBean.getUsed_space());
+
+        //更新user表
+        UserDbHelper.addOrUpdateUser(user);
+
+        //
+        settings.isLogout = false;
+        //
         settings.firstLaunch = false;
         settings.savePref(false);
         startActivity(TNMainAct.class);
@@ -227,8 +296,8 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
     }
 
     @Override
-    public void onAutoLogFailed(String msg, Exception e) {
-        TNUtilsUi.alert(this, msg);
+    public void onLogProfileFailed(String msg, Exception e) {
+        TNUtilsUi.showToast(msg);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.thinkernote.ThinkerNote.http.wechat;
+package com.thinkernote.ThinkerNote.http.third;
 
 import android.content.Context;
 import android.util.Log;

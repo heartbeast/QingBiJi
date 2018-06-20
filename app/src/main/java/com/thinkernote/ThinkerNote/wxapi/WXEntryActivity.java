@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 /**
  * 微信登录 设置
+ * TODO 登录回调 未做
  */
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     private static final int BACK_RESULT_CODE = 11;

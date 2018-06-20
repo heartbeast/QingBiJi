@@ -16,5 +16,8 @@ public interface OnBindAccountListener {
 
     void onAutoLogFailed(String msg, Exception e);
 
+    void onLogProfileSuccess(Object obj);
+
+    void onLogProfileFailed(String msg, Exception e);
 
 }

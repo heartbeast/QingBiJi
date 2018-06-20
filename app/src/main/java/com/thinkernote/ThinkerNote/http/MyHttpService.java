@@ -58,42 +58,11 @@ public interface MyHttpService {
     }
 
     /**
-     * （3）put方式调用
+     * （2）put方式调用
      */
     class PUTBuilder {
         public static MyHttpService getHttpServer() {
             return HttpUtils.getInstance().getPUTServer(MyHttpService.class);
-        }
-    }
-
-
-
-    /**
-     * （3）get方式调用：header+token
-     * 登录和注册不可调用
-     */
-    class POSTBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
-        }
-    }
-
-    /**
-     * （3）get方式调用：header
-     * 登录和注册专用
-     */
-    class PostNoTokenBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getGETServer(MyHttpService.class);
-        }
-    }
-
-    /**
-     * （4）retrofit+okhttp+Rxjava样式+特殊缓存接口
-     */
-    class NoCacheBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getNoCacheServer(MyHttpService.class);
         }
     }
 
@@ -113,19 +82,19 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Log.LOGINNORMAL)
-    Observable<LoginBean> postLoginNormal(
+    Observable<LoginBean> loginNormal(
             @Field("username") String username
             , @Field("password") String password);
 
 
     /**
-     * 02 qq登录
+     * 02 第三方登录：qq登录/sina登录/wechat登录
      *
      * @return
      */
     @FormUrlEncoded
-    @POST(URLUtils.Log.LOGINQQ)
-    Observable<CommonBean> postLoginQQ(
+    @POST(URLUtils.Log.LOGIN_THIRD)
+    Observable<LoginBean> loginThird(
             @Field("btype") int btype
             , @Field("bid") String password
             , @Field("stamp") long stamp
@@ -134,48 +103,16 @@ public interface MyHttpService {
     );
 
     /**
-     * 登录同步更新
+     * （3）登录同步更新
      *
      * @return
      */
     @GET(URLUtils.Log.PROFILE)
     Observable<CommonBean2<ProfileBean>> LogNormalProfile(@Query("session_token") String session_token);
 
-    /**
-     * 03 sina登录
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(URLUtils.Log.LOGINQQ)
-    Observable<CommonBean> postLoginSina(
-            @Field("btype") int btype
-            , @Field("bid") String password
-            , @Field("stamp") long stamp
-            , @Field("sign") String sign
-            , @Field("session_token") String session_token
-    );
 
     /**
-     * 04 wechat登录
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(URLUtils.Log.LOGINQQ)
-    Observable<CommonBean> postLoginWechat(
-            @Field("btype") int btype
-            , @Field("bid") String password
-            , @Field("stamp") long stamp
-            , @Field("sign") String sign
-            , @Field("session_token") String session_token
-    );
-
-
-    // 05--07绑定手机号
-
-    /**
-     * 05 手机验证码(两个参数)
+     * 04 手机验证码(两个参数)
      *
      * @return
      */
@@ -188,7 +125,7 @@ public interface MyHttpService {
     );
 
     /**
-     * 06 绑定手机号
+     * 05 绑定手机号
      *
      * @return
      */
@@ -207,25 +144,9 @@ public interface MyHttpService {
             , @Field("session_token") String session_token
     );
 
-    /**
-     * 07 绑定手机号后，自动登录，(同qq登录接口)
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(URLUtils.Log.LOGINQQ)
-    Observable<LoginBean> postLoginAfterBind(
-            @Field("btype") int btype
-            , @Field("bid") String password
-            , @Field("stamp") long stamp
-            , @Field("sign") String sign
-            , @Field("session_token") String session_token
-    );
-
-    // 08--11忘记密码
 
     /**
-     * 08 图片验证
+     * 06 图片验证
      *
      * @return
      */
@@ -234,7 +155,7 @@ public interface MyHttpService {
 
 
     /**
-     * 09 手机验证码(四个参数)
+     * 07 手机验证码(四个参数)
      *
      * @return
      */
@@ -251,7 +172,7 @@ public interface MyHttpService {
 
 
     /**
-     * 10 邮箱验证码
+     * 8 邮箱验证码
      *
      * @return
      */
@@ -262,10 +183,9 @@ public interface MyHttpService {
             , @Field("t") String t
             , @Field("session_token") String session_token);
 
-    // 11--12注册
 
     /**
-     * 11 忘记密码 提交
+     * 9 忘记密码 提交
      *
      * @return
      */
@@ -279,7 +199,7 @@ public interface MyHttpService {
 
 
     /**
-     * 12 注册 提交
+     * 10 注册 提交
      *
      * @return
      */
@@ -292,7 +212,7 @@ public interface MyHttpService {
     );
 
     /**
-     * 13 修改手机号
+     * 11 修改手机号
      *
      * @return
      */
@@ -305,7 +225,7 @@ public interface MyHttpService {
             , @Field("session_token") String session_token);
 
     /**
-     * 14 获取用户信息
+     * 12 获取用户信息
      *
      * @return
      */
@@ -313,7 +233,7 @@ public interface MyHttpService {
     Observable<CommonBean> getUserInfo(@Query("session_token") String session_token);
 
     /**
-     * 15 退出登录
+     * 13 退出登录
      *
      * @return
      */

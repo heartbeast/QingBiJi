@@ -23,6 +23,7 @@ public class LogModuleImpl implements ILogModule {
 
     private Context context;
     private static final String TAG = "SJY";
+
     public LogModuleImpl(Context context) {
         this.context = context;
     }
@@ -31,7 +32,7 @@ public class LogModuleImpl implements ILogModule {
     @Override
     public void loginNomal(final OnLogListener listener, String name, String ps) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginNormal(name, ps)//接口方法
+                .loginNormal(name, ps)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -44,7 +45,7 @@ public class LogModuleImpl implements ILogModule {
                     @Override
                     public void onError(Throwable e) {
                         MLog.e(TAG, "登录--登录失败异常onError:" + e.toString());
-                        listener.onLoginNormalFailed("异常"  ,new Exception("接口异常！"));
+                        listener.onLoginNormalFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
@@ -55,8 +56,8 @@ public class LogModuleImpl implements ILogModule {
                         if (bean.getCode() == 0) {
                             MLog.d(TAG, "登录-成功");
                             listener.onLoginNormalSuccess(bean);
-                        } else{
-                            listener.onLoginNormalFailed(bean.getMessage(),null);
+                        } else {
+                            listener.onLoginNormalFailed(bean.getMessage(), null);
                         }
                     }
 
@@ -64,14 +65,14 @@ public class LogModuleImpl implements ILogModule {
     }
 
     @Override
-    public void loginQQ(final OnLogListener listener, int btype, final String bid, final long stamp, String sign, final String accessToken, final String refreshToken, final String name) {
+    public void loginThird(final OnLogListener listener, final int btype, final String bid, final long stamp, String sign, final String accessToken, final String refreshToken, final String name) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginQQ(btype, bid,stamp,sign,settings.token)//接口方法
+                .loginThird(btype, bid, stamp, sign, settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<LoginBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
                         MLog.d(TAG, "登录--onCompleted");
@@ -80,92 +81,19 @@ public class LogModuleImpl implements ILogModule {
                     @Override
                     public void onError(Throwable e) {
                         MLog.e(TAG, "登录--登录失败异常onError:" + e.toString());
-                        listener.onLoginQQFailed("异常"  ,new Exception("接口异常！"),bid,stamp,accessToken,refreshToken,name);
+                        listener.onLoginThirdFailed("异常", new Exception("接口异常！"), bid, btype, stamp, accessToken, refreshToken, name);
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
+                    public void onNext(LoginBean bean) {
                         MLog.d(TAG, "登录-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
                             MLog.d(TAG, "登录-成功");
-                            listener.onLoginQQSuccess(bean);
-                        } else{
-                            listener.onLoginQQFailed(bean.getMessage(),null,bid,stamp,accessToken,refreshToken,name);
-                        }
-                    }
-
-                });
-    }
-
-    @Override
-    public void loginSina(final OnLogListener listener, int btype, final String bid, final long stamp, String sign, final String accessToken, final String refreshToken, final String name) {
-        TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginSina(btype, bid,stamp,sign,settings.token)//接口方法
-                .subscribeOn(Schedulers.io())//固定样式
-                .unsubscribeOn(Schedulers.io())//固定样式
-                .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
-                    @Override
-                    public void onCompleted() {
-                        MLog.d(TAG, "登录--onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MLog.e(TAG, "登录--登录失败异常onError:" + e.toString());
-                        listener.onLoginSinaFailed("异常"  ,new Exception("接口异常！"),bid,stamp,accessToken,refreshToken,name);
-                    }
-
-                    @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "登录-onNext");
-
-                        //处理返回结果
-                        if (bean.getCode() == 0) {
-                            MLog.d(TAG, "登录-成功");
-                            listener.onLoginSinaSuccess(bean);
-                        } else{
-                            listener.onLoginSinaFailed(bean.getMessage(),null,bid,stamp,accessToken,refreshToken,name);
-                        }
-                    }
-
-                });
-    }
-
-
-    @Override
-    public void loginWechat(final OnLogListener listener, int btype, final String bid, final long stamp, String sign, final String accessToken, final String refreshToken, final String name) {
-        TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginWechat(btype, bid,stamp,sign,settings.token)//接口方法
-                .subscribeOn(Schedulers.io())//固定样式
-                .unsubscribeOn(Schedulers.io())//固定样式
-                .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
-                    @Override
-                    public void onCompleted() {
-                        MLog.d(TAG, "登录--onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MLog.e(TAG, "登录--登录失败异常onError:" + e.toString());
-                        listener.onLoginWechatFailed("异常"  ,new Exception("接口异常！"),bid,stamp,accessToken,refreshToken,name);
-                    }
-
-                    @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "登录-onNext");
-
-                        //处理返回结果
-                        if (bean.getCode() == 0) {
-                            MLog.d(TAG, "登录-成功");
-                            listener.onLoginWechatSuccess(bean);
-                        } else{
-                            listener.onLoginWechatFailed(bean.getMessage(),null,bid,stamp,accessToken,refreshToken,name);
+                            listener.onLoginThirdSuccess(bean);
+                        } else {
+                            listener.onLoginThirdFailed(bean.getMessage(), null, bid, btype, stamp, accessToken, refreshToken, name);
                         }
                     }
 
@@ -189,7 +117,7 @@ public class LogModuleImpl implements ILogModule {
                     @Override
                     public void onError(Throwable e) {
                         MLog.e(TAG, "mProfile--异常onError:" + e.toString());
-                        listener.onLogProfileFailed("异常"  ,new Exception("接口异常！"));
+                        listener.onLogProfileFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
@@ -200,8 +128,8 @@ public class LogModuleImpl implements ILogModule {
                         if (bean.getCode() == 0) {
                             MLog.d(TAG, "mProfile-成功");
                             listener.onLogProfileSuccess(bean.getProfile());
-                        } else{
-                            listener.onLogProfileFailed(bean.getMsg(),null);
+                        } else {
+                            listener.onLogProfileFailed(bean.getMsg(), null);
                         }
                     }
 

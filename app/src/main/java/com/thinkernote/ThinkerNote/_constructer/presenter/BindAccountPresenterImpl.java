@@ -15,11 +15,11 @@ import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 /**
  * 登录 p层 具体实现
  */
-public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAccountListener{
+public class BindAccountPresenterImpl implements IBindAccountPresener, OnBindAccountListener {
     private Context context;
     private OnBindAccountListener onView;
     //p层调用M层方法
-    private IBindAccountModule  module;
+    private IBindAccountModule module;
 
     public BindAccountPresenterImpl(Context context, OnBindAccountListener logListener) {
         this.context = context;
@@ -31,7 +31,7 @@ public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAcco
 
     @Override
     public void pPostVerifyCode(String phone, String t) {
-        module.mVerifyCode(this,phone,t);
+        module.mVerifyCode(this, phone, t);
     }
 
     @Override
@@ -43,7 +43,12 @@ public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAcco
     @Override
     public void pAutoLogAfterBind(int btype, String bid, String name, String accessToken, String refreshToken, long currentTime, String bindName) {
         String sign = "bid=" + bid + "&btype=" + btype + "&stamp=" + currentTime + "qingbiji";
-        module.autoLoginAferBind(this,btype,bid,currentTime,sign);
+        module.autoLoginAferBind(this, btype, bid, currentTime, sign);
+    }
+
+    @Override
+    public void pProfile() {
+        module.mProfile(this);
     }
 
     //==========================结果回调==============================
@@ -54,7 +59,7 @@ public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAcco
 
     @Override
     public void onVerifyCodeFailed(String msg, Exception e) {
-        onView.onVerifyCodeFailed(msg,e);
+        onView.onVerifyCodeFailed(msg, e);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAcco
 
     @Override
     public void onBindFailed(String msg, Exception e) {
-        onView.onBindFailed(msg,e);
+        onView.onBindFailed(msg, e);
     }
 
     @Override
@@ -74,6 +79,16 @@ public class BindAccountPresenterImpl implements IBindAccountPresener,OnBindAcco
 
     @Override
     public void onAutoLogFailed(String msg, Exception e) {
-        onView.onAutoLogFailed(msg,e);
+        onView.onAutoLogFailed(msg, e);
+    }
+
+    @Override
+    public void onLogProfileSuccess(Object obj) {
+        onView.onLogProfileSuccess(obj);
+    }
+
+    @Override
+    public void onLogProfileFailed(String msg, Exception e) {
+        onView.onLogProfileFailed(msg, e);
     }
 }

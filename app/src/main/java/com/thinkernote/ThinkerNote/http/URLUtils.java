@@ -53,7 +53,7 @@ public class URLUtils {
         /**
          * qq登录
          */
-        public static final String LOGINQQ = "api/login/third";
+        public static final String LOGIN_THIRD = "api/login/third";
 
         /**
          * 手机验证码接口

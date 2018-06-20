@@ -211,7 +211,7 @@ public class RegistModuleImpl implements IRegistModule {
     @Override
     public void autoLogin(final OnRegistListener listener, String phone, String ps) {
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .postLoginNormal(phone, ps)//接口方法
+                .loginNormal(phone, ps)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

@@ -32,7 +32,7 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
     @Override
     public void mVcode(final OnBindPhoneListener listener, final String phone, String name, String answer, String mNonce, String mHashKey) {
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.NoCacheBuilder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .postVerifyCode4(phone, name,answer,mNonce,mHashKey,settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
