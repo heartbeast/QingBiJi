@@ -11,6 +11,7 @@ import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
+import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -49,7 +51,7 @@ public interface MyHttpService {
 
     /**
      * （1）retrofit+okhttp+Rxjava默认构建样式（header+token+无缓存）
-     * 非get接口调用
+     * 非文件使用
      */
     class Builder {
         public static MyHttpService getHttpServer() {
@@ -60,9 +62,9 @@ public interface MyHttpService {
     /**
      * （2）put方式调用
      */
-    class PUTBuilder {
+    class FileBuilder {
         public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getPUTServer(MyHttpService.class);
+            return HttpUtils.getInstance().getFileServer(MyHttpService.class);
         }
     }
 
@@ -241,7 +243,7 @@ public interface MyHttpService {
     Observable<CommonBean> logout(@Query("session_token") String session_token);
 
 
-    //-------------------------------------------------main相关----------------------------------------------------
+    //-------------------------------------------------main相关----------------------------------------------------d
 
     /**
      * 13 检查更新
@@ -250,6 +252,15 @@ public interface MyHttpService {
      */
     @GET(URLUtils.Home.UPGRADE)
     Observable<CommonBean1<MainUpgradeBean>> upgrade(@Query("session_token") String session_token);
+
+    /**
+     * 下载安装包，动态路径形式
+     *
+     * @return
+     */
+    @GET
+    Observable<CommonBean1<MainUpgradeBean>> download(@Url String url
+            , @Query("session_token") String session_token);
 
 
     /**
@@ -306,6 +317,62 @@ public interface MyHttpService {
      */
     @POST(URLUtils.Home.UPLOAD_PIC)
     Observable<CommonBean> upLoadPic(@Field("session_token") String session_token);
+
+    //-------------------------------------------------同步相关----------------------------------------------------
+
+    /**
+     * 同步新建文件
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.FOLDER)
+    Observable<CommonBean> syncFolderAdd(@Field("name") String name
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步tag
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.TAG)
+    Observable<CommonBean> syncTagAdd(@Field("name") String name
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步 上传图片
+     *
+     * @return
+     */
+    @Multipart
+    @POST(URLUtils.Note.UPLOAD_PIC)
+    Observable<OldNotePicBean> syncOldNotePic(
+            @Part MultipartBody.Part file
+            , @Part("session_token") String session_token);
+
+
+    /**
+     * 同步oldNoteAdd
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.NOTE)
+    Observable<CommonBean> syncOldNoteAdd(
+            @Field("title") String title
+            , @Field("content") String content
+            , @Field("tags") String tags
+            , @Field("folder_id") long folder_id
+            , @Field("create_time") int create_time
+            , @Field("update_time") int update_time
+            , @Field("longitude") int longitude
+            , @Field("latitude") int latitude
+            , @Field("address") String address
+            , @Field("radius") int radius
+            , @Field("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------
@@ -442,6 +509,9 @@ public interface MyHttpService {
             , @Query("pagesize") int pagesize
             , @Query("sortord") String sortord
             , @Query("session_token") String session_token);
+
+
+//*************************************************以下不使用***********************************************
 
     /**
      * 01轮播图 表单的使用方式，post

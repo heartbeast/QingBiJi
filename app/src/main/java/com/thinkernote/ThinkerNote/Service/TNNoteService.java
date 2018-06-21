@@ -61,16 +61,20 @@ public class TNNoteService {
 		
 		return singleton;
 	}
-	
+
+
+	//TODO
 	public void NoteAdd(TNAction aAction) {
 		TNNote note = (TNNote) aAction.inputs.get(0);
 		boolean isNewDb = (Boolean) aAction.inputs.get(1);//true表示新数据库，old表示老数据库
 		String content = note.content;
+		//上传所有图片，再执行NoteAdd
 		for(TNNoteAtt att: note.atts) {
 			TNAction action = uploadFile(att, 1);
 			if (action.outputs.get(0) instanceof String) {
 				continue;
 			}
+
 			JSONObject output = (JSONObject) action.outputs.get(0);
 			if ((Integer) TNUtils.getFromJSON(output, "code") == 0) {
 				att.digest = (String) TNUtils.getFromJSON(output, "md5");
@@ -640,6 +644,7 @@ public class TNNoteService {
 		
 		JSONObject outputs = (JSONObject) aAction.childAction.outputs.get(0);
 		if ((Integer) TNUtils.getFromJSON(outputs, "code") == 0) {
+
 			if (aAction.inputs.size() > 2) {//意见反馈不走这个逻辑
 				long attId = (Long) TNUtils.getFromLongJSON(outputs, "id");
 				TNDb.beginTransaction();

@@ -403,14 +403,14 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
                     getPackageName(), 0);
             MLog.d(TAG, info.versionCode + "," + info.versionName);
             String newVersionName = bean.getVersion();
-            String newVersionCode = bean.getVersionCode() != null ? bean.getVersionCode() : "-1";
+            int newVersionCode = bean.getVersionCode() != 0 ? bean.getVersionCode() : -1;
             int newSize = bean.getSize();
             String description = bean.getContent();
             mDownLoadAPKPath = bean.getUrl();
 
             MLog.d(TAG, newVersionName + "," + newSize);
 
-            if (Integer.valueOf(newVersionCode) > info.versionCode) {
+            if (newVersionCode > info.versionCode) {
                 LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout fl = (LinearLayout) layoutInflater.inflate(
                         R.layout.update, null);

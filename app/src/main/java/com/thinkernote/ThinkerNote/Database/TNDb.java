@@ -8,7 +8,9 @@ import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNApplication;
 
+import android.app.Application;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,230 +21,243 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 已不再使用
  */
 public class TNDb extends SQLiteOpenHelper {
-	private static final String TAG = "TNDatabase";
-	private static TNDb singleton = null;
-	private final static int DB_VER = 2;
-	private final static String DB_NAME = "ThinkerNote3.db";
-	private SQLiteDatabase db = null;
-	
-	private int changeBits;
-	
-	public TNDb() {
-		super(TNUtils.getAppContext(), DB_NAME, null, DB_VER);
-		
-		db = getWritableDatabase(); 
-		
-		TNAction.regRunner(TNActionType.Db_Execute, this, "executeSQL");
-		TNAction.regRunner(TNActionType.DBReset, this, "DBReset");
-	}
+    private static final String TAG = "TNDatabase";
+    private static TNDb singleton = null;
+    private final static int DB_VER = 2;
+    private final static String DB_NAME = "ThinkerNote3.db";
+    private SQLiteDatabase db = null;
 
-	public static TNDb getInstance(){
-		if (singleton == null){
-			synchronized (TNDb.class){
-				if (singleton == null){
-					singleton = new TNDb();
-				}
-			}
-		}
-		
-		return singleton;
-	}
+    private int changeBits;
 
-	@Override
-	public void onCreate(SQLiteDatabase aDB) {
-		MLog.d(TAG, "onCreate");
-		aDB.execSQL(TNSQLString.USER_CREATE_TABLE);
-		aDB.execSQL(TNSQLString.CAT_CREATE_TABLE);
-		aDB.execSQL(TNSQLString.TAG_CREATE_TABLE);
-		aDB.execSQL(TNSQLString.NOTE_CREATE_TABLE);
-		aDB.execSQL(TNSQLString.ATT_CREATE_TABLE);
+    public TNDb() {
+        super(TNUtils.getAppContext(), DB_NAME, null, DB_VER);
 
-	}
+        db = getWritableDatabase();
 
-	@Override
-	public void onUpgrade(SQLiteDatabase aDB, int oldVer, int newVer) {
-		if (oldVer == 1 && newVer == 2) {
-			aDB.execSQL("ALTER TABLE `Category` ADD `strIndex` TEXT(8) NOT NULL DEFAULT ''");
-		}
-	}
-	
-	public void DBReset(TNAction aAction){
-		beginTransaction();
-		try {
-			//drop tables
-			getInstance().db.execSQL(TNSQLString.USER_DROP_TABLE);
-			getInstance().db.execSQL(TNSQLString.CAT_DROP_TABLE);
-			getInstance().db.execSQL(TNSQLString.TAG_DROP_TABLE);
-			getInstance().db.execSQL(TNSQLString.NOTE_DROP_TABLE);
-			getInstance().db.execSQL(TNSQLString.ATT_DROP_TABLE);
-			
-			//create tables
-			getInstance().db.execSQL(TNSQLString.USER_CREATE_TABLE);
-			getInstance().db.execSQL(TNSQLString.CAT_CREATE_TABLE);
-			getInstance().db.execSQL(TNSQLString.TAG_CREATE_TABLE);
-			getInstance().db.execSQL(TNSQLString.NOTE_CREATE_TABLE);
-			getInstance().db.execSQL(TNSQLString.ATT_CREATE_TABLE);
-			
-			setTransactionSuccessful();
-		} finally {
-			endTransaction();
-		}
-	}
-	
-	private long insert(String sql, String[] args) {
-		int start = 0, end = 0;
-		String tableName = "";
-		ContentValues values = new ContentValues();
+        TNAction.regRunner(TNActionType.Db_Execute, this, "executeSQL");
+        TNAction.regRunner(TNActionType.DBReset, this, "DBReset");
+    }
 
-		start = sql.indexOf("`");
-		end = sql.indexOf("`", start + 1);
-		tableName = sql.substring(start, end + 1);
+    public static TNDb getInstance() {
+        if (singleton == null) {
+            synchronized (TNDb.class) {
+                if (singleton == null) {
+                    singleton = new TNDb();
+                }
+            }
+        }
 
-		for (int i = 0; i < args.length; i++) {
-			start = sql.indexOf("`", end + 1);
-			end = sql.indexOf("`", start + 1);
-			values.put(sql.substring(start, end + 1), args[i]);
-		}
-		return db.insertOrThrow(tableName, null, values);
-	}
+        return singleton;
+    }
 
-	private Vector<Vector<String>> select(String sql, String[] args) {
-		Cursor cursor = db.rawQuery(sql, args);
+    @Override
+    public void onCreate(SQLiteDatabase aDB) {
+        MLog.d(TAG, "onCreate");
+        aDB.execSQL(TNSQLString.USER_CREATE_TABLE);
+        aDB.execSQL(TNSQLString.CAT_CREATE_TABLE);
+        aDB.execSQL(TNSQLString.TAG_CREATE_TABLE);
+        aDB.execSQL(TNSQLString.NOTE_CREATE_TABLE);
+        aDB.execSQL(TNSQLString.ATT_CREATE_TABLE);
 
-		Vector<Vector<String>> allData = new Vector<Vector<String>>();
-		while (cursor.moveToNext()) {
-			Vector<String> rowData = new Vector<String>();
-			for (int i = 0; i < cursor.getColumnCount(); i++) {
-				String value = cursor.getString(i);
-				if (value != null)
-					rowData.add(value);
-				else
-					rowData.add("0");
-			}
-			allData.add(rowData);
-		}
-		cursor.close();
-		MLog.d(TAG, allData.toString());
+    }
 
-		return allData;
-	}
+    @Override
+    public void onUpgrade(SQLiteDatabase aDB, int oldVer, int newVer) {
+        if (oldVer == 1 && newVer == 2) {
+            aDB.execSQL("ALTER TABLE `Category` ADD `strIndex` TEXT(8) NOT NULL DEFAULT ''");
+        }
+    }
 
-	private void execute(String sql, String[] args) {
-		db.execSQL(sql, args);
-	}
+    public void DBReset(TNAction aAction) {
+        beginTransaction();
+        try {
+            //drop tables
+            getInstance().db.execSQL(TNSQLString.USER_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.CAT_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.TAG_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.NOTE_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.ATT_DROP_TABLE);
 
-	public Object execSQL(String sql, Object... args) {
-		String[] valus = new String[args.length];
-		for (int i = 0; i < args.length; i++) {
-			valus[i] = String.valueOf(args[i]);
-		}
-		printSql(sql, valus);
-		if (sql.startsWith("SELECT")) {
-			return select(sql, valus);
-		} else if (sql.startsWith("INSERT")) {
-			return insert(sql, valus);
-		} else {
-			execute(sql, valus);
-		}
+            //create tables
+            getInstance().db.execSQL(TNSQLString.USER_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.CAT_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.TAG_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.NOTE_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.ATT_CREATE_TABLE);
 
-		return null;
-	}
-	
-	public void executeSQL(TNAction aAction){
-		MLog.d(TAG, aAction.inputs.toString());
-		try{
-			String sql = (String)aAction.inputs.get(0);
-			if( sql.startsWith("SELECT")){
-				String[] args = new String[aAction.inputs.size()-1];
-				for(int i=1; i < aAction.inputs.size(); i ++){
-					args[i-1] = aAction.inputs.get(i).toString();
-				}
-				Cursor cursor = db.rawQuery(sql, args);					
-				
-				Vector<Vector<String>> allData = new Vector<Vector<String>>();
-				while (cursor.moveToNext()) { 
-					Vector<String> rowData = new Vector<String>();
-					for(int i=0; i < cursor.getColumnCount(); i ++){
-						String value = cursor.getString(i);
-						if( value != null)
-							rowData.add( value );
-						else
-							rowData.add("0");
-					}
-					allData.add(rowData);
-				} 
-				aAction.outputs.add(allData);
-				cursor.close(); 
-			}
-			else if(sql.startsWith("INSERT")){
-				int start=0, end=0;
-				String tableName="";
-				ContentValues values = new ContentValues();
-				
-				start = sql.indexOf("`");
-				end = sql.indexOf("`", start+1);
-				tableName = sql.substring(start, end+1);
-				//Log.i(TAG, "tableName:" + tableName + start + end);
-				
-				for(int i=1; i < aAction.inputs.size(); i ++){
-					start = sql.indexOf("`", end+1);
-					end = sql.indexOf("`", start+1);
-					values.put(sql.substring(start, end+1), aAction.inputs.get(i).toString());
-				}
-				//Log.i(TAG, "values:" + values);
-				long id = db.insertOrThrow(tableName, null, values);
-				aAction.outputs.add(id);
-			}
-			else{ 
-				Object[] args = new Object[aAction.inputs.size()-1];
-				for(int i=1; i < aAction.inputs.size(); i ++){
-					args[i-1] = aAction.inputs.get(i);
-				}
-				db.execSQL(sql, args);
-			
-			}
-			aAction.result = TNActionResult.Finished;
-		}catch(SQLiteException e){
-			e.printStackTrace();
-			TNAction.runAction(TNActionType.DbReportError,
-					"username:" + TNSettings.getInstance().username +
-					" SQLiteException:" + e.toString());
-			aAction.result = TNActionResult.Finished;
-		}
-	}
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
 
-	public static void beginTransaction() {
-		getInstance().db.beginTransaction();
-	}
+    private long insert(String sql, String[] args) {
+        int start = 0, end = 0;
+        String tableName = "";
+        ContentValues values = new ContentValues();
 
-	public static void setTransactionSuccessful() {
-		getInstance().db.setTransactionSuccessful();
-	}
+        start = sql.indexOf("`");
+        end = sql.indexOf("`", start + 1);
+        tableName = sql.substring(start, end + 1);
 
-	public static void endTransaction() {
-		getInstance().db.endTransaction();
-	}
+        for (int i = 0; i < args.length; i++) {
+            start = sql.indexOf("`", end + 1);
+            end = sql.indexOf("`", start + 1);
+            values.put(sql.substring(start, end + 1), args[i]);
+        }
+        return db.insertOrThrow(tableName, null, values);
+    }
 
-	public static boolean isChanges(int aChange) {
-		return (getInstance().changeBits & aChange) != 0;
-	}
+    private Vector<Vector<String>> select(String sql, String[] args) {
+        Cursor cursor = db.rawQuery(sql, args);
 
-	public static void addChange(int aChange) {
-		if ((getInstance().changeBits & aChange) == 0)
-			getInstance().changeBits += aChange;
-	}
+        Vector<Vector<String>> allData = new Vector<Vector<String>>();
+        while (cursor.moveToNext()) {
+            Vector<String> rowData = new Vector<String>();
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                String value = cursor.getString(i);
+                if (value != null)
+                    rowData.add(value);
+                else
+                    rowData.add("0");
+            }
+            allData.add(rowData);
+        }
+        cursor.close();
+        MLog.d(TAG, allData.toString());
 
-	public static void removeChange(int aChange) {
-		if ((getInstance().changeBits & aChange) != 0)
-			getInstance().changeBits -= aChange;
-	}
+        return allData;
+    }
 
-	private void printSql(String sql, String[] args) {
-		String values = "";
-		for (String arg : args) {
-			arg = "`" + arg + "` ";
-			values = values + arg;
-		}
-		MLog.d(TAG, sql + "\r\n" + values);
-	}
+    private void execute(String sql, String[] args) {
+        db.execSQL(sql, args);
+    }
+
+    public Object execSQL(String sql, Object... args) {
+        String[] valus = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            valus[i] = String.valueOf(args[i]);
+        }
+        printSql(sql, valus);
+        if (sql.startsWith("SELECT")) {
+            return select(sql, valus);
+        } else if (sql.startsWith("INSERT")) {
+            return insert(sql, valus);
+        } else {
+            execute(sql, valus);
+        }
+
+        return null;
+    }
+
+    public void executeSQL(TNAction aAction) {
+        MLog.d(TAG, aAction.inputs.toString());
+        try {
+            String sql = (String) aAction.inputs.get(0);
+            if (sql.startsWith("SELECT")) {
+                String[] args = new String[aAction.inputs.size() - 1];
+                for (int i = 1; i < aAction.inputs.size(); i++) {
+                    args[i - 1] = aAction.inputs.get(i).toString();
+                }
+                Cursor cursor = db.rawQuery(sql, args);
+
+                Vector<Vector<String>> allData = new Vector<Vector<String>>();
+                while (cursor.moveToNext()) {
+                    Vector<String> rowData = new Vector<String>();
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        String value = cursor.getString(i);
+                        if (value != null)
+                            rowData.add(value);
+                        else
+                            rowData.add("0");
+                    }
+                    allData.add(rowData);
+                }
+                aAction.outputs.add(allData);
+                cursor.close();
+            } else if (sql.startsWith("INSERT")) {
+                int start = 0, end = 0;
+                String tableName = "";
+                ContentValues values = new ContentValues();
+
+                start = sql.indexOf("`");
+                end = sql.indexOf("`", start + 1);
+                tableName = sql.substring(start, end + 1);
+                //Log.i(TAG, "tableName:" + tableName + start + end);
+
+                for (int i = 1; i < aAction.inputs.size(); i++) {
+                    start = sql.indexOf("`", end + 1);
+                    end = sql.indexOf("`", start + 1);
+                    values.put(sql.substring(start, end + 1), aAction.inputs.get(i).toString());
+                }
+                //Log.i(TAG, "values:" + values);
+                long id = db.insertOrThrow(tableName, null, values);
+                aAction.outputs.add(id);
+            } else {
+                Object[] args = new Object[aAction.inputs.size() - 1];
+                for (int i = 1; i < aAction.inputs.size(); i++) {
+                    args[i - 1] = aAction.inputs.get(i);
+                }
+                db.execSQL(sql, args);
+
+            }
+            aAction.result = TNActionResult.Finished;
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNAction.runAction(TNActionType.DbReportError,
+                    "username:" + TNSettings.getInstance().username +
+                            " SQLiteException:" + e.toString());
+            aAction.result = TNActionResult.Finished;
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     */
+    public void executeSQLUpData(String sql, int num, long attId, int attLocalID) {
+
+        try {
+            String[] args = new String[]{num + "", attId + "", attLocalID + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    public static void beginTransaction() {
+        getInstance().db.beginTransaction();
+    }
+
+    public static void setTransactionSuccessful() {
+        getInstance().db.setTransactionSuccessful();
+    }
+
+    public static void endTransaction() {
+        getInstance().db.endTransaction();
+    }
+
+    public static boolean isChanges(int aChange) {
+        return (getInstance().changeBits & aChange) != 0;
+    }
+
+    public static void addChange(int aChange) {
+        if ((getInstance().changeBits & aChange) == 0)
+            getInstance().changeBits += aChange;
+    }
+
+    public static void removeChange(int aChange) {
+        if ((getInstance().changeBits & aChange) != 0)
+            getInstance().changeBits -= aChange;
+    }
+
+    private void printSql(String sql, String[] args) {
+        String values = "";
+        for (String arg : args) {
+            arg = "`" + arg + "` ";
+            values = values + arg;
+        }
+        MLog.d(TAG, sql + "\r\n" + values);
+    }
 }

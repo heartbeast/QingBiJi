@@ -8,8 +8,8 @@ package com.thinkernote.ThinkerNote.http;
 public class URLUtils {
     //URL根目录
 //    public final static String API_BASE_URL = "http://new.qingbiji.cn:8088/";//内网测试
-//    public final static String API_BASE_URL = "https://s.qingbiji.cn/";//外网测试
-    public final static String API_BASE_URL = "http://new.qingbiji.cn/";//正式
+    public final static String API_BASE_URL = "https://s.qingbiji.cn/";//外网测试
+//    public final static String API_BASE_URL = "http://new.qingbiji.cn/";//正式
 
     public final static String WEICHAT_BASE_URL = "https://api.weixin.qq.com";//微信登陆BaseURL
 
@@ -108,6 +108,13 @@ public class URLUtils {
         public static final String UPGRADE = "api/app/upgrade";
 
         /**
+         * 下载路径 说明
+         */
+        @Deprecated
+        public static final String DOWNLOAD = "static/ThinkerNote-Setup.apk";
+
+
+        /**
          * 同步数据
          */
         public static final String SYNCHRONIZE = "api/app/upgrade";
@@ -144,10 +151,16 @@ public class URLUtils {
          * 标签
          */
         public static final String TAGLIST = "api/tags";
+
         /**
          * getNote
          */
-        public static final String NOTE = "api/note";
+        public static final String NOTE = "api/note";//
+
+        /**
+         * getNote
+         */
+        public static final String UPLOAD_PIC = "api/attachment";//
 
         /**
          * 设置默认路径

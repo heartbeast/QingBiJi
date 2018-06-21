@@ -89,7 +89,7 @@ public class HttpUtils {
 
     /**
      * 01 Retrofit构建 默认样式：Retrofit+okhttp
-     *
+     * <p>
      * header+token+无缓存
      */
     public <T> T getDefaultServer(Class<T> clz) {
@@ -102,6 +102,19 @@ public class HttpUtils {
         return (T) https;
     }
 
+    /**
+     * 05 Retrofit构建:Retrofit+okhttp,添加token验证
+     */
+
+    public <T> T getFileServer(Class<T> clz) {
+        if (https == null) {
+            synchronized (HttpUtils.class) {
+                https = getFileBuilder(URLUtils.API_BASE_URL).build().create(clz);
+            }
+        }
+        initCache();//再设置一遍，可以注销
+        return (T) https;
+    }
 
     /**
      * 04 Retrofit构建:Retrofit+okhttp
@@ -117,19 +130,6 @@ public class HttpUtils {
         return (T) https;
     }
 
-    /**
-     * 05 Retrofit构建:Retrofit+okhttp,添加token验证
-     */
-
-    public <T> T getPUTServer(Class<T> clz) {
-        if (https == null) {
-            synchronized (HttpUtils.class) {
-                https = getPUTBuilder(URLUtils.API_BASE_URL).build().create(clz);
-            }
-        }
-        initCache();//再设置一遍，可以注销
-        return (T) https;
-    }
 
     /**
      * 05 Retrofit构建:Retrofit+okhttp,header+token+无缓存
@@ -206,11 +206,11 @@ public class HttpUtils {
     /**
      * 03 put接口使用
      */
-    private Retrofit.Builder getPUTBuilder(String apiUrl) {
+    private Retrofit.Builder getFileBuilder(String apiUrl) {
 
         //retrofit配置
         Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(getDefaultOkhttp());//设置okhttp（重点），不设置走默认的
+        builder.client(getFileOkHttp());//设置okhttp（重点），不设置走默认的
         builder.baseUrl(apiUrl);//设置远程地址
         builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
         builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
@@ -314,6 +314,52 @@ public class HttpUtils {
     }
 
     /**
+     * 处理文件上传专用，（后台处理文件和表单的格式有区别）
+     * @return
+     */
+    private OkHttpClient getFileOkHttp() {
+        //log打印级别
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        try {
+            //具体配置，可用链式结构
+            OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
+            okBuilder.readTimeout(20, TimeUnit.SECONDS);//读超时
+            okBuilder.connectTimeout(10 * 1000, TimeUnit.MILLISECONDS);//链接超时
+            okBuilder.writeTimeout(20, TimeUnit.SECONDS);//写超时
+            okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
+            okBuilder.addInterceptor(new Interceptor() {//设置统一请求头，由后台要求，灵活设置
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request okhttpRequest = chain.request();
+                    TNSettings settings = TNSettings.getInstance();
+                    String myToken = settings.token;//添加你的token
+
+                    Request.Builder okhttpRequst = okhttpRequest.newBuilder()
+                            .addHeader("user-agent", HttpHead.getHeader());
+                    if (myToken != null) {
+                        okhttpRequst.addHeader("session_token", myToken);//TODO token 位置
+                    }
+                    return chain.proceed(okhttpRequst.build());
+                }
+            });
+            okBuilder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    MLog.d("HttpUtils", "hostname: " + hostname);
+                    return true;
+                }
+            });
+
+            return okBuilder.build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
      * 01 缓存
      * <p>
      * 如果服务端没有配合处理cache请求头，会抛出如下504异常,可以自定义cache策略：
@@ -351,51 +397,6 @@ public class HttpUtils {
 
     }
 
-    /**
-     * 03 token验证
-     * 每个接口添加token
-     * 说明 api/login和 api/register不添加token
-     *
-     * @return
-     */
-    private OkHttpClient getTokenOkHttp() {
-        try {
-            //具体配置，可用链式结构
-            OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.readTimeout(20, TimeUnit.SECONDS);
-            okBuilder.connectTimeout(10, TimeUnit.SECONDS);
-            okBuilder.writeTimeout(20, TimeUnit.SECONDS);
-            okBuilder.addInterceptor(new HttpCacheInterceptor());//公共缓存拦截器
-            okBuilder.addInterceptor(getInterceptor());//设置拦截器,打印
-            okBuilder.addInterceptor(new Interceptor() {//网络请求设附带token
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request originalRequest = chain.request();
-                    TNSettings settings = TNSettings.getInstance();
-                    String myToken = settings.token;//添加你的token
-                    if (myToken == null) {
-                        return chain.proceed(originalRequest);
-                    }
-                    Request authorised = originalRequest.newBuilder()
-                            .header("session_token", myToken)//token
-                            .build();
-                    return chain.proceed(authorised);
-                }
-            });
-            okBuilder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    MLog.d("HttpUtils", "hostname: " + hostname);
-                    return true;
-                }
-            });
-
-            return okBuilder.build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
     /**
      * 04 无缓存设置

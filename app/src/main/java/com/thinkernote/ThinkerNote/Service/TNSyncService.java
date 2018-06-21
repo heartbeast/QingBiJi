@@ -119,6 +119,7 @@ public class TNSyncService {
 		}
 
 		TNAction actionPage = TNAction.runAction(TNActionType.GetAllNoteIds);
+
 		JSONArray cloudIds = new JSONArray();
 		if (!(actionPage.outputs.get(0) instanceof String)) {
 			JSONObject outputPage = (JSONObject) actionPage.outputs.get(0);

@@ -21,6 +21,7 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
  */
 public class TNSocketCat {
 	private static final String TAG = "TNSocketCat";
+
 	public static void handle_Folders(TNAction aAction){
 		TNSettings settings = TNSettings.getInstance();
 		TNActionType type = (TNActionType)aAction.inputs.get(3);

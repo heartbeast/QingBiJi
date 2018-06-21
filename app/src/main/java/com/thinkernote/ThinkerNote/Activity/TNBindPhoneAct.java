@@ -251,7 +251,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 
 		TNSettings settings = TNSettings.getInstance();
 
-//		settings.loginname = (String)aAction.inputs.get(0);//TODO 需要测试
+		settings.loginname = mPhone;
 		settings.phone = phone;
 		settings.savePref(false);
 		TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_PHONE, phone, settings.userId);

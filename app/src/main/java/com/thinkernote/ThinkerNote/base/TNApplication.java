@@ -31,10 +31,15 @@ import com.thinkernote.ThinkerNote.http.third.WeichatHttpUtils;
  */
 public class TNApplication extends Application {
 	private static final String TAG = "TNApplication";
+	private static  TNApplication application;
 
+	public static TNApplication getInstance(){
+		return  application;
+	}
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		application = this;
 
 		// 是否使用测试服务器
 		TNOAuth2.useTestServer(false);
@@ -108,7 +113,7 @@ public class TNApplication extends Application {
 	}
 
 	// 检测db错误 /TNDb.java使用
-	public void DbReportError(){
+	public void DbReportError(String error){
 		MLog.i( "DbReportError s" , TNSettings.getInstance().topAct);
 		//TNUtilsUi.showToast("DB ERROR!!");
 		if( TNSettings.getInstance().topAct != null){

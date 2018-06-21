@@ -5,15 +5,25 @@ import com.thinkernote.ThinkerNote.bean.CommonBean;
 import java.io.Serializable;
 
 /**
- *  更新 返回数据的bean
+ *  更新 返回数据的bean sjy 0621
  */
 
 public class MainUpgradeBean extends CommonBean implements Serializable {
+    String update_at;
     String version;
-    String versionCode;
+    int versionCode;
     int size;
     String content;
     String url;
+    String host;
+
+    public String getUpdate_at() {
+        return update_at;
+    }
+
+    public void setUpdate_at(String update_at) {
+        this.update_at = update_at;
+    }
 
     public String getVersion() {
         return version;
@@ -23,11 +33,11 @@ public class MainUpgradeBean extends CommonBean implements Serializable {
         this.version = version;
     }
 
-    public String getVersionCode() {
+    public int getVersionCode() {
         return versionCode;
     }
 
-    public void setVersionCode(String versionCode) {
+    public void setVersionCode(int versionCode) {
         this.versionCode = versionCode;
     }
 
@@ -55,14 +65,24 @@ public class MainUpgradeBean extends CommonBean implements Serializable {
         this.url = url;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     @Override
     public String toString() {
         return "MainUpgradeBean{" +
-                "version='" + version + '\'' +
-                ", versionCode='" + versionCode + '\'' +
+                "update_at='" + update_at + '\'' +
+                ", version='" + version + '\'' +
+                ", versionCode=" + versionCode +
                 ", size=" + size +
                 ", content='" + content + '\'' +
                 ", url='" + url + '\'' +
+                ", host='" + host + '\'' +
                 '}';
     }
 }
