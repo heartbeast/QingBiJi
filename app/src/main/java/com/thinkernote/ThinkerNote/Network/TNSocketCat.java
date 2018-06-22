@@ -22,6 +22,7 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
 public class TNSocketCat {
 	private static final String TAG = "TNSocketCat";
 
+	//TODO
 	public static void handle_Folders(TNAction aAction){
 		TNSettings settings = TNSettings.getInstance();
 		TNActionType type = (TNActionType)aAction.inputs.get(3);
@@ -33,6 +34,7 @@ public class TNSocketCat {
 				if (result == 0) {
 					insertDBCats(outputs, -1);
 				}
+				//该处不会执行
 				if (settings.firstLaunch) {
 					Vector<TNCat> cats = TNDbUtils.getAllCatList(settings.userId);
 					TNCat tempCat = null;

@@ -109,7 +109,7 @@ public class TNOAuth2 {
         //
         while (count > 0) {
             count--;
-            //TODO token
+            //TODO token（该处向每一个接口隐藏的传递了一个参数token）
             json = addUserParams(cmd, json);
             TNHttpEntity tnEntity = null;
             try {

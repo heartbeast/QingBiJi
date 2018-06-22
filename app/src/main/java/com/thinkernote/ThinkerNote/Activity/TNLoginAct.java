@@ -78,7 +78,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     private LoginBean loginBean;
     private ProfileBean profileBean;//登录更新
 
-    // Activity methods
+    // Activity methodsƒ
     //-------------------------------------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -442,7 +442,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
 
         TNSettings settings = TNSettings.getInstance();
         settings.isLogout = false;
-
+        settings.firstLaunch = false;//该数据，只有第三方登录成功才设置
         //
         settings.password = mPassword;
         settings.userId = loginBean.getUser_id();
@@ -512,7 +512,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
 
         //
         settings.isLogout = false;
-        settings.firstLaunch = false;
         settings.savePref(false);
 
         startActivity(TNMainAct.class);

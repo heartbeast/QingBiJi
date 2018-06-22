@@ -434,7 +434,6 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
         settings.savePref(false);
 
         //
-        settings.firstLaunch = false;
         settings.loginname = mType == 1 ? mPhone : mEmail;
         settings.password = mPsw;
         settings.savePref(false);

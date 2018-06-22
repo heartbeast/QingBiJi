@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.DBHelper.CatDbHelper;
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
+import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
@@ -47,11 +50,17 @@ import com.thinkernote.ThinkerNote._constructer.presenter.MainPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.IMainPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -75,10 +84,18 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //
     private IMainPresener presener;
-    private String[] arrayFolderName;//第一次登录，要同步的数据，（1）先调用
-    private String[] arrayTagName;//第一次登录，要同步的数据，（2）后调用
+    private String[] arrayFolderName;//第一次登录，要同步的数据，（1）
+    private String[] arrayTagName;//第一次登录，要同步的数据，（2）
+    private Vector<TNCat> cats;//第一次登录，要同步的数据，（3）
+    private String[] groupWorks;//（3）下第一个数组数据
+    private String[] groupLife;//（3）下第2个数组数据
+    private String[] groupFun;//（3）下第3个数组数据
     private Vector<TNNote> addOldNotes;//（2）正常同步，第一个调用数据
     Vector<TNNoteAtt> oldNotesAtts;//（1）正常同步，第一个调用数据中第一调用的数据
+    //接口返回数据
+
+    private List<List<AllFolderItemBean>> mapList;//递归调用使用的数据集合，size最大是5；//后台需求
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -392,14 +409,60 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
-    //调用图片上传，就触发更新db
-    private void executeSQLUpdata(long attrId) {
+    /**
+     * 调用图片上传，就触发更新db
+     *
+     * @param attrId
+     */
+    private void upDataAttIdSQL(long attrId) {
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().executeSQLUpData(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, -1);
+            TNDb.getInstance().upDataAttIdSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, -1);
             TNDb.setTransactionSuccessful();
         } finally {
             TNDb.endTransaction();
+        }
+    }
+
+    /**
+     * 调用OldNoteAdd接口，就触发更新db
+     */
+    private void upDataNoteLocalIdSQL(OldNoteAddBean oldNoteAddBean, TNNote note) {
+        long id = oldNoteAddBean.getId();
+        TNDb.beginTransaction();
+        try {
+            TNDb.getInstance().upDataNoteLocalIdSQL(TNSQLString.NOTE_UPDATE_NOTEID_BY_NOTELOCALID, id, note.noteLocalId);
+            TNDb.setTransactionSuccessful();
+        } finally {
+            TNDb.endTransaction();
+        }
+    }
+
+    /**
+     * 调用GetFoldersByFolderId接口，就触发插入db
+     */
+    private void insertDBCatsSQL(AllFolderBean allFolderBean, long pCatId) {
+        TNSettings settings = TNSettings.getInstance();
+        CatDbHelper.clearCatsByParentId(pCatId);
+        List<AllFolderItemBean> beans = allFolderBean.getFolders();
+        for (int i = 0; i < beans.size(); i++) {
+            AllFolderItemBean bean = beans.get(i);
+
+            JSONObject tempObj = TNUtils.makeJSON(
+                    "catName", bean.getName(),
+                    "userId", settings.userId,
+                    "trash", 0,
+                    "catId", bean.getId(),
+                    "noteCounts", bean.getCount(),
+                    "catCounts", bean.getFolder_count(),
+                    "deep", bean.getFolder_count() > 0 ? 1 : 0,
+                    "pCatId", pCatId,
+                    "isNew", -1,
+                    "createTime", TNUtils.formatStringToTime(bean.getCreate_at()),
+                    "lastUpdateTime", TNUtils.formatStringToTime(bean.getUpdate_at()),
+                    "strIndex", TNUtils.getPingYinIndex(bean.getName())
+            );
+            CatDbHelper.addOrUpdateCat(tempObj);
         }
     }
 
@@ -415,7 +478,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
-    //-------------------------------------p层调用------------------------------------------
+    //=============================================p层调用======================================================
+
     //检查更新
     private void findUpgrade() {
         presener.pUpgrade("HOME");
@@ -443,6 +507,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             arrayFolderName = new String[]{TNConst.FOLDER_DEFAULT, TNConst.FOLDER_MEMO, TNConst.GROUP_FUN, TNConst.GROUP_WORK, TNConst.GROUP_LIFE};
             arrayTagName = new String[]{TNConst.TAG_IMPORTANT, TNConst.TAG_TODO, TNConst.TAG_GOODSOFT};
 
+
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
@@ -454,13 +519,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * 第一次登录同步
+     * 第一次登录同步(按如下执行顺序调用接口)
      * <p>
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
         presener.folderAdd(position, arraySize, name);
-
     }
 
     /**
@@ -470,8 +534,158 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pTagAdd(int position, int arraySize, String name) {
         presener.tagAdd(position, arraySize, name);
-
     }
+
+    /**
+     * 第一次登录同步
+     * <p>
+     * （一.3）更新 GetFolder
+     */
+    private void syncGetFolder() {
+        presener.pGetFolder();
+    }
+
+    /**
+     * 第一次登录同步 每一次层的调用
+     * <p>
+     * （一.4） GetFoldersByFolderId
+     * list中都要调用接口，串行调用
+     * 接口个数= allFolderItemBeans.size的n个连乘（n最大5）
+     *
+     * @param isAdd 如果mapList.add之后立即执行该方法，为true
+     */
+    private void syncGetFoldersByFolderId(int startPos, boolean isAdd) {
+        if (mapList.size() > 0 && mapList.size() <= 5) {
+            //有1---5，for循环层层内嵌,从最内层（size最大处）开始执行
+            List<AllFolderItemBean> allFolderItemBeans = mapList.get(mapList.size() - 1);
+
+            if (allFolderItemBeans.size() > 0) {
+                if (startPos < allFolderItemBeans.size() - 1) {
+                    //从1层从第一个数据开始
+                    if (isAdd) {
+                        syncGetFoldersByFolderId(0, allFolderItemBeans);
+                    } else {
+                        syncGetFoldersByFolderId(startPos, allFolderItemBeans);
+                    }
+
+                } else {
+                    if (mapList.size() == 1) {
+                        //执行下一个接口
+                        syncTNCat();
+                    } else {
+                        //执行上一层的循环
+                        mapList.remove(mapList.size() - 1);
+                        syncGetFoldersByFolderId(0, false);
+                    }
+                }
+            } else {
+                //执行上一层的循环
+                if (mapList.size() == 1) {
+                    //执行下一个接口
+                    syncTNCat();
+                } else {
+                    mapList.remove(mapList.size() - 1);
+                    syncGetFoldersByFolderId(0, false);
+                }
+            }
+
+        } else {
+            TNUtilsUi.showToast("递归调用数据出错了！");
+        }
+    }
+
+    /**
+     * 具体执行GetFoldersByFolderId的步骤 p层调用
+     */
+
+    private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
+        if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
+            syncGetFoldersByFolderId(startPos + 1, false);
+        } else {
+            presener.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
+        }
+    }
+
+
+    /**
+     * （一.5）更新TNCat
+     * 双层for循环的样式,串行执行接口
+     * 接口个数 = 3*cats.size*groupXXX.size;
+     */
+    private void syncTNCat() {
+        //同步TNCat
+        cats = TNDbUtils.getAllCatList(mSettings.userId);
+        if (cats.size() > 0) {
+            //先执行最外层的数据
+            syncTNCat(0, cats.size());
+        } else {
+            syncProfile();
+        }
+    }
+
+    /**
+     * 更新 postion的TNCat数据
+     *
+     * @param postion
+     */
+    private void syncTNCat(int postion, int catsSize) {
+        if (postion < catsSize - 1) {
+            //获取postion条数据
+            TNCat tempCat = cats.get(postion);
+
+            if (TNConst.GROUP_WORK.equals(tempCat.catName)) {
+                groupWorks = new String[]{TNConst.FOLDER_WORK_NOTE, TNConst.FOLDER_WORK_UNFINISHED, TNConst.FOLDER_WORK_FINISHED};
+            }
+            if (TNConst.GROUP_LIFE.equals(tempCat.catName)) {
+                groupLife = new String[]{TNConst.FOLDER_LIFE_DIARY, TNConst.FOLDER_LIFE_KNOWLEDGE, TNConst.FOLDER_LIFE_PHOTO};
+
+            }
+            if (TNConst.GROUP_FUN.equals(tempCat.catName)) {
+                groupFun = new String[]{TNConst.FOLDER_FUN_TRAVEL, TNConst.FOLDER_FUN_MOVIE, TNConst.FOLDER_FUN_GAME};
+            }
+            //执行顺序:groupWorks-->groupLife-->groupFun
+            if (groupWorks == null && groupLife == null && groupFun == null) {
+                //postion下没有数据，执行下个position
+                syncTNCat(postion + 1, catsSize);
+            } else {
+                if (groupWorks != null) {
+                    //执行顺序:groupWorks-->groupLife-->groupFun
+                    pFirstFolderAdd(0, groupWorks.length, tempCat.catId, postion, 1);//执行第一个
+                } else {
+                    if (groupLife != null) {
+                        //执行顺序:groupWorks-->groupLife-->groupFun
+                        pFirstFolderAdd(0, groupLife.length, tempCat.catId, postion, 2);//执行第2个
+                    } else {
+                        //保险一点，我对这个数据不甚了解 sjy 0622
+                        if (groupFun != null) {
+                            //执行顺序:groupWorks-->groupLife-->groupFun
+                            pFirstFolderAdd(0, groupFun.length, tempCat.catId, postion, 2);//执行第3个
+                        } else {
+                            //postion下没有数据，执行下个position
+                            syncTNCat(postion + 1, catsSize);
+                        }
+
+                    }
+                }
+            }
+        } else {
+            syncProfile();
+        }
+    }
+
+    /**
+     * 具体执行TNCat的步骤 p层调用
+     *
+     * @param workPos
+     * @param workSize
+     * @param catID
+     * @param catPos
+     * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
+     */
+    private void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag) {
+        presener.pFirstFolderAdd(workPos, workSize, catID, catPos, flag);
+    }
+
 
     //-------正常登录同步的p调用-------
 
@@ -494,10 +708,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                     pOldNote(0, addOldNotes.size(), addOldNotes.get(0), false, addOldNotes.get(0).content);
                 }
             } else {
-                syncProfile();
+                syncGetFolder();
             }
         } else {
-            syncProfile();
+            syncGetFolder();
         }
     }
 
@@ -519,7 +733,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * （二.3）正常同步
+     * （二.3）正常同步 （如果没有老数据，不执行(二.1)和(二.2)的接口）
      */
     private void syncProfile() {
         presener.pProfile();
@@ -549,7 +763,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
 
-    //-------------------------------------接口结果回调------------------------------------------
+    //=============================================接口结果回调======================================================
 
     //检查更新
     @Override
@@ -630,6 +844,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //---接口结果回调  第一次登录的同步---
 
+    //1
     @Override
     public void onSyncFolderAddSuccess(Object obj, int position, int arraySize) {
         if (position < arraySize - 1) {//同步该接口的列表数据，
@@ -644,15 +859,17 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncFolderAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
-        if (position < arraySize - 1) {//同步该接口的列表数据，
-            //（有数组，循环调用）
-            pFolderAdd(position + 1, arraySize, arrayFolderName[position + 1]);
-        } else {//同步完成后，再同步其他接口列表数据
-            //（有数组，循环调用）
-            pTagAdd(0, arrayTagName.length, arrayTagName[0]);
-        }
+        //TODO
+//        if (position < arraySize - 1) {//同步该接口的列表数据，
+//            //（有数组，循环调用）
+//            pFolderAdd(position + 1, arraySize, arrayFolderName[position + 1]);
+//        } else {//同步完成后，再同步其他接口列表数据
+//            //（有数组，循环调用）
+//            pTagAdd(0, arrayTagName.length, arrayTagName[0]);
+//        }
     }
 
+    //2
     @Override
     public void onSyncTagAddSuccess(Object obj, int position, int arraySize) {
         if (position < arraySize - 1) {//同步该接口的列表数据，
@@ -670,17 +887,135 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncTagAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
-        if (position + 1 < arraySize) {//同步该接口的列表数据
-            //（有数组，循环调用）
-            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
+
+        //TODO
+//        if (position + 1 < arraySize) {//同步该接口的列表数据
+//            //（有数组，循环调用）
+//            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
+//        } else {
+//            mSettings.firstLaunch = true;
+//            mSettings.savePref(false);
+//            //再调用正常的同步接口
+//            syncNormalLogData();
+//        }
+    }
+
+    //3
+    @Override
+    public void onSyncGetFolderSuccess(Object obj) {
+
+        AllFolderBean allFolderBean = (AllFolderBean) obj;
+        List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
+        mapList.add(allFolderItemBeans);
+        //更新数据库
+        insertDBCatsSQL(allFolderBean, -1);
+
+        //执行下个接口 处理递归
+        syncGetFoldersByFolderId(0, true);
+    }
+
+    @Override
+    public void onSyncGetFolderFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //4
+    @Override
+    public void onSyncGetFoldersByFolderIdSuccess(Object obj, long catID, int startPos, List<AllFolderItemBean> beans) {
+
+        AllFolderBean allFolderBean = (AllFolderBean) obj;
+        List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
+        mapList.add(allFolderItemBeans);
+
+        insertDBCatsSQL(allFolderBean, catID);
+
+        //执行下个position循环
+        syncGetFoldersByFolderId(startPos, false);
+    }
+
+    @Override
+    public void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long catID, int position, List<AllFolderItemBean> beans) {
+
+    }
+
+    //6
+    @Override
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
+        if (catPos < cats.size() - 1) {
+            if (flag == 1) {//groupWorks
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID, catPos, 1);//继续执行第1个
+                } else {//groupWorks执行完，执行groupLife
+                    pFirstFolderAdd(0, groupLife.length, catID, catPos, 2);//执行第2个
+                }
+            } else if (flag == 2) {//groupLife
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupLife.length, catID, catPos, 2);//继续执行第2个
+                } else {//groupLife执行完，执行groupFun
+                    pFirstFolderAdd(0, groupFun.length, catID, catPos, 3);//执行第3个
+                }
+            } else if (flag == 3) {//groupFun
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupFun.length, catID, catPos, 3);//继续执行第3个
+                } else {//groupFun执行完，执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
+                }
+            }
         } else {
-            mSettings.firstLaunch = true;
-            mSettings.savePref(false);
-            //再调用正常的同步接口
-            syncNormalLogData();
+
+            //执行下一个接口
+            syncProfile();
         }
     }
 
+    @Override
+    public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag) {
+        MLog.e(msg);
+    }
+
+    //7
+    @Override
+    public void onSyncProfileSuccess(Object obj) {
+        ProfileBean profileBean = (ProfileBean) obj;
+        //
+        TNSettings settings = TNSettings.getInstance();
+        long userId = TNDbUtils.getUserId(settings.username);
+
+        settings.phone = profileBean.getPhone();
+        settings.email = profileBean.getEmail();
+        settings.defaultCatId = profileBean.getDefault_folder();
+
+        if (userId != settings.userId) {
+            //清空user表
+            UserDbHelper.clearUsers();
+        }
+
+        JSONObject user = TNUtils.makeJSON(
+                "username", settings.username,
+                "password", settings.password,
+                "userEmail", settings.email,
+                "phone", settings.phone,
+                "userId", settings.userId,
+                "emailVerify", profileBean.getEmailverify(),
+                "totalSpace", profileBean.getTotal_space(),
+                "usedSpace", profileBean.getUsed_space());
+
+        //更新user表
+        UserDbHelper.addOrUpdateUser(user);
+
+        //
+        settings.isLogout = false;
+        settings.firstLaunch = false;
+        settings.savePref(false);
+        //执行下个接口 TODO
+
+    }
+
+    @Override
+    public void onSyncProfileAddFailed(String msg, Exception e) {
+        //
+        MLog.e(msg);
+    }
     //----接口结果回调  正常同步---
 
     //OldNotePic
@@ -688,8 +1023,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
         String content = addOldNotes.get(notePos).content;
         OldNotePicBean oldNotePicBean = (OldNotePicBean) obj;
-        //更新数据库
-        executeSQLUpdata(oldNotePicBean.getId());
+        //更新图片 数据库
+        upDataAttIdSQL(oldNotePicBean.getId());
 
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
@@ -702,52 +1037,63 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 String s1 = String.format("<tn-media hash=\"%s\" />", digest);
                 String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
                 content = content.replaceAll(s1, s2);
-                pOldNote(notePos, noteArrySize, addOldNotes.get(notePos), false, content);
+
+                //
+                TNNote note = addOldNotes.get(notePos);
+                if (note.catId == -1) {
+                    note.catId = TNSettings.getInstance().defaultCatId;
+                }
+                pOldNote(notePos, noteArrySize, note, false, content);
             }
         } else {
-            pOldNote(notePos, noteArrySize, addOldNotes.get(notePos), false, content);
+
+            //
+            TNNote note = addOldNotes.get(notePos);
+            if (note.catId == -1) {
+                note.catId = TNSettings.getInstance().defaultCatId;
+            }
+            pOldNote(notePos, noteArrySize, note, false, content);
         }
     }
 
     @Override
     public void onSyncOldNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
-        //TODO 考虑如何不补充
-        TNUtilsUi.showToast(msg);
+        MLog.e(msg);
     }
 
     //OldNoteAdd
     @Override
     public void onSyncOldNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+        OldNoteAddBean oldNoteAddBean = (OldNoteAddBean) obj;
+
+        if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
+            upDataNoteLocalIdSQL(oldNoteAddBean, addOldNotes.get(position));
+        }
+
         if (position < arraySize - 1) {
             pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
         } else {
             mSettings.syncOldDb = true;
             mSettings.savePref(false);
             //执行下个接口
-            syncProfile();
+            syncGetFolder();
         }
     }
 
     @Override
     public void onSyncOldNoteAddFailed(String msg, Exception e, int position, int arraySize) {
-        if (position < arraySize - 1) {
-            pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
-        } else {
-            mSettings.syncOldDb = false;
-            mSettings.savePref(false);
-            //执行下个接口
-            syncProfile();
-        }
+        MLog.e(msg);
+
+        //TODO
+//        if (position < arraySize - 1) {
+//            pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
+//        } else {
+//            mSettings.syncOldDb = false;
+//            mSettings.savePref(false);
+//            //执行下个接口
+//            syncProfile();
+//        }
     }
 
-    @Override
-    public void onSyncProfileSuccess(Object obj) {
-
-    }
-
-    @Override
-    public void onSyncProfileAddFailed(String msg, Exception e) {
-
-    }
 
 }

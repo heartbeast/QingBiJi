@@ -37,7 +37,6 @@ public class TNSocketNote {
 				updateNote(obj);
 			}
 		}
-		
 	}
 	
 	public static void handle_TrashNotes(TNAction aAction) {

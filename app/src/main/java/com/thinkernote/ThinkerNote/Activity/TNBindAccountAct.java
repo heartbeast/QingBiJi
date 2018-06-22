@@ -289,7 +289,6 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
         //
         settings.isLogout = false;
         //
-        settings.firstLaunch = false;
         settings.savePref(false);
         startActivity(TNMainAct.class);
         finish();

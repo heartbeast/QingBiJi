@@ -41,10 +41,12 @@ public class TNSyncService {
 		
 		return singleton;
 	}
-	
+
+	//TODO
 	public void Synchronize(TNAction aAction) {
 		TNSettings settings = TNSettings.getInstance();
 
+		//sjy 0621
 		if (settings.firstLaunch) {
 			TNAction.runAction(TNActionType.FolderAdd, -1L, TNConst.FOLDER_DEFAULT);
 			TNAction.runAction(TNActionType.FolderAdd, -1L, TNConst.FOLDER_MEMO);
@@ -58,6 +60,7 @@ public class TNSyncService {
 			settings.savePref(false);
 		}
 
+		//sjy-0621
 		if (!settings.syncOldDb) {
 			//add老数据库的笔记
 			Vector<TNNote> addOldNotes = TNDbUtils.getOldDbNotesByUserId(TNSettings.getInstance().userId);
@@ -68,7 +71,10 @@ public class TNSyncService {
 			settings.savePref(false);
 		}
 
+		//sjy
 		TNAction.runAction(TNActionType.Profile);
+
+		//
 		Vector<TNCat> cats = TNDbUtils.getAllCatList(settings.userId);
 		if (aAction.inputs.get(0) == "home" || aAction.inputs.get(0) == "Folder"  || cats.size() == 0) {
 			TNAction.runAction(TNActionType.GetAllFolders);

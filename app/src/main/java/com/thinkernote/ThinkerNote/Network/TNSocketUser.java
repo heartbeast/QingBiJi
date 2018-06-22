@@ -108,7 +108,8 @@ public class TNSocketUser {
 		
 		settings.savePref(false);
 	}
-	
+
+	//==================================以下未使用==================================
 	public static void initCats(TNAction aAction) {
 		aAction.runChildAction(TNActionType.FolderAdd, -1L, TNConst.FOLDER_MEMO);
 		aAction.runChildAction(TNActionType.FolderAdd, -1L, TNConst.GROUP_FUN);

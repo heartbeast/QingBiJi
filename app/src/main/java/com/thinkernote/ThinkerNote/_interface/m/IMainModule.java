@@ -11,6 +11,14 @@ import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 public interface IMainModule {
     void mUpgrade(OnMainListener onMainListener);
 
+    void GetFolder(OnMainListener onMainListener);
+
+    void mGetFoldersByFolderId(OnMainListener onMainListenerl, long id, int position, int size);
+
+    void mGetFoldersByFolderId2(OnMainListener onMainListener, long id, int outPos, int outSize, int position, int size);
+
+    void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID, int catPos, int flag);
+
     void mfolderAdd(OnMainListener listener, int position, int arraySize, String name);
 
     void mTagAdd(OnMainListener listener, int position, int arraySize, String name);

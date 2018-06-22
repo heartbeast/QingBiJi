@@ -9,8 +9,10 @@ import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
+import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 
@@ -361,7 +363,7 @@ public interface MyHttpService {
      */
     @FormUrlEncoded
     @POST(URLUtils.Note.NOTE)
-    Observable<CommonBean> syncOldNoteAdd(
+    Observable<OldNoteAddBean> syncOldNoteAdd(
             @Field("title") String title
             , @Field("content") String content
             , @Field("tags") String tags
@@ -373,6 +375,25 @@ public interface MyHttpService {
             , @Field("address") String address
             , @Field("radius") int radius
             , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步获取folder get形式
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.FOLDER)
+    Observable<AllFolderBean> syncGetFolder(
+            @Query("session_token") String session_token);
+
+    /**
+     * 同步获取GetFolderByFodlerId
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.FOLDER)
+    Observable<AllFolderBean> syncGetFolderByFodlerId(@Query("folder_id") long folder_id
+            , @Query("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------

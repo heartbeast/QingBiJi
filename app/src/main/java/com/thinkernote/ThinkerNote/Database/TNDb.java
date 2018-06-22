@@ -213,8 +213,9 @@ public class TNDb extends SQLiteOpenHelper {
 
     /**
      * 更新 禁用反射 sjy 0621
+     * 更新图片
      */
-    public void executeSQLUpData(String sql, int num, long attId, int attLocalID) {
+    public void upDataAttIdSQL(String sql, int num, long attId, int attLocalID) {
 
         try {
             String[] args = new String[]{num + "", attId + "", attLocalID + ""};
@@ -225,6 +226,24 @@ public class TNDb extends SQLiteOpenHelper {
             TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
         }
     }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     *
+     * localId
+     */
+    public void upDataNoteLocalIdSQL(String sql, long attId, long localId) {
+
+        try {
+            String[] args = new String[]{attId + "", attId + "", localId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
 
     public static void beginTransaction() {
         getInstance().db.beginTransaction();
