@@ -268,6 +268,7 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
+
     //02-02 OldNotePic
     @Override
     public void mUploadOldNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
@@ -275,7 +276,7 @@ public class MainModuleImpl implements IMainModule {
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
         MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
 
         TNSettings settings = TNSettings.getInstance();
@@ -393,12 +394,12 @@ public class MainModuleImpl implements IMainModule {
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
         MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
 
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncOldNotePic(part, settings.token)//接口方法
+                .syncNewNotePic(part, settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -434,7 +435,7 @@ public class MainModuleImpl implements IMainModule {
     public void mNewNote(final OnMainListener listener, final int position, final int arraySize, TNNote note, final boolean isNewDb, String content) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncOldNoteAdd(note.title, content, note.tagStr, note.catId, note.createTime, note.lastUpdate, note.lbsLongitude, note.lbsLatitude, note.lbsAddress, note.lbsRadius, settings.token)//接口方法
+                .syncNewNoteAdd(note.title, content, note.tagStr, note.catId, note.createTime, note.lastUpdate, note.lbsLongitude, note.lbsLatitude, note.lbsAddress, note.lbsRadius, settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -465,4 +466,154 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
+    //2-7-1
+    @Override
+    public void mRecoveryNote(final OnMainListener listener, final long noteID, final int position, int arrySize) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncRecoveryNote(noteID, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNote--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNote 异常onError:" + e.toString());
+                        listener.onSyncRecoveryFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mRecoveryNote-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncRecoverySuccess(bean, noteID, position);
+                        } else {
+                            listener.onSyncRecoveryFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
+
+    //2-7-2
+    @Override
+    public void mRecoveryNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
+        String filename = tnNoteAtt.attName;
+        String filePath = tnNoteAtt.path;
+        long fileId = tnNoteAtt.attId;
+
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
+        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
+
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncRecoveryNotePic(part, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNotePic--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNotePic 异常onError:" + e.toString());
+                        listener.onSyncNewNotePicFailed("异常", new Exception("接口异常！"), picPos, picArrySize, notePos, noteArrySize);
+                    }
+
+                    @Override
+                    public void onNext(OldNotePicBean bean) {
+                        MLog.d(TAG, "mRecoveryNotePic-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncNewNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize);
+                        } else {
+                            listener.onSyncNewNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
+                        }
+                    }
+
+                });
+    }
+
+    //2-7-3
+    @Override
+    public void mRecoveryNoteAdd(final OnMainListener listener, final int position, final int arraySize, TNNote note, final boolean isNewDb, String content) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncRecoveryNoteAdd(note.title, content, note.tagStr, note.catId, note.createTime, note.lastUpdate, note.lbsLongitude, note.lbsLatitude, note.lbsAddress, note.lbsRadius, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<OldNoteAddBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        listener.onSyncRecoveryNoteAddFailed("异常", new Exception("接口异常！"), position, arraySize);
+                    }
+
+                    @Override
+                    public void onNext(OldNoteAddBean bean) {
+                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncRecoveryNoteAddSuccess(bean, position, arraySize, isNewDb);
+                        } else {
+                            listener.onSyncRecoveryNoteAddFailed(bean.getMessage(), null, position, arraySize);
+                        }
+                    }
+
+                });
+    }
+
+    //2-8
+    @Override
+    public void mDeleteNote(final OnMainListener listener, final long noteId, final int poistion) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncDeleteNote(noteId,settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        listener.onSyncDeleteNoteFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncDeleteNoteSuccess(bean,noteId,poistion);
+                        } else {
+                            listener.onSyncDeleteNoteFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
 }

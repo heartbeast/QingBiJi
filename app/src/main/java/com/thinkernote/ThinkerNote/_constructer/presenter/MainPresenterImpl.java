@@ -122,6 +122,29 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         module.mNewNote(this, position, arraySize, tnNote, isNewDb, content);
     }
 
+    //2-7-1
+    @Override
+    public void pRecoveryNote(long noteID, int position, int arrySize) {
+        module.mRecoveryNote(this, noteID, position, arrySize);
+    }
+
+    //2-7-2
+    @Override
+    public void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        module.mRecoveryNotePic(this, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+    }
+
+    //2-7-3
+    @Override
+    public void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content) {
+        module.mRecoveryNoteAdd(this, position, arraySize, tnNote, isNewDb, content);
+    }
+
+    //2-8
+    @Override
+    public void pDeleteNote(long noteId, int position) {
+
+    }
     //==========================接口结果回调==============================
 
     @Override
@@ -259,6 +282,51 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
     @Override
     public void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         onView.onSyncNewNoteAddFailed(msg, e, position, arraySize);
+    }
+
+    //2-7-1
+    @Override
+    public void onSyncRecoverySuccess(Object obj, long noteId, int position) {
+        onView.onSyncRecoverySuccess(obj, noteId, position);
+    }
+
+    @Override
+    public void onSyncRecoveryFailed(String msg, Exception e) {
+        onView.onSyncRecoveryFailed(msg, e);
+    }
+
+    //2-7-2
+    @Override
+    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
+        onView.onSyncRecoveryNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
+    }
+
+    @Override
+    public void onSyncRecoveryNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
+        onView.onSyncRecoveryNotePicFailed(msg, e, picPos, picArry, notePos, noteArry);
+
+    }
+
+    //2-7-3
+    @Override
+    public void onSyncRecoveryNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+        onView.onSyncRecoveryNoteAddSuccess(obj, position, arraySize, isNewDb);
+    }
+
+    @Override
+    public void onSyncRecoveryNoteAddFailed(String msg, Exception e, int position, int arraySize) {
+        onView.onSyncRecoveryNoteAddFailed(msg, e, position, arraySize);
+    }
+
+    //2-8
+    @Override
+    public void onSyncDeleteNoteSuccess(Object obj, long noteId, int position) {
+        onView.onSyncDeleteNoteSuccess(obj, noteId, position);
+    }
+
+    @Override
+    public void onSyncDeleteNoteFailed(String msg, Exception e) {
+        onView.onSyncDeleteNoteFailed(msg, e);
     }
 
 

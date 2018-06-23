@@ -24,6 +24,8 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -40,6 +42,8 @@ import rx.Observable;
  * <p>
  * Observable引用：import rx.Observable
  * 接口说明：所有的接口都有固定参数 token(除 登录/注册两个接口);
+ *
+ * @PUT 与@POST差别不大，只是网络header需要单独设置
  */
 
 public interface MyHttpService {
@@ -356,6 +360,28 @@ public interface MyHttpService {
             @Part MultipartBody.Part file
             , @Part("session_token") String session_token);
 
+    /**
+     * 同步 上传图片
+     *
+     * @return
+     */
+    @Multipart
+    @POST(URLUtils.Note.UPLOAD_PIC)
+    Observable<OldNotePicBean> syncNewNotePic(
+            @Part MultipartBody.Part file
+            , @Part("session_token") String session_token);
+
+    /**
+     * 同步 上传图片
+     *
+     * @return
+     */
+    @Multipart
+    @POST(URLUtils.Note.UPLOAD_PIC)
+    Observable<OldNotePicBean> syncRecoveryNotePic(
+            @Part MultipartBody.Part file
+            , @Part("session_token") String session_token);
+
 
     /**
      * 同步oldNoteAdd
@@ -375,6 +401,58 @@ public interface MyHttpService {
             , @Field("latitude") int latitude
             , @Field("address") String address
             , @Field("radius") int radius
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步NewNote
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.NOTE)
+    Observable<OldNoteAddBean> syncNewNoteAdd(
+            @Field("title") String title
+            , @Field("content") String content
+            , @Field("tags") String tags
+            , @Field("folder_id") long folder_id
+            , @Field("create_time") int create_time
+            , @Field("update_time") int update_time
+            , @Field("longitude") int longitude
+            , @Field("latitude") int latitude
+            , @Field("address") String address
+            , @Field("radius") int radius
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步syncRecoveryNoteAdd
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Note.NOTE)
+    Observable<OldNoteAddBean> syncRecoveryNoteAdd(
+            @Field("title") String title
+            , @Field("content") String content
+            , @Field("tags") String tags
+            , @Field("folder_id") long folder_id
+            , @Field("create_time") int create_time
+            , @Field("update_time") int update_time
+            , @Field("longitude") int longitude
+            , @Field("latitude") int latitude
+            , @Field("address") String address
+            , @Field("radius") int radius
+            , @Field("session_token") String session_token);
+
+    /**
+     * 同步syncRecoveryNote
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Note.RECOVERY_NOTE)
+    Observable<CommonBean> syncRecoveryNote(@Field("note_id") long note_id
             , @Field("session_token") String session_token);
 
 
@@ -404,6 +482,20 @@ public interface MyHttpService {
      */
     @GET(URLUtils.Note.TAGLIST)
     Observable<TagListBean> syncTagList(@Query("session_token") String session_token);
+
+
+    /**
+     * 同步 DeleteNote
+     * 使用 delete请求
+     *
+     * @return
+     */
+    @Headers("Content-Type:application/x-www-form-urlencoded")
+    @HTTP(method = "DELETE", path = URLUtils.Note.NOTE, hasBody = true)
+    @FormUrlEncoded
+    Observable<CommonBean> syncDeleteNote(
+            @Field("note_id") long note_id
+            , @Field("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------

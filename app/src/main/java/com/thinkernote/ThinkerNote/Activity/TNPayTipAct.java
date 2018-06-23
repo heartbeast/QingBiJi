@@ -1,15 +1,10 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.util.Map;
-
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -20,25 +15,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
-import com.tencent.mm.opensdk.modelpay.PayReq;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.R;
+import com.tencent.mm.sdk.modelpay.PayReq;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
-import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
+import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.PayResult;
 import com.thinkernote.ThinkerNote._constructer.presenter.PayPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.IPayPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnPayListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
+
+import java.util.Map;
 
 /**
  * 设置--打赏（支付宝） sjy 0615

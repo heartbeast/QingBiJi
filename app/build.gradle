@@ -41,15 +41,18 @@ dependencies {
     implementation files('libs/android_api.jar')
     implementation files('libs/baidu_locSDK_2.3.jar')
     implementation files('libs/httpmime-4.1.jar')
-    //    implementation files('libs/libammsdk.jar')
+
     implementation files('libs/Msc.jar')
     implementation files('libs/mta-sdk-1.6.2.jar')
     implementation files('libs/open_sdk.jar')
     implementation files('libs/pinyin4j-2.5.0.jar')
     implementation files('libs/weibo_sdk.jar')
     implementation files('libs/commons-lang3-3.1.jar')
-    //TODO
+    //01 说明：微信功能jar，和02相同
+    implementation files('libs/libammsdk.jar')
+    //02 说明：微信功能依赖，和01相同（但是maven库不可用了 sjy  0623）
     //    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+
     //
     //    implementation 'jp.wasabeef:richeditor-android:1.2.2'
     //---------------------------------使用最新网络框架--开始（不可缺少的依赖）----------------------------------------

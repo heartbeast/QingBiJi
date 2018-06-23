@@ -1,30 +1,5 @@
 package com.thinkernote.ThinkerNote.General;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.json.JSONObject;
-
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXTextObject;
-import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tencent.open.Util;
-import com.tencent.record.util.Utils;
-import com.tencent.record.util.Utils$Bit;
-import com.tencent.tauth.Constants;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
-import com.thinkernote.ThinkerNote.Data.TNNote;
-import com.thinkernote.ThinkerNote.Utils.MLog;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -40,8 +15,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +35,27 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.tauth.Constants;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.R;
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class TNUtilsUi {
 	private static final String TAG = "TNUtilsUi";

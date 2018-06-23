@@ -158,6 +158,11 @@ public class URLUtils {
         public static final String NOTE = "api/note";//
 
         /**
+         * recovery
+         */
+        public static final String RECOVERY_NOTE = "api/note/trash";//
+
+        /**
          * getNote
          */
         public static final String UPLOAD_PIC = "api/attachment";//

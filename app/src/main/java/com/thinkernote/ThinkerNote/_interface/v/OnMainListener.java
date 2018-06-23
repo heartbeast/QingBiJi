@@ -39,36 +39,56 @@ public interface OnMainListener {
     //正常同步2
 
 
-    //1
+    //2-1
     void onSyncProfileSuccess(Object obj);
 
     void onSyncProfileAddFailed(String msg, Exception e);
 
-    //2
+    //2-2
     void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
 
     void onSyncOldNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
-    //3
+    //2-3
     void onSyncOldNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb);
 
     void onSyncOldNoteAddFailed(String msg, Exception e, int position, int arraySize);
 
 
-    //4
+    //2-4
     void onSyncTagListSuccess(Object obj);
 
     void onSyncTagListAddFailed(String msg, Exception e);
 
-    //5
+    //2-5
     void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
 
     void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
-    //6
+    //2-6
     void onSyncNewNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb);
 
     void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize);
+
+    //2-7
+    void onSyncRecoverySuccess(Object obj, long noteId, int position);
+
+    void onSyncRecoveryFailed(String msg, Exception e);
+
+    //2-7
+    void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
+
+    void onSyncRecoveryNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
+
+    //2-7
+    void onSyncRecoveryNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb);
+
+    void onSyncRecoveryNoteAddFailed(String msg, Exception e, int position, int arraySize);
+
+    //2-8
+    void onSyncDeleteNoteSuccess(Object obj, long noteId, int position);
+
+    void onSyncDeleteNoteFailed(String msg, Exception e);
 
 
 }

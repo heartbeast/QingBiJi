@@ -37,4 +37,13 @@ public interface IMainPresener {
     void pDownload(String url, Dialog dialog);
 
     void pProfile();
+
+    void pRecoveryNote(long noteID, int position, int arrySize);
+
+    void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
+
+    void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
+
+    void pDeleteNote(long noteId, int position);
+
 }

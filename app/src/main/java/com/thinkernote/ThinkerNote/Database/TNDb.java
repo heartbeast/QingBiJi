@@ -210,6 +210,7 @@ public class TNDb extends SQLiteOpenHelper {
             aAction.result = TNActionResult.Finished;
         }
     }
+//==================================sjy 更改 开始======================================
 
     /**
      * 更新 禁用反射 sjy 0621
@@ -229,7 +230,39 @@ public class TNDb extends SQLiteOpenHelper {
 
     /**
      * 更新 禁用反射 sjy 0621
-     *
+     * 更新Recovery
+     */
+    public void upDataRecoverySQL(String sql, int trash, int syncState, long currentTime, long noteId) {
+
+        try {
+            String[] args = new String[]{trash + "", syncState + "", currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * 更新Recovery
+     */
+    public void upDataRecoveryLastTimeSQL(String sql, long currentTime, long noteId) {
+
+        try {
+            String[] args = new String[]{currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * <p>
      * localId
      */
     public void upDataNoteLocalIdSQL(String sql, long attId, long localId) {
@@ -244,6 +277,70 @@ public class TNDb extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * 更新 禁用反射 sjy 0621
+     * <p>
+     * delete
+     */
+    public void upDataDeleteNoteSQL(String sql, int trash, int state, long currentTime, long localId) {
+        try {
+            String[] args = new String[]{trash + "", state + "", currentTime + "", localId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * 更新delete
+     */
+    public void upDatadeleteLastTimeSQL(String sql, long currentTime, long noteId) {
+        try {
+            String[] args = new String[]{currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * <p>
+     * DeleteLocal
+     */
+    public void upDataDeleteLocalNoteSQL(String sql, int trash, int state, long currentTime, long localId) {
+        try {
+            String[] args = new String[]{trash + "", state + "", currentTime + "", localId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * 更新delete
+     */
+    public void upDatadeleteLocalLastTimeSQL(String sql, long currentTime, long noteId) {
+        try {
+            String[] args = new String[]{currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+
+//==================================sjy 更改 结束======================================
 
     public static void beginTransaction() {
         getInstance().db.beginTransaction();

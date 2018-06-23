@@ -64,8 +64,11 @@ import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 主界面
@@ -78,7 +81,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public static final int FISRTLAUCh_FOLDER_ADD = 11;//1
 
     //正常登录的同步常量
-    public static final int HANDLER_NOTEADD = 101;//1
+    public static final int DELETE_LOCALNOTE = 101;//1
 
     //==================================变量=======================================
     private long mLastClickBackTime = 0;
@@ -89,22 +92,27 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //
     private IMainPresener presener;
     //
-    private String[] arrayFolderName;//第一次登录，要同步的数据，（1）
-    private String[] arrayTagName;//第一次登录，要同步的数据，（2）
+    private String[] arrayFolderName;//第一次登录，要同步的数据，（1-1）
+    private String[] arrayTagName;//第一次登录，要同步的数据，（1-2）
     //
-    private Vector<TNCat> cats;//第一次登录，要同步的数据，（3）
+    private Vector<TNCat> cats;//第一次登录，要同步的数据，（1-3）
     private String[] groupWorks;//（3）下第一个数组数据
     private String[] groupLife;//（3）下第2个数组数据
     private String[] groupFun;//（3）下第3个数组数据
     //
-    private Vector<TNNote> addOldNotes;//（2）正常同步，第一个调用数据
-    private Vector<TNNoteAtt> oldNotesAtts;//（3）正常同步，第一个调用数据中第一调用的数据
+    private Vector<TNNote> addOldNotes;//（2-2）正常同步，第一个调用数据
+    //    private Vector<TNNoteAtt> oldNotesAtts;//（2-3）正常同步，第一个调用数据中第一调用的数据 不可使用全局，易错
     //
-    private Vector<TNNote> addNewNotes;//（5）正常同步，第5个调用数据
-    private Vector<TNNoteAtt> newNotesAtts;//（5）正常同步，第5个调用数据中第一调用的数据
+    private Vector<TNNote> addNewNotes;//（2-5）正常同步，第5个调用数据
+//    private Vector<TNNoteAtt> newNotesAtts;//（2-5）正常同步，第5个调用数据中第一调用的数据 不可使用全局，易错
+
+    private Vector<TNNote> recoveryNotes;//(2-7)正常同步，第7个调用数据
+//    Vector<TNNoteAtt> recoveryNotesAtts;//(2-7)正常同步，第7个调用数据中第一调用的数据 不可使用全局，易错
+
+    Vector<TNNote> deleteNotes;//(2-8)正常同步，第8个调用数据
 
     //接口返回数据
-    private List<List<AllFolderItemBean>> mapList;//递归调用使用的数据集合，size最大是5；//后台需求
+    private List<List<AllFolderItemBean>> mapList = new ArrayList<>();//递归调用使用的数据集合，size最大是5；//后台需求
 
 
     @Override
@@ -419,6 +427,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
+    //-------------------------------------数据库操作------------------------------------------
+
     /**
      * 调用图片上传，就触发更新db
      *
@@ -476,6 +486,37 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
+    /**
+     * 调用recovery接口(2-7-1)，就触发更新db
+     */
+    private void recoveryNoteSQL(long noteId) {
+
+        TNNote note = TNDbUtils.getNoteByNoteId(noteId);
+        TNDb.beginTransaction();
+        try {
+            TNDb.getInstance().upDataRecoverySQL(TNSQLString.NOTE_SET_TRASH, 0, 2, System.currentTimeMillis() / 1000, note.noteLocalId);
+            TNDb.getInstance().upDataRecoveryLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+
+            TNDb.setTransactionSuccessful();
+        } finally {
+            TNDb.endTransaction();
+        }
+    }
+
+    private void updataDeleteNoteSQL(long noteId) {
+
+        TNNote note = TNDbUtils.getNoteByNoteId(noteId);
+        TNDb.beginTransaction();
+        try {
+            TNDb.getInstance().upDataDeleteNoteSQL(TNSQLString.NOTE_SET_TRASH, 2, 1, System.currentTimeMillis() / 1000, note.noteLocalId);
+            TNDb.getInstance().upDatadeleteLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+
+            TNDb.setTransactionSuccessful();
+        } finally {
+            TNDb.endTransaction();
+        }
+    }
+
     //-------------------------------------handler处理同步------------------------------------------
 
 
@@ -483,7 +524,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     protected void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch (msg.what) {
-            case FISRTLAUCh_FOLDER_ADD://
+            case DELETE_LOCALNOTE://2-8-2的调用
+                //执行下一个position/执行下一个接口
+                pDelete(((int) msg.obj + 1));
                 break;
         }
     }
@@ -630,7 +673,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * 更新 postion的TNCat数据
+     * （一.5）更新 postion的TNCat数据
      *
      * @param postion
      */
@@ -682,7 +725,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * 具体执行TNCat的步骤 p层调用
+     * （一.5）具体执行TNCat的步骤 p层调用
      *
      * @param workPos
      * @param workSize
@@ -716,7 +759,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             if (addOldNotes.size() > 0) {
                 //先 上传数组的第一个
                 TNNote tnNote = addOldNotes.get(0);
-                oldNotesAtts = tnNote.atts;
+                Vector<TNNoteAtt> oldNotesAtts = tnNote.atts;
                 if (oldNotesAtts.size() > 0) {//有图，先上传图片
                     pUploadOldNotePic(0, oldNotesAtts.size(), 0, addOldNotes.size(), oldNotesAtts.get(0));
                 } else {//如果没有图片，就执行OldNote
@@ -765,6 +808,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     /**
      * (二.5+二.6)正常同步 pAddNewNote
      * 说明：同(二.2+二.3)的执行顺序，先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片，如此循环
+     * 接口个数：addNewNotes.size * addNewNotes.size
      */
 
     private void pAddNewNote() {
@@ -773,7 +817,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         if (addNewNotes.size() > 0) {
             //先 上传数组的第一个
             TNNote tnNote = addNewNotes.get(0);
-            newNotesAtts = tnNote.atts;
+            Vector<TNNoteAtt> newNotesAtts = tnNote.atts;
             if (newNotesAtts.size() > 0) {//有图，先上传图片
                 pNewNotePic(0, newNotesAtts.size(), 0, addNewNotes.size(), newNotesAtts.get(0));
             } else {//如果没有图片，就执行OldNote
@@ -781,7 +825,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
         } else {
             //下个执行接口
-            pGetTagList();
+            recoveryNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 7);
+            recoveryNote(0);
         }
     }
 
@@ -799,13 +844,120 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void pNewNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+
         presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
     /**
+     * (二.7)正常同步 recoveryNote
+     * 从0开始执行
+     * 接口个数：如果走NoteRecovery:recoveryNotes.size /如果走NoteAdd：recoveryNotes.size * recoveryNotesattrs.size
+     * 说明：同(二.7-2+二.7-3)的执行顺序，先处理recoveryNotes的图片，处理完就上传recoveryNotes的文本，然后再处理position+1的图片，如此循环
+     *
+     * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
-    private void a() {
+    private void recoveryNote(int position) {
+        if (position < recoveryNotes.size() && position >= 0) {
+            if (recoveryNotes.get(position).noteId != -1) {
+                //循环执行
+                pRecoveryNote(recoveryNotes.get(position).noteId, position, recoveryNotes.size());
+            } else {
+                Vector<TNNoteAtt> recoveryNotesAtts = recoveryNotes.get(position).atts;
+                if (recoveryNotesAtts.size() > 0) {//有图，先上传图片
+                    pRecoveryNotePic(0, recoveryNotesAtts.size(), position, recoveryNotes.size(), recoveryNotesAtts.get(0));
+                } else {//如果没有图片，就执行RecoveryNoteAdd
+                    pRecoveryNoteAdd(0, recoveryNotes.size(), recoveryNotes.get(position), true, recoveryNotes.get(position).content);
+                }
+            }
+        } else {
+
+            //执行下一个接口
+            deleteNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 6);
+            pDelete(0);
+        }
+
+    }
+
+    /**
+     * (二.7)01
+     */
+    private void pRecoveryNote(long noteID, int position, int arrySize) {
+        presener.pRecoveryNote(noteID, position, arrySize);
+    }
+
+    /**
+     * (二.7)02
+     */
+    private void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        presener.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+    }
+
+    /**
+     * (二.7)03
+     */
+    private void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        presener.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
+    }
+
+
+    /**
+     * (二.8)
+     *
+     * @param position
+     */
+    private void pDelete(int position) {
+
+        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+            if (deleteNotes.get(position).noteId != -1) {
+                pNoteDelete(deleteNotes.get(position).noteId, position);
+            } else {
+                //不调接口
+                pNoteLocalDelete(position, deleteNotes.get(position).noteLocalId);
+            }
+        } else {
+            //TODO 下一个接口
+
+        }
+    }
+
+    /**
+     * (二.8)
+     */
+    private void pNoteDelete(long noteId, int postion) {
+        presener.pDeleteNote(noteId, postion);
+    }
+
+    /**
+     * (二.8)删除本地数据 （不调接口）
+     */
+    private void pNoteLocalDelete(final int position, final long noteLocalId) {
+
+        //使用异步操作，完成后，执行下一个 position或接口
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    //
+                    TNDb.getInstance().upDataDeleteLocalNoteSQL(TNSQLString.NOTE_SET_TRASH, 2, 6, System.currentTimeMillis() / 1000, noteLocalId);
+                    //
+                    TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+                    TNDb.getInstance().upDatadeleteLocalLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+
+                //
+                Message msg = Message.obtain();
+                msg.obj = position;
+                msg.what = DELETE_LOCALNOTE;
+                handler.sendMessage(msg);
+            }
+        });
 
     }
 
@@ -834,7 +986,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
 
-    //=============================================接口结果回调======================================================
+    //=============================================接口结果回调(成对的success+failed)======================================================
 
     //检查更新
     @Override
@@ -915,7 +1067,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //---接口结果回调  第一次登录的同步---
 
-    //1
+    //1-1
     @Override
     public void onSyncFolderAddSuccess(Object obj, int position, int arraySize) {
         if (position < arraySize - 1) {//同步该接口的列表数据，
@@ -930,7 +1082,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncFolderAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
-        //TODO
+        //
 //        if (position < arraySize - 1) {//同步该接口的列表数据，
 //            //（有数组，循环调用）
 //            pFolderAdd(position + 1, arraySize, arrayFolderName[position + 1]);
@@ -940,7 +1092,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 //        }
     }
 
-    //2
+    //1-2
     @Override
     public void onSyncTagAddSuccess(Object obj, int position, int arraySize) {
         if (position < arraySize - 1) {//同步该接口的列表数据，
@@ -958,7 +1110,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncTagAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
 
-        //TODO
+        //
 //        if (position + 1 < arraySize) {//同步该接口的列表数据
 //            //（有数组，循环调用）
 //            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
@@ -969,7 +1121,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 //        }
     }
 
-    //3
+    //1-3
     @Override
     public void onSyncGetFolderSuccess(Object obj) {
 
@@ -988,7 +1140,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         MLog.e(msg);
     }
 
-    //4
+    //1-4
     @Override
     public void onSyncGetFoldersByFolderIdSuccess(Object obj, long catID, int startPos, List<AllFolderItemBean> beans) {
 
@@ -1013,7 +1165,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         syncGetFoldersByFolderId(startPos + 1, false);
     }
 
-    //5
+    //1-5
     @Override
     public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
         if (catPos < cats.size() - 1) {
@@ -1104,6 +1256,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
                 //继续上传下张图
+                Vector<TNNoteAtt> oldNotesAtts = addOldNotes.get(notePos).atts;
                 pUploadOldNotePic(picPos + 1, picArrySize, notePos, noteArrySize, oldNotesAtts.get(picPos + 1));
             } else {//所有图片上传完成，就处理
                 String digest = oldNotePicBean.getMd5();
@@ -1146,10 +1299,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
 
         if (position < arraySize - 1) {
+            //执行下一个 图片
+            Vector<TNNoteAtt> oldNotesAtts = addOldNotes.get(position + 1).atts;
             pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
         } else {
-            mSettings.syncOldDb = true;
-            mSettings.savePref(false);
             //执行下个接口
             pGetTagList();
         }
@@ -1159,7 +1312,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncOldNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
 
-        //TODO
+        //
 //        if (position < arraySize - 1) {
 //            pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
 //        } else {
@@ -1218,6 +1371,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
                 //继续上传下张图
+                Vector<TNNoteAtt> newNotesAtts = addNewNotes.get(notePos).atts;
                 pNewNotePic(picPos + 1, picArrySize, notePos, noteArrySize, newNotesAtts.get(picPos + 1));
             } else {//所有图片上传完成，就开始上传文本
                 String digest = newPicbean.getMd5();
@@ -1253,8 +1407,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //2-6
     @Override
     public void onSyncNewNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
-        OldNoteAddBean newNoteBean = (OldNoteAddBean) obj;
 
+        OldNoteAddBean newNoteBean = (OldNoteAddBean) obj;
         //更新数据库
         if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
             upDataNoteLocalIdSQL(newNoteBean, addNewNotes.get(position));
@@ -1263,18 +1417,114 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
         if (position < arraySize - 1) {
             //处理position + 1下的图片上传
+            Vector<TNNoteAtt> newNotesAtts = addNewNotes.get(position + 1).atts;
             pNewNotePic(0, newNotesAtts.size(), position + 1, arraySize, addNewNotes.get(position + 1).atts.get(0));
         } else {
 
-            mSettings.syncOldDb = true;
-            mSettings.savePref(false);
-            //执行下个接口 TODO
-
+            //执行下个接口
+            recoveryNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 7);
+            recoveryNote(0);
         }
     }
 
     @Override
     public void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize) {
+        MLog.e(msg);
+    }
+
+    //2-7-1
+    @Override
+    public void onSyncRecoverySuccess(Object obj, long noteId, int position) {
+        //更新数据库
+        recoveryNoteSQL(noteId);
+
+        //执行循环的下一个position+1数据/下一个接口
+        recoveryNote(position + 1);
+    }
+
+    @Override
+    public void onSyncRecoveryFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //2-7-2
+    @Override
+    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
+        String content = recoveryNotes.get(notePos).content;
+        OldNotePicBean recoveryPicbean = (OldNotePicBean) obj;
+
+        //更新图片 数据库
+        upDataAttIdSQL(recoveryPicbean.getId());
+
+        if (notePos < noteArrySize - 1) {
+            if (picPos < picArrySize - 1) {
+                //继续上传下张图
+                Vector<TNNoteAtt> newNotesAtts = recoveryNotes.get(notePos).atts;
+                pRecoveryNotePic(picPos + 1, picArrySize, notePos, noteArrySize, newNotesAtts.get(picPos + 1));
+            } else {//所有图片上传完成，就开始上传文本
+                String digest = recoveryPicbean.getMd5();
+                long attId = recoveryPicbean.getId();
+                //更新 content
+                String s1 = String.format("<tn-media hash=\"%s\" />", digest);
+                String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
+                content = content.replaceAll(s1, s2);
+
+                //所有图片上传完成，就开始上传newPos的文本
+                TNNote note = recoveryNotes.get(notePos);
+                if (note.catId == -1) {
+                    note.catId = TNSettings.getInstance().defaultCatId;
+                }
+                pRecoveryNoteAdd(notePos, noteArrySize, note, true, content);
+            }
+        } else {
+
+            //所有图片上传完成，就开始上传newPos的文本
+            TNNote note = recoveryNotes.get(notePos);
+            if (note.catId == -1) {
+                note.catId = TNSettings.getInstance().defaultCatId;
+            }
+            pRecoveryNoteAdd(notePos, noteArrySize, note, true, content);
+        }
+    }
+
+    @Override
+    public void onSyncRecoveryNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
+        MLog.e(msg);
+    }
+
+    //2-7-3
+    @Override
+    public void onSyncRecoveryNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+
+        OldNoteAddBean recoveryNoteBean = (OldNoteAddBean) obj;
+        //更新数据库
+        if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
+            upDataNoteLocalIdSQL(recoveryNoteBean, recoveryNotes.get(position));
+        }
+
+        //处理position + 1下的TNNote/下一个接口
+        recoveryNote(position + 1);
+
+    }
+
+    @Override
+    public void onSyncRecoveryNoteAddFailed(String msg, Exception e, int position, int arraySize) {
+        MLog.e(msg);
+    }
+
+    //2-8
+    @Override
+    public void onSyncDeleteNoteSuccess(Object obj, long noteId, int position) {
+
+        //更新数据
+        updataDeleteNoteSQL(noteId);
+
+        //执行下一个
+        pDelete(position + 1);
+    }
+
+    @Override
+    public void onSyncDeleteNoteFailed(String msg, Exception e) {
         MLog.e(msg);
     }
 
