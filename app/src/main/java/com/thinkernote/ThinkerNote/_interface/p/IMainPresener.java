@@ -46,4 +46,8 @@ public interface IMainPresener {
 
     void pDeleteNote(long noteId, int position);
 
+    void pDeleteRealNotes(long noteId, int position);
+
+
+
 }

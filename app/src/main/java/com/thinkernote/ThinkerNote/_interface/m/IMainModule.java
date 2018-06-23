@@ -43,4 +43,7 @@ public interface IMainModule {
     void mRecoveryNoteAdd(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
     void mDeleteNote(OnMainListener listener, long noteId, int poistion);
+
+    void mDeleteRealNotes(OnMainListener listener, long noteId, int poistion);
+
 }

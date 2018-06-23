@@ -18,7 +18,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * 已不再使用
+ * TODO
+ * 需要重构
  */
 public class TNDb extends SQLiteOpenHelper {
     private static final String TAG = "TNDatabase";
@@ -329,6 +330,37 @@ public class TNDb extends SQLiteOpenHelper {
      * 更新delete
      */
     public void upDatadeleteLocalLastTimeSQL(String sql, long currentTime, long noteId) {
+        try {
+            String[] args = new String[]{currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * deleteReadNotes
+     */
+    public void deleteReadNotesSQL(String sql, long noteId) {
+        try {
+            String[] args = new String[]{noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     * deleteReadNotes
+     */
+    public void updataReadNotesLastTimeSQL(String sql, long currentTime, long noteId) {
         try {
             String[] args = new String[]{currentTime + "", noteId + ""};
             db.execSQL(sql, args);

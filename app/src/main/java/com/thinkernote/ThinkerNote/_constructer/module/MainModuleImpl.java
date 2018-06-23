@@ -586,7 +586,7 @@ public class MainModuleImpl implements IMainModule {
     public void mDeleteNote(final OnMainListener listener, final long noteId, final int poistion) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncDeleteNote(noteId,settings.token)
+                .syncDeleteNote(noteId, settings.token)
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -608,7 +608,7 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncDeleteNoteSuccess(bean,noteId,poistion);
+                            listener.onSyncDeleteNoteSuccess(bean, noteId, poistion);
                         } else {
                             listener.onSyncDeleteNoteFailed(bean.getMessage(), null);
                         }
@@ -616,4 +616,74 @@ public class MainModuleImpl implements IMainModule {
 
                 });
     }
+
+    //2-9
+    @Override
+    public void mDeleteRealNotes(final OnMainListener listener, final long noteId, final int poistion) {
+        TNSettings settings = TNSettings.getInstance();
+        //2-9-1
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncDeleteRealNote1(noteId, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        listener.onSyncDeleteRealNotes1Failed("异常", new Exception("接口异常！"), poistion);
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncpDeleteRealNotes1Success(bean, noteId, poistion);
+                        } else {
+                            listener.onSyncDeleteRealNotes1Failed(bean.getMessage(), null, poistion);
+                        }
+                    }
+
+                });
+
+        //2-9-2
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncDeleteRealNote2(noteId, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        listener.onSyncDeleteRealNotes2Failed("异常", new Exception("接口异常！"), poistion);
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncDeleteRealNotes2Success(bean, noteId, poistion);
+                        } else {
+                            listener.onSyncDeleteRealNotes2Failed(bean.getMessage(), null, poistion);
+                        }
+                    }
+
+                });
+    }
+
 }

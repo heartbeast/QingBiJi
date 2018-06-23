@@ -112,7 +112,7 @@ public class TNSyncService {
             }
         }
 
-        //realDelete
+        //realDelete sjy
         Vector<TNNote> deleteRealNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 5);
         for (int i = 0; i < deleteRealNotes.size(); i++) {
             if (deleteRealNotes.get(i).noteId == -1) {
@@ -125,6 +125,8 @@ public class TNSyncService {
             }
         }
 
+
+        //GetAllNoteIds
         TNAction actionPage = TNAction.runAction(TNActionType.GetAllNoteIds);
 
         JSONArray cloudIds = new JSONArray();

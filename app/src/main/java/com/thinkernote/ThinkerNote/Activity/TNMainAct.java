@@ -82,6 +82,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //正常登录的同步常量
     public static final int DELETE_LOCALNOTE = 101;//1
+    public static final int DELETE_REALNOTE = 102;//
+    public static final int DELETE_REALNOTE2 = 103;//
 
     //==================================变量=======================================
     private long mLastClickBackTime = 0;
@@ -110,6 +112,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 //    Vector<TNNoteAtt> recoveryNotesAtts;//(2-7)正常同步，第7个调用数据中第一调用的数据 不可使用全局，易错
 
     Vector<TNNote> deleteNotes;//(2-8)正常同步，第8个调用数据
+    Vector<TNNote> deleteRealNotes;//(2-9)正常同步，第9个调用数据
 
     //接口返回数据
     private List<List<AllFolderItemBean>> mapList = new ArrayList<>();//递归调用使用的数据集合，size最大是5；//后台需求
@@ -517,6 +520,35 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
+    /**
+     * 2-9-2接口
+     */
+    private void deleteRealSQL(final long nonteLocalID, final int position) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    TNNote note = TNDbUtils.getNoteByNoteId(nonteLocalID);
+                    //
+                    TNDb.getInstance().deleteReadNotesSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, nonteLocalID);
+                    TNDb.getInstance().updataReadNotesLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+
+                //
+                Message msg = Message.obtain();
+                msg.obj = position;
+                msg.what = DELETE_REALNOTE2;
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
     //-------------------------------------handler处理同步------------------------------------------
 
 
@@ -527,6 +559,24 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             case DELETE_LOCALNOTE://2-8-2的调用
                 //执行下一个position/执行下一个接口
                 pDelete(((int) msg.obj + 1));
+                break;
+
+            case DELETE_REALNOTE://2-9 deleteRealNotes
+                //执行下一个position/执行下一个接口
+                pRealDelete(((int) msg.obj + 1));
+                break;
+            case DELETE_REALNOTE2://2-9 deleteRealNotes
+                //执行下一个position/执行下一个接口
+
+                if (isRealDelete1 && isRealDelete2) {
+                    //执行下一个
+                    pRealDelete((int) msg.obj + 1);
+
+                    //复原 false,供下次循环使用
+                    isRealDelete1 = false;
+                    isRealDelete2 = false;
+                }
+
                 break;
         }
     }
@@ -916,8 +966,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 pNoteLocalDelete(position, deleteNotes.get(position).noteLocalId);
             }
         } else {
-            //TODO 下一个接口
-
+            //下一个接口
+            deleteRealNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 5);
+            pRealDelete(0);
         }
     }
 
@@ -958,6 +1009,80 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 handler.sendMessage(msg);
             }
         });
+
+    }
+
+    /**
+     * (二.9)deleteRealNotes
+     *
+     * @param position deleteRealNotes执行位置
+     */
+    //添加标记，两个线程异步执行，都执行完，isRealDelete都设置为true,再执行下一poistion，
+    private boolean isRealDelete1 = false;
+    private boolean isRealDelete2 = false;
+
+    private void pRealDelete(int position) {
+
+        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+            if (deleteRealNotes.get(position).noteId == -1) {
+                //
+                pDeleteReadNotesSql(deleteRealNotes.get(position).noteLocalId, position);
+            } else {
+                //2个接口
+                pDeleteRealNotes(deleteRealNotes.get(position).noteId, position);
+            }
+        } else {
+            //下一个接口
+            pGetAllNoteIds();
+        }
+    }
+
+
+    /**
+     * (二.9) deleteReadNotes
+     * 数据库
+     * 接口个数：2
+     *
+     * @param nonteLocalID
+     */
+    private void pDeleteReadNotesSql(final long nonteLocalID, final int position) {
+        //使用异步操作，完成后，执行下一个 position或接口
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    //
+                    TNDb.getInstance().deleteReadNotesSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, nonteLocalID);
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+
+                //
+                Message msg = Message.obtain();
+                msg.obj = position;
+                msg.what = DELETE_REALNOTE;
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
+    /**
+     * (二.9)
+     */
+    private void pDeleteRealNotes(long noteId, int postion) {
+        //
+        presener.pDeleteRealNotes(noteId, postion);
+
+    }
+
+    /**
+     * (二.10)
+     */
+    private void pGetAllNoteIds() {
+        //
 
     }
 
@@ -1525,6 +1650,44 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncDeleteNoteFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //2-9-1
+    @Override
+    public void onSyncpDeleteRealNotes1Success(Object obj, long noteId, int position) {
+        isRealDelete1 = true;
+        //更新数据
+        updataDeleteNoteSQL(noteId);
+
+        if (isRealDelete1 && isRealDelete2) {
+            //执行下一个
+            pRealDelete(position + 1);
+
+            //复原 false,供下次循环使用
+            isRealDelete1 = false;
+            isRealDelete2 = false;
+        }
+
+    }
+
+    @Override
+    public void onSyncDeleteRealNotes1Failed(String msg, Exception e, int position) {
+        isRealDelete1 = true;
+        MLog.e(msg);
+    }
+
+    //2-9-2
+    @Override
+    public void onSyncDeleteRealNotes2Success(Object obj, long noteId, int position) {
+        isRealDelete2 = true;
+        //更新数据库
+        deleteRealSQL(noteId, position);
+    }
+
+    @Override
+    public void onSyncDeleteRealNotes2Failed(String msg, Exception e, int position) {
+        isRealDelete2 = true;
         MLog.e(msg);
     }
 

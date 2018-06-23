@@ -91,4 +91,16 @@ public interface OnMainListener {
     void onSyncDeleteNoteFailed(String msg, Exception e);
 
 
+    //2-9-1
+    void onSyncpDeleteRealNotes1Success(Object obj, long noteId, int position);
+
+    void onSyncDeleteRealNotes1Failed(String msg, Exception e,int position);
+
+
+    //2-9-2
+    void onSyncDeleteRealNotes2Success(Object obj, long noteId, int position);
+
+    void onSyncDeleteRealNotes2Failed(String msg, Exception e,int position);
+
+
 }

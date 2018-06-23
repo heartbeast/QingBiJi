@@ -143,8 +143,14 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
     //2-8
     @Override
     public void pDeleteNote(long noteId, int position) {
-
+        module.mDeleteNote(this,noteId,position);
     }
+
+    @Override
+    public void pDeleteRealNotes(long noteId, int position) {
+        module.mDeleteRealNotes(this,noteId,position);
+    }
+
     //==========================接口结果回调==============================
 
     @Override
@@ -327,6 +333,28 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
     @Override
     public void onSyncDeleteNoteFailed(String msg, Exception e) {
         onView.onSyncDeleteNoteFailed(msg, e);
+    }
+
+    //2-9-1
+    @Override
+    public void onSyncpDeleteRealNotes1Success(Object obj, long noteId, int position) {
+        onView.onSyncpDeleteRealNotes1Success(obj, noteId, position);
+    }
+
+    @Override
+    public void onSyncDeleteRealNotes1Failed(String msg, Exception e, int position) {
+        onView.onSyncDeleteRealNotes1Failed(msg, e, position);
+    }
+
+    //2-9-2
+    @Override
+    public void onSyncDeleteRealNotes2Success(Object obj, long noteId, int position) {
+        onView.onSyncDeleteRealNotes2Success(obj, noteId, position);
+    }
+
+    @Override
+    public void onSyncDeleteRealNotes2Failed(String msg, Exception e, int position) {
+        onView.onSyncDeleteRealNotes2Failed(msg, e, position);
     }
 
 

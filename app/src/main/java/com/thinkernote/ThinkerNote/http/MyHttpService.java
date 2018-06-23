@@ -498,6 +498,35 @@ public interface MyHttpService {
             , @Field("session_token") String session_token);
 
 
+    /**
+     * 2-9
+     * 同步 DeleteRealNote1
+     * 使用 delete请求
+     *
+     * @return
+     */
+    @Headers("Content-Type:application/x-www-form-urlencoded")
+    @HTTP(method = "DELETE", path = URLUtils.Note.NOTE, hasBody = true)
+    @FormUrlEncoded
+    Observable<CommonBean> syncDeleteRealNote1(
+            @Field("note_id") long note_id
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 同步 DeleteRealNote2
+     * 使用 delete请求
+     *
+     * @return
+     */
+    @Headers("Content-Type:application/x-www-form-urlencoded")
+    @HTTP(method = "DELETE", path = URLUtils.Note.RECOVERY_NOTE, hasBody = true)
+    @FormUrlEncoded
+    Observable<CommonBean> syncDeleteRealNote2(
+            @Field("note_id") long note_id
+            , @Field("session_token") String session_token);
+
+
     //-------------------------------------------------写笔记相关----------------------------------------------------
 
     /**
