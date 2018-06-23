@@ -16,6 +16,7 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
  */
 public class TNSocketTag {
 	private static final String TAG = "TNSocketTag";
+	//TODO
 	public static void handle_Tags(TNAction aAction){
 		TNSettings settings = TNSettings.getInstance();
 		TNActionType type = (TNActionType) aAction.inputs.get(3);

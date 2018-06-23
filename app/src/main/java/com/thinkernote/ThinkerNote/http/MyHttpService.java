@@ -14,6 +14,7 @@ import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
+import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 
 import java.util.List;
@@ -394,6 +395,15 @@ public interface MyHttpService {
     @GET(URLUtils.Note.FOLDER)
     Observable<AllFolderBean> syncGetFolderByFodlerId(@Query("folder_id") long folder_id
             , @Query("session_token") String session_token);
+
+
+    /**
+     * 同步 syncTagList
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.TAGLIST)
+    Observable<TagListBean> syncTagList(@Query("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------

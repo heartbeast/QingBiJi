@@ -4,6 +4,9 @@ import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+
+import java.util.List;
 
 /**
  * 登录 m层interface
@@ -13,9 +16,9 @@ public interface IMainModule {
 
     void GetFolder(OnMainListener onMainListener);
 
-    void mGetFoldersByFolderId(OnMainListener onMainListenerl, long id, int position, int size);
+    void mGetTagList(OnMainListener onMainListener);
 
-    void mGetFoldersByFolderId2(OnMainListener onMainListener, long id, int outPos, int outSize, int position, int size);
+    void mGetFoldersByFolderId(OnMainListener onMainListenerl, long id, int position, List<AllFolderItemBean> beans);
 
     void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID, int catPos, int flag);
 
@@ -26,6 +29,10 @@ public interface IMainModule {
     void mOldNoteAdd(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
     void mUploadOldNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
+
+    void mNewNote(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
+
+    void mNewNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
     void mProfile(OnMainListener listener);
 }

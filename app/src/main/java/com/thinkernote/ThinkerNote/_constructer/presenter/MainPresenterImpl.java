@@ -14,6 +14,9 @@ import com.thinkernote.ThinkerNote._interface.p.IMainPresener;
 import com.thinkernote.ThinkerNote._interface.p.IRegistPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+
+import java.util.List;
 
 /**
  * 注册 p层 具体实现
@@ -64,42 +67,60 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         module.GetFolder(this);
     }
 
+
     //4
     @Override
-    public void pGetFoldersByFolderId(long id, int position, int size) {
-        module.mGetFoldersByFolderId(this, id, position, size);
+    public void pGetFoldersByFolderId(long id, int position, List<AllFolderItemBean> beans) {
+        module.mGetFoldersByFolderId(this, id, position, beans);
     }
 
     //5
-    @Override
-    public void pGetFoldersByFolderId2(long id, int outPos, int outSize, int position, int size) {
-        module.mGetFoldersByFolderId2(this, id, outPos, outSize, position, size);
-    }
-
-    //6
     @Override
     public void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag) {
         module.mFirstFolderAdd(this, workPos, workSize, catID, catPos, flag);
     }
 
-    //7
+
+    //=正常登录的同步方法=
+
+    //2-1
     @Override
     public void pProfile() {
         module.mProfile(this);
     }
 
-    //=正常登录的同步方法=
 
+    //2-2
     @Override
     public void pUploadOldNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
         module.mUploadOldNotePic(this, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
+
+    //2-3
     @Override
     public void pOldNoteAdd(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content) {
         module.mOldNoteAdd(this, position, arraySize, tnNote, isNewDb, content);
     }
 
+
+    //2-4
+    @Override
+    public void pGetTagList() {
+        module.mGetTagList(this);
+    }
+
+    //2-5
+    @Override
+    public void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        module.mNewNotePic(this, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+    }
+
+    //2-6
+    @Override
+    public void pNewNote(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content) {
+        module.mNewNote(this, position, arraySize, tnNote, isNewDb, content);
+    }
 
     //==========================接口结果回调==============================
 
@@ -150,27 +171,16 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //4
     @Override
-    public void onSyncGetFoldersByFolderIdSuccess(Object obj, long id, int position, int size) {
-        onView.onSyncGetFoldersByFolderIdSuccess(obj, id, position, size);
+    public void onSyncGetFoldersByFolderIdSuccess(Object obj, long id, int position, List<AllFolderItemBean> beans) {
+        onView.onSyncGetFoldersByFolderIdSuccess(obj, id, position, beans);
     }
 
     @Override
-    public void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long id, int position, int size) {
-        onView.onSyncGetFoldersByFolderIdFailed(msg, e, id, position, size);
+    public void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long id, int position, List<AllFolderItemBean> beans) {
+        onView.onSyncGetFoldersByFolderIdFailed(msg, e, id, position, beans);
     }
 
-    //5
-    @Override
-    public void onSyncGetFoldersByFolderId2Success(Object obj, long id, int outPos, int outSize, int innerPos, int innerSize) {
-        onView.onSyncGetFoldersByFolderId2Success(obj, id, outPos, outSize, innerPos, innerSize);
-    }
-
-    @Override
-    public void onSyncGetFoldersByFolderId2Failed(String msg, Exception e, long id, int outPos, int outSize, int innerPos, int innerSize) {
-        onView.onSyncGetFoldersByFolderId2Failed(msg, e, id, outPos, outSize, innerPos, innerSize);
-    }
-
-    //6 TNCat
+    //5 TNCat
     @Override
     public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
         onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, catPos, flag);
@@ -181,7 +191,9 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         onView.onSyncFirstFolderAddFailed(msg, e, workPos, workSize, catID, catPos, flag);
     }
 
-    //7
+
+    //===正常登录的回调=
+    //2-1
     @Override
     public void onSyncProfileSuccess(Object obj) {
         onView.onSyncProfileSuccess(obj);
@@ -192,9 +204,7 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         onView.onSyncProfileAddFailed(msg, e);
     }
 
-    //===正常登录的回调=
-
-    //pic
+    //2-2 pic
     @Override
     public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
         onView.onSyncOldNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
@@ -205,7 +215,7 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         onView.onSyncOldNotePicFailed(msg, e, picPos, picArry, notePos, noteArry);
     }
 
-    //oldNoteAdd
+    //2-3 oldNoteAdd
     @Override
     public void onSyncOldNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
         onView.onSyncOldNoteAddSuccess(obj, position, arraySize, isNewDb);
@@ -214,6 +224,41 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
     @Override
     public void onSyncOldNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         onView.onSyncOldNoteAddFailed(msg, e, position, arraySize);
+    }
+
+    //2-4
+    @Override
+    public void onSyncTagListSuccess(Object obj) {
+        onView.onSyncTagListSuccess(obj);
+    }
+
+    @Override
+    public void onSyncTagListAddFailed(String msg, Exception e) {
+        onView.onSyncTagListAddFailed(msg, e);
+    }
+
+    //2-5
+    @Override
+    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
+        onView.onSyncNewNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
+    }
+
+    @Override
+    public void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
+        onView.onSyncNewNotePicFailed(msg, e, picPos, picArry, notePos, noteArry);
+
+
+    }
+
+    //2-6
+    @Override
+    public void onSyncNewNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+        onView.onSyncNewNoteAddSuccess(obj, position, arraySize, isNewDb);
+    }
+
+    @Override
+    public void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize) {
+        onView.onSyncNewNoteAddFailed(msg, e, position, arraySize);
     }
 
 

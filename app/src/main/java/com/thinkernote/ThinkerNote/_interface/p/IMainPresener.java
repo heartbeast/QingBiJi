@@ -18,6 +18,8 @@ public interface IMainPresener {
 
     void pGetFolder();
 
+    void pGetTagList();
+
     void pGetFoldersByFolderId(long id, int position, List<AllFolderItemBean> beans);
 
     void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag);
@@ -27,6 +29,10 @@ public interface IMainPresener {
     void pUploadOldNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
     void pOldNoteAdd(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
+
+    void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
+
+    void pNewNote(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
     void pDownload(String url, Dialog dialog);
 

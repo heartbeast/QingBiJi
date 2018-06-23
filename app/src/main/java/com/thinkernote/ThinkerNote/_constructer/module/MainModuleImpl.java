@@ -15,12 +15,16 @@ import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
+import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
+import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import org.json.JSONObject;
+
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -40,7 +44,6 @@ public class MainModuleImpl implements IMainModule {
     public MainModuleImpl(Context context) {
         this.context = context;
     }
-
 
     @Override
     public void mUpgrade(final OnMainListener listener) {
@@ -186,9 +189,10 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
+
     //01-4
     @Override
-    public void mGetFoldersByFolderId(final OnMainListener listener, final long id, final int position, final int size) {
+    public void mGetFoldersByFolderId(final OnMainListener listener, final long id, final int position, final List<AllFolderItemBean> beans) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .syncGetFolderByFodlerId(id, settings.token)//接口方法
@@ -204,7 +208,7 @@ public class MainModuleImpl implements IMainModule {
                     @Override
                     public void onError(Throwable e) {
                         MLog.e("GetFoldersByFolderId 异常onError:" + e.toString());
-                        listener.onSyncGetFoldersByFolderIdFailed("异常", new Exception("接口异常！"), id, position, size);
+                        listener.onSyncGetFoldersByFolderIdFailed("异常", new Exception("接口异常！"), id, position, beans);
                     }
 
                     @Override
@@ -213,9 +217,9 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncGetFoldersByFolderIdSuccess(bean, id, position, size);
+                            listener.onSyncGetFoldersByFolderIdSuccess(bean, id, position, beans);
                         } else {
-                            listener.onSyncGetFoldersByFolderIdFailed(bean.getMsg(), null, id, position, size);
+                            listener.onSyncGetFoldersByFolderIdFailed(bean.getMsg(), null, id, position, beans);
                         }
                     }
 
@@ -223,50 +227,48 @@ public class MainModuleImpl implements IMainModule {
     }
 
 
-    //01-5
-    @Override
-    public void mGetFoldersByFolderId2(final OnMainListener listener, final long id, final int outPos, final int outSize, final int position, final int size) {
-
-        TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncGetFolderByFodlerId(id, settings.token)//接口方法
-                .subscribeOn(Schedulers.io())//固定样式
-                .unsubscribeOn(Schedulers.io())//固定样式
-                .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<AllFolderBean>() {//固定样式，可自定义其他处理
-                    @Override
-                    public void onCompleted() {
-                        MLog.d(TAG, "GetFoldersByFolderId2--onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MLog.e("GetFoldersByFolderId2 异常onError:" + e.toString());
-                        listener.onSyncGetFoldersByFolderId2Failed("异常", new Exception("接口异常！"), id, outPos, outSize, position, size);
-                    }
-
-                    @Override
-                    public void onNext(AllFolderBean bean) {
-                        MLog.d(TAG, "GetFoldersByFolderId2-onNext");
-
-                        //处理返回结果
-                        if (bean.getCode() == 0) {
-                            listener.onSyncGetFoldersByFolderId2Success(bean, id, outPos, outSize, position, size);
-                        } else {
-                            listener.onSyncGetFoldersByFolderId2Failed(bean.getMsg(), null, id, outPos, outSize, position, size);
-                        }
-                    }
-
-                });
-    }
-
-    //01-7
+    //1-5
     @Override
     public void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID, int catPos, int flag) {
 
     }
 
-    //02-01 OldNotePic
+    //2-1
+    @Override
+    public void mProfile(final OnMainListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .LogNormalProfile(settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mProFile--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mProFile 异常onError:" + e.toString());
+                        listener.onSyncProfileAddFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean2<ProfileBean> bean) {
+                        MLog.d(TAG, "mProFile-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncProfileSuccess(bean.getProfile());
+                        } else {
+                            listener.onSyncProfileAddFailed(bean.getMsg(), null);
+                        }
+                    }
+                });
+    }
+
+    //02-02 OldNotePic
     @Override
     public void mUploadOldNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
         String filename = tnNoteAtt.attName;
@@ -310,7 +312,7 @@ public class MainModuleImpl implements IMainModule {
     }
 
 
-    //02-02 OldNoteAdd
+    //02-03 OldNoteAdd
     @Override
     public void mOldNoteAdd(final OnMainListener listener, final int position, final int arraySize, TNNote note, final boolean isNewDb, String content) {
 
@@ -347,40 +349,120 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
-
+    //2-4
     @Override
-    public void mProfile(final OnMainListener listener) {
+    public void mGetTagList(final OnMainListener listener) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .LogNormalProfile(settings.token)//接口方法
+                .syncTagList(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<TagListBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mProFile--onCompleted");
+                        MLog.d(TAG, "mGetTagList--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("mProFile 异常onError:" + e.toString());
-                        listener.onSyncProfileAddFailed("异常", new Exception("接口异常！"));
+                        MLog.e("mGetTagList 异常onError:" + e.toString());
+                        listener.onSyncTagListAddFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
-                    public void onNext(CommonBean2<ProfileBean> bean) {
-                        MLog.d(TAG, "mProFile-onNext");
+                    public void onNext(TagListBean bean) {
+                        MLog.d(TAG, "mGetTagList-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncProfileSuccess(bean.getProfile());
+                            listener.onSyncTagListSuccess(bean);
                         } else {
-                            listener.onSyncProfileAddFailed(bean.getMsg(), null);
+                            listener.onSyncTagListAddFailed(bean.getMsg(), null);
                         }
                     }
+
                 });
     }
 
+
+    //2-5
+    @Override
+    public void mNewNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
+        String filename = tnNoteAtt.attName;
+        String filePath = tnNoteAtt.path;
+        long fileId = tnNoteAtt.attId;
+
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
+
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncOldNotePic(part, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mNewNotePic--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mNewNotePic 异常onError:" + e.toString());
+                        listener.onSyncNewNotePicFailed("异常", new Exception("接口异常！"), picPos, picArrySize, notePos, noteArrySize);
+                    }
+
+                    @Override
+                    public void onNext(OldNotePicBean bean) {
+                        MLog.d(TAG, "mNewNotePic-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncNewNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize);
+                        } else {
+                            listener.onSyncNewNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
+                        }
+                    }
+
+                });
+    }
+
+    //2-6
+    @Override
+    public void mNewNote(final OnMainListener listener, final int position, final int arraySize, TNNote note, final boolean isNewDb, String content) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncOldNoteAdd(note.title, content, note.tagStr, note.catId, note.createTime, note.lastUpdate, note.lbsLongitude, note.lbsLatitude, note.lbsAddress, note.lbsRadius, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<OldNoteAddBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mNewNote--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mNewNote 异常onError:" + e.toString());
+                        listener.onSyncNewNoteAddFailed("异常", new Exception("接口异常！"), position, arraySize);
+                    }
+
+                    @Override
+                    public void onNext(OldNoteAddBean bean) {
+                        MLog.d(TAG, "mNewNote-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncNewNoteAddSuccess(bean, position, arraySize, isNewDb);
+                        } else {
+                            listener.onSyncNewNoteAddFailed(bean.getMessage(), null, position, arraySize);
+                        }
+                    }
+
+                });
+    }
 
 }

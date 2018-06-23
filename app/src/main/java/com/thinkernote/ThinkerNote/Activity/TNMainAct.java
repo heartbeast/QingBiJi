@@ -27,10 +27,12 @@ import android.widget.TextView;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.DBHelper.CatDbHelper;
+import com.thinkernote.ThinkerNote.DBHelper.TagDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
@@ -56,6 +58,8 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
+import com.thinkernote.ThinkerNote.bean.main.TagItemBean;
+import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -84,16 +88,22 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //
     private IMainPresener presener;
+    //
     private String[] arrayFolderName;//第一次登录，要同步的数据，（1）
     private String[] arrayTagName;//第一次登录，要同步的数据，（2）
+    //
     private Vector<TNCat> cats;//第一次登录，要同步的数据，（3）
     private String[] groupWorks;//（3）下第一个数组数据
     private String[] groupLife;//（3）下第2个数组数据
     private String[] groupFun;//（3）下第3个数组数据
+    //
     private Vector<TNNote> addOldNotes;//（2）正常同步，第一个调用数据
-    Vector<TNNoteAtt> oldNotesAtts;//（1）正常同步，第一个调用数据中第一调用的数据
-    //接口返回数据
+    private Vector<TNNoteAtt> oldNotesAtts;//（3）正常同步，第一个调用数据中第一调用的数据
+    //
+    private Vector<TNNote> addNewNotes;//（5）正常同步，第5个调用数据
+    private Vector<TNNoteAtt> newNotesAtts;//（5）正常同步，第5个调用数据中第一调用的数据
 
+    //接口返回数据
     private List<List<AllFolderItemBean>> mapList;//递归调用使用的数据集合，size最大是5；//后台需求
 
 
@@ -502,20 +512,16 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void synchronizeData() {
-        if (mSettings.firstLaunch) {//如果第一次启动，执行该处方法
+        if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
             //需要同步的文件数据
             arrayFolderName = new String[]{TNConst.FOLDER_DEFAULT, TNConst.FOLDER_MEMO, TNConst.GROUP_FUN, TNConst.GROUP_WORK, TNConst.GROUP_LIFE};
             arrayTagName = new String[]{TNConst.TAG_IMPORTANT, TNConst.TAG_TODO, TNConst.TAG_GOODSOFT};
 
-
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
-            syncNormalLogData();
+            syncProfile();
         }
-
-        //TODO
-//        TNAction.runActionAsync(TNActionType.Synchronize, "home");
     }
 
     /**
@@ -573,7 +579,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                         //执行下一个接口
                         syncTNCat();
                     } else {
-                        //执行上一层的循环
+                        //执行上一层的新循环
                         mapList.remove(mapList.size() - 1);
                         syncGetFoldersByFolderId(0, false);
                     }
@@ -606,7 +612,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
-
     /**
      * （一.5）更新TNCat
      * 双层for循环的样式,串行执行接口
@@ -619,6 +624,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             //先执行最外层的数据
             syncTNCat(0, cats.size());
         } else {
+            //执行下一个接口
             syncProfile();
         }
     }
@@ -643,6 +649,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             if (TNConst.GROUP_FUN.equals(tempCat.catName)) {
                 groupFun = new String[]{TNConst.FOLDER_FUN_TRAVEL, TNConst.FOLDER_FUN_MOVIE, TNConst.FOLDER_FUN_GAME};
             }
+
             //执行顺序:groupWorks-->groupLife-->groupFun
             if (groupWorks == null && groupLife == null && groupFun == null) {
                 //postion下没有数据，执行下个position
@@ -669,6 +676,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             }
         } else {
+            //执行下一个接口
             syncProfile();
         }
     }
@@ -690,11 +698,18 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //-------正常登录同步的p调用-------
 
     /**
-     * （二）正常登录的数据同步（非第一次登录的同步）
+     * （二.1）正常同步 第一个接口
+     */
+    private void syncProfile() {
+        presener.pProfile();
+    }
+
+    /**
+     * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
      */
-    private void syncNormalLogData() {
+    private void syncOldNote() {
         if (!mSettings.syncOldDb) {
             //add老数据库的笔记
             addOldNotes = TNDbUtils.getOldDbNotesByUserId(TNSettings.getInstance().userId);
@@ -708,36 +723,92 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                     pOldNote(0, addOldNotes.size(), addOldNotes.get(0), false, addOldNotes.get(0).content);
                 }
             } else {
-                syncGetFolder();
+                //下个执行接口
+                pGetTagList();
             }
         } else {
-            syncGetFolder();
+            //下个执行接口
+            pGetTagList();
         }
     }
 
     /**
-     * (二.1)正常同步 第一个执行的接口 上传图片OldNotePic 循环调用
-     * 和（二.2组成双层for循环，该处是最内层for执行）
+     * (二.2)正常同步 第一个执行的接口 上传图片OldNotePic 循环调用
+     * 说明：先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片...,如此循环
+     * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
         presener.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
-     * (二.2)正常同步 第2个执行的接口 循环调用
-     * 和（二.1组成双层for循环，该处是最外层for执行）
+     * (二.3)正常同步 第2个执行的接口 循环调用
+     * 和（二.2组成双层for循环，该处是最外层for执行）
      */
 
     private void pOldNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
         presener.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
+
     /**
-     * （二.3）正常同步 （如果没有老数据，不执行(二.1)和(二.2)的接口）
+     * (二.4)正常同步 pGetTagList
      */
-    private void syncProfile() {
-        presener.pProfile();
+
+    private void pGetTagList() {
+        Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
+        TNAction.runAction(TNActionType.GetTagList);
+        presener.pGetTagList();
     }
+
+
+    /**
+     * (二.5+二.6)正常同步 pAddNewNote
+     * 说明：同(二.2+二.3)的执行顺序，先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片，如此循环
+     */
+
+    private void pAddNewNote() {
+        addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
+
+        if (addNewNotes.size() > 0) {
+            //先 上传数组的第一个
+            TNNote tnNote = addNewNotes.get(0);
+            newNotesAtts = tnNote.atts;
+            if (newNotesAtts.size() > 0) {//有图，先上传图片
+                pNewNotePic(0, newNotesAtts.size(), 0, addNewNotes.size(), newNotesAtts.get(0));
+            } else {//如果没有图片，就执行OldNote
+                pNewNote(0, addNewNotes.size(), addNewNotes.get(0), false, addNewNotes.get(0).content);
+            }
+        } else {
+            //下个执行接口
+            pGetTagList();
+        }
+    }
+
+    /**
+     * (二.5)正常同步 第一个执行的接口 上传图片OldNotePic 循环调用
+     * 和（二.6组成双层for循环，该处是最内层for执行）
+     */
+    private void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        presener.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+    }
+
+    /**
+     * (二.6)正常同步 第2个执行的接口 循环调用
+     * 和（二.5组成双层for循环，该处是最外层for执行）
+     */
+
+    private void pNewNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
+    }
+
+
+    /**
+     */
+    private void a() {
+
+    }
+
 
     //下载
     public void respondUpdateSoftware(TNAction aAction) {
@@ -877,10 +948,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
         } else {
             //
-            mSettings.firstLaunch = false;
             mSettings.savePref(false);
-            //完成后，再调用正常的同步接口
-            syncNormalLogData();
+            //执行下个接口
+            syncGetFolder();
         }
     }
 
@@ -893,7 +963,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 //            //（有数组，循环调用）
 //            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
 //        } else {
-//            mSettings.firstLaunch = true;
 //            mSettings.savePref(false);
 //            //再调用正常的同步接口
 //            syncNormalLogData();
@@ -925,20 +994,26 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
-        mapList.add(allFolderItemBeans);
-
-        insertDBCatsSQL(allFolderBean, catID);
-
-        //执行下个position循环
-        syncGetFoldersByFolderId(startPos, false);
+        //判断是否有返回值
+        if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 0) {
+            //执行下个position循环
+            syncGetFoldersByFolderId(startPos + 1, false);
+        } else {
+            mapList.add(allFolderItemBeans);
+            insertDBCatsSQL(allFolderBean, catID);
+            //执行新循环
+            syncGetFoldersByFolderId(0, true);
+        }
     }
 
     @Override
-    public void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long catID, int position, List<AllFolderItemBean> beans) {
-
+    public void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long catID, int startPos, List<AllFolderItemBean> beans) {
+        MLog.e(msg);
+        //执行下个position循环
+        syncGetFoldersByFolderId(startPos + 1, false);
     }
 
-    //6
+    //5
     @Override
     public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
         if (catPos < cats.size() - 1) {
@@ -962,7 +1037,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             }
         } else {
-
             //执行下一个接口
             syncProfile();
         }
@@ -973,7 +1047,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         MLog.e(msg);
     }
 
-    //7
+
+    //----接口结果回调  正常同步---
+    //2-1
     @Override
     public void onSyncProfileSuccess(Object obj) {
         ProfileBean profileBean = (ProfileBean) obj;
@@ -1005,10 +1081,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
         //
         settings.isLogout = false;
-        settings.firstLaunch = false;
+        settings.firstLaunch = false;//在此处设置 false
         settings.savePref(false);
-        //执行下个接口 TODO
-
+        //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
+        syncOldNote();
     }
 
     @Override
@@ -1016,9 +1092,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         //
         MLog.e(msg);
     }
-    //----接口结果回调  正常同步---
 
-    //OldNotePic
+    //2-2 OldNotePic
     @Override
     public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
         String content = addOldNotes.get(notePos).content;
@@ -1061,7 +1136,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         MLog.e(msg);
     }
 
-    //OldNoteAdd
+    //2-3OldNoteAdd
     @Override
     public void onSyncOldNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
         OldNoteAddBean oldNoteAddBean = (OldNoteAddBean) obj;
@@ -1076,7 +1151,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             mSettings.syncOldDb = true;
             mSettings.savePref(false);
             //执行下个接口
-            syncGetFolder();
+            pGetTagList();
         }
     }
 
@@ -1091,8 +1166,116 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 //            mSettings.syncOldDb = false;
 //            mSettings.savePref(false);
 //            //执行下个接口
-//            syncProfile();
 //        }
+    }
+
+    //2-4
+    @Override
+    public void onSyncTagListSuccess(Object obj) {
+
+        TagListBean tagListBean = (TagListBean) obj;
+        List<TagItemBean> beans = tagListBean.getTags();
+        //
+        TNSettings settings = TNSettings.getInstance();
+        TagDbHelper.clearTags();
+
+        for (int i = 0; i < beans.size(); i++) {
+            TagItemBean itemBean = beans.get(i);
+
+            String tagName = itemBean.getName();
+            if (TextUtils.isEmpty(tagName)) {
+                tagName = "无";
+            }
+            JSONObject tempObj = TNUtils.makeJSON(
+                    "tagName", tagName,
+                    "userId", settings.userId,
+                    "trash", 0,
+                    "tagId", itemBean.getId(),
+                    "strIndex", TNUtils.getPingYinIndex(tagName),
+                    "count", itemBean.getCount()
+            );
+            TagDbHelper.addOrUpdateTag(tempObj);
+        }
+
+        //执行下个接口
+        pAddNewNote();
+    }
+
+    @Override
+    public void onSyncTagListAddFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //2-5
+    @Override
+    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
+
+        String content = addNewNotes.get(notePos).content;
+        OldNotePicBean newPicbean = (OldNotePicBean) obj;
+        //更新图片 数据库
+        upDataAttIdSQL(newPicbean.getId());
+
+        if (notePos < noteArrySize - 1) {
+            if (picPos < picArrySize - 1) {
+                //继续上传下张图
+                pNewNotePic(picPos + 1, picArrySize, notePos, noteArrySize, newNotesAtts.get(picPos + 1));
+            } else {//所有图片上传完成，就开始上传文本
+                String digest = newPicbean.getMd5();
+                long attId = newPicbean.getId();
+                //更新 content
+                String s1 = String.format("<tn-media hash=\"%s\" />", digest);
+                String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
+                content = content.replaceAll(s1, s2);
+
+                //
+                TNNote note = addNewNotes.get(notePos);
+                if (note.catId == -1) {
+                    note.catId = TNSettings.getInstance().defaultCatId;
+                }
+                pNewNote(notePos, noteArrySize, note, false, content);
+            }
+        } else {
+
+            //所有图片上传完成，就开始上传newPos的文本
+            TNNote note = addNewNotes.get(notePos);
+            if (note.catId == -1) {
+                note.catId = TNSettings.getInstance().defaultCatId;
+            }
+            pNewNote(notePos, noteArrySize, note, false, content);
+        }
+    }
+
+    @Override
+    public void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
+        MLog.e(msg);
+    }
+
+    //2-6
+    @Override
+    public void onSyncNewNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+        OldNoteAddBean newNoteBean = (OldNoteAddBean) obj;
+
+        //更新数据库
+        if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
+            upDataNoteLocalIdSQL(newNoteBean, addNewNotes.get(position));
+        }
+
+
+        if (position < arraySize - 1) {
+            //处理position + 1下的图片上传
+            pNewNotePic(0, newNotesAtts.size(), position + 1, arraySize, addNewNotes.get(position + 1).atts.get(0));
+        } else {
+
+            mSettings.syncOldDb = true;
+            mSettings.savePref(false);
+            //执行下个接口 TODO
+
+        }
+    }
+
+    @Override
+    public void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize) {
+        MLog.e(msg);
     }
 
 

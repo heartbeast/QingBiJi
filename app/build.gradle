@@ -48,7 +48,9 @@ dependencies {
     implementation files('libs/pinyin4j-2.5.0.jar')
     implementation files('libs/weibo_sdk.jar')
     implementation files('libs/commons-lang3-3.1.jar')
-    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    //TODO
+    //    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    //
     //    implementation 'jp.wasabeef:richeditor-android:1.2.2'
     //---------------------------------使用最新网络框架--开始（不可缺少的依赖）----------------------------------------
     //=============okhttp3相关==============
