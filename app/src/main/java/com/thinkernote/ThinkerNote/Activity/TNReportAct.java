@@ -1,11 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -28,24 +22,27 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Adapter.PlusPhotoAdapter;
 import com.thinkernote.ThinkerNote.Adapter.PlusPhotoAdapter.OnClickedListener;
-import com.thinkernote.ThinkerNote.General.TNActionType;
-import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.KeyBoardManager;
 import com.thinkernote.ThinkerNote.Utils.UiUtils;
 import com.thinkernote.ThinkerNote.Views.MyGridView;
 import com.thinkernote.ThinkerNote._constructer.presenter.ReportPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.IReportPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 设置--关于我们--反馈
@@ -246,16 +243,15 @@ public class TNReportAct extends TNActBase
         } else {
             presener.pFeedBack(content, -1L, email);
         }
-        //TODO
-        TNAction.runActionAsync(TNActionType.FeedBack, content, mFiles, email);
     }
 
     //--------------------------------------接口结果回调------------------------------------------
 
     @Override
     public void onPicSuccess(Object obj, String content, String email) {
+        OldNotePicBean picBean = (OldNotePicBean) obj;
         //拿到pid,上传内容
-        presener.pFeedBack(content, -1L, email);
+        presener.pFeedBack(content, -picBean.getId(), email);
     }
 
     @Override

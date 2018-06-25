@@ -284,18 +284,6 @@ public interface MyHttpService {
     @GET(URLUtils.Home.UPGRADE)
     Observable<CommonBean1<MainUpgradeBean>> synchronizeData(@Query("session_token") String session_token);
 
-    /**
-     * feedBack
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(URLUtils.Home.FEEDBACK)
-    Observable<CommonBean> feedBack(
-            @Field("content") String content
-            , @Field("pic_id") long pic
-            , @Field("email") String email
-            , @Field("session_token") String session_token);
 
     /**
      * 支付宝支付
@@ -736,6 +724,19 @@ public interface MyHttpService {
     @POST(URLUtils.Settings.UPLOAD_PIC)
     Observable<FeedBackBean> upLoadFeedBackPic(
             @Part List<MultipartBody.Part> parts);
+
+    /**
+     * feedBack
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(URLUtils.Settings.FEEDBACK)
+    Observable<CommonBean> feedBack(
+            @Field("content") String content
+            , @Field("pic_id") long pic
+            , @Field("email") String email
+            , @Field("session_token") String session_token);
 
 //*************************************************以下不使用***********************************************
 

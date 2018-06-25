@@ -19,7 +19,6 @@ public class TNCacheService {
 				}
 			}
 		}
-		
 		return singleton;
 	}
 	

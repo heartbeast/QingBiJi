@@ -119,10 +119,7 @@ public class URLUtils {
          */
         public static final String SYNCHRONIZE = "api/app/upgrade";
 
-        /**
-         * feedBack
-         */
-        public static final String FEEDBACK = "api/feedback";
+
 
         /**
          * 支付
@@ -205,8 +202,11 @@ public class URLUtils {
         /**
          * 反馈伤上传图片
          */
-        public static final String UPLOAD_PIC = "api/feedback";
-
+        public static final String UPLOAD_PIC = "api/attachment";
+        /**
+         * feedBack
+         */
+        public static final String FEEDBACK = "api/feedback";
     }
 
 
