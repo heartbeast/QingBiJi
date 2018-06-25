@@ -7,10 +7,12 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
 import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnTagListListener;
 import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;
@@ -29,36 +31,35 @@ public class TagListModuleImpl implements ITagListModule {
         this.context = context;
     }
 
-
     @Override
-    public void mTagList(final OnCommonListener listener) {
+    public void mTagList(final OnTagListListener listener) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .getTagList(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<TagListBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "upgrade--onCompleted");
+                        MLog.d(TAG, "mTagList--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("upgrade 异常onError:" + e.toString());
-                        listener.onFailed("异常", new Exception("接口异常！"));
+                        MLog.e("mTagList 异常onError:" + e.toString());
+                        listener.onTagListFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "upgrade-onNext");
+                    public void onNext(TagListBean bean) {
+                        MLog.d(TAG, "mTagList-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSuccess(bean);
+                            listener.onTagListSuccess(bean.getTags());
                         } else {
-                            listener.onFailed(bean.getMessage(), null);
+                            listener.onTagListFailed(bean.getMsg(), null);
                         }
                     }
 

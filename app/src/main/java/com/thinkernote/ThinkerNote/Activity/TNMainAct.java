@@ -350,24 +350,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         return super.onKeyDown(keyCode, event);
     }
 
-
-    public void respondSynchronizeEdit(TNAction aAction) {
-        if (aAction.result == TNActionResult.Cancelled) {
-            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
-        } else if (!TNHandleError.handleResult(this, aAction, false)) {
-            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
-            if (TNActionUtils.isSynchroniz(aAction)) {
-                TNSettings settings = TNSettings.getInstance();
-                settings.originalSyncTime = System.currentTimeMillis();
-                settings.savePref(false);
-                mTimeView.setText("上次同步时间：" + TNUtilsUi.formatDate(TNMainAct.this,
-                        settings.originalSyncTime / 1000L));
-            }
-        } else {
-            TNUtilsUi.showNotification(this, R.string.alert_Synchronize_Stoped, true);
-        }
-    }
-
     /**
      * 同步按钮的动画
      */
@@ -381,6 +363,31 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         findViewById(R.id.main_sync_btn).startAnimation(rAnimation);
     }
 
+    /**
+     * 同步结束后的操作
+     *
+     * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
+     */
+    private void endSynchronize(int state) {
+
+        //结束动画
+        findViewById(R.id.main_sync_btn).clearAnimation();
+
+        if (state == 0) {
+            //正常结束
+            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
+            //
+            TNSettings settings = TNSettings.getInstance();
+            settings.originalSyncTime = System.currentTimeMillis();
+            settings.savePref(false);
+            mTimeView.setText("上次同步时间：" + TNUtilsUi.formatDate(TNMainAct.this,
+                    settings.originalSyncTime / 1000L));
+        } else if (state == 1) {
+            TNUtilsUi.showNotification(this, R.string.alert_Synchronize_Stoped, true);
+        } else {
+            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
+        }
+    }
 
     //更新弹窗的自定义监听（确定按钮的监听）
     class CustomListener implements View.OnClickListener {
@@ -439,7 +446,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             }
         });
-
     }
 
     /**
@@ -786,31 +792,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
     }
 
-    /**
-     * 同步结束后的操作
-     *
-     * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
-     */
-    private void endSynchronize(int state) {
 
-        //结束动画
-        findViewById(R.id.main_sync_btn).clearAnimation();
-
-        if (state == 0) {
-            //正常结束
-            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
-            //
-            TNSettings settings = TNSettings.getInstance();
-            settings.originalSyncTime = System.currentTimeMillis();
-            settings.savePref(false);
-            mTimeView.setText("上次同步时间：" + TNUtilsUi.formatDate(TNMainAct.this,
-                    settings.originalSyncTime / 1000L));
-        } else if (state == 1) {
-            TNUtilsUi.showNotification(this, R.string.alert_Synchronize_Stoped, true);
-        } else {
-            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
-        }
-    }
 
     //=============================================p层调用======================================================
 

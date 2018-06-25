@@ -21,7 +21,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
 import com.thinkernote.ThinkerNote.Data.TNCat;
@@ -29,9 +28,9 @@ import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
 import com.thinkernote.ThinkerNote.Data.TNUser;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
@@ -74,10 +73,6 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         setContentView(R.layout.settings);
         initMyView();
 
-        //TODO 未做
-        TNAction.regResponder(TNActionType.ClearCache, this, "respondClearCache");
-
-        //
         presener = new SettingsPresenterImpl(this, this);
     }
 
@@ -679,12 +674,8 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
     }
 
     private void pClearCache() {
-
-        //TODO 未做
-        TNAction.runAction(TNActionType.ClearCache);
-    }
-
-    public void respondClearCache(TNAction aAction) {
+        TNUtilsAtt.deleteTempFiles();
+        TNDbUtils.clearCache();
         TNUtilsUi.showToast("清除成功");
     }
 

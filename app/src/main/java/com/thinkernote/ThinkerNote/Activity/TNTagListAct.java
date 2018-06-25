@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +23,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
+import com.thinkernote.ThinkerNote.DBHelper.TagDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
@@ -36,293 +38,355 @@ import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.TagListPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ITagListPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnTagListListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.bean.main.TagItemBean;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 选择标签/更换标签
  */
-public class TNTagListAct extends TNActBase implements OnClickListener, OnItemClickListener, OnItemLongClickListener,OnCommonListener {
-	
-	/* Bundle:
-	 * TagStrForEdit
-	 */
-	private String mOriginal = null;
-	private String mTagStr = null;
-	private TNTagAdapter mAdapter;
-	private long mNoteLocalId;
-	private TNNote mNote;
-	private Vector<TNTag> mTags;
-	private ProgressDialog mProgressDialog = null;
+public class TNTagListAct extends TNActBase implements OnClickListener, OnItemClickListener, OnItemLongClickListener, OnTagListListener {
 
-	// p
-	private ITagListPresener presener;
-	
-	// Activity methods
-	//-------------------------------------------------------------------------------
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.taglist);
-		setViews();
-		mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
-		mTags = new Vector<TNTag>();
+    public static final int BACK_CHECKDB = 101;//1
 
-		presener = new TagListPresenterImpl(this, this);
-		
-		findViewById(R.id.taglist_back).setOnClickListener(this);
-		findViewById(R.id.taglist_new).setOnClickListener(this);
-		findViewById(R.id.taglist_save).setOnClickListener(this);
+    /* Bundle:
+     * TagStrForEdit
+     */
+    private String mOriginal = null;
+    private String mTagStr = null;
+    private TNTagAdapter mAdapter;
+    private long mNoteLocalId;
+    private TNNote mNote;
+    private Vector<TNTag> mTags;
+    private ProgressDialog mProgressDialog = null;
 
-		mOriginal = mTagStr = getIntent().getStringExtra("TagStrForEdit");
-		mNoteLocalId = getIntent().getLongExtra("ChangeTagForNoteList", -1);
-		if (mNoteLocalId != -1) {
-			mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
-		}
-		
-		ListView lv = (ListView)findViewById(R.id.taglist_list);
-		lv.setOnItemClickListener(this);
-		lv.setOnItemLongClickListener(this);
-		mAdapter = new TNTagAdapter();
-		lv.setAdapter(mAdapter);
-	}
-	
-	@Override
-	protected void setViews() {
-		TNUtilsSkin.setViewBackground(this, null, R.id.taglist_toolbar_layout, R.drawable.toolbg);
-		TNUtilsSkin.setImageButtomDrawableAndStateBackground(this, null, R.id.taglist_new, R.drawable.newnote);
-		TNUtilsSkin.setImageButtomDrawableAndStateBackground(this, null, R.id.taglist_save, R.drawable.ok);
-		TNUtilsSkin.setViewBackground(this, null, R.id.taglist_page_bg, R.drawable.page_bg);
-	}
+    // p
+    private ITagListPresener presener;
 
-	@Override
-	public void onSaveInstanceState(Bundle outBundle){
-		outBundle.putString("TAG_STR", mTagStr);
-		super.onSaveInstanceState(outBundle);
-	}
-	
-	@Override
-	public void onRestoreInstanceState(Bundle outBundle){
-		super.onRestoreInstanceState(outBundle);
-		
-		mTagStr = outBundle.getString("TAG_STR");
-	}
-	
-	protected void configView(){
-		((TextView)findViewById(R.id.taglist_tagstr)).setText(mTagStr);
-		//
-		getTagList();
+    // Activity methods
+    //-------------------------------------------------------------------------------
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.taglist);
+        setViews();
+        mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
+        mTags = new Vector<TNTag>();
 
-	}
-	
-	@Override
-	public void onDestroy() {
-		mProgressDialog.dismiss();
-		super.onDestroy();
-	}
+        presener = new TagListPresenterImpl(this, this);
 
-	@Override
-	public boolean onKeyDown (int keyCode, KeyEvent event){
-		if (keyCode==KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) { 
-			back();
-			return true;
-		}
-		
-		return super.onKeyDown(keyCode,event);  
-	}
-	// Implement OnClickListener
-	//-------------------------------------------------------------------------------
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()){
-		case R.id.taglist_back:
-			back();
-			break;
-			
-		case R.id.taglist_new:
-			Bundle b = new Bundle();
-			b.putString("TextType", "tag_add");
-			b.putString("TextHint", getString(R.string.textedit_tag));
-			b.putString("OriginalText", "");
-			startActivity(TNTextEditAct.class, b);
-			break;
-			
-		case R.id.taglist_save:
-			if( !mTagStr.equals(mOriginal)){
-				if (mNote != null) {
-					TNAction aAction = TNAction.runAction(TNActionType.NoteLocalChangeTag, mNote.noteLocalId, mTagStr);
-					if (aAction.result == TNActionResult.Finished) {
-						mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
-						finish();
-					}
-				} else {
-					Intent it = new Intent();
-					it.putExtra("EditedTagStr", mTagStr);
-					setResult(Activity.RESULT_OK, it);
-					finish();
-				}
-			}else{
-				setResult(Activity.RESULT_CANCELED, null);	
-				finish();
-			}
-			break;
-		}
-	}
+        findViewById(R.id.taglist_back).setOnClickListener(this);
+        findViewById(R.id.taglist_new).setOnClickListener(this);
+        findViewById(R.id.taglist_save).setOnClickListener(this);
 
-	// Implement OnItemClickListener
-	//-------------------------------------------------------------------------------
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, 
-			int position, long id){
-		MLog.d(TAG, parent.toString() + view.toString() + position + id);
-		ListView lv = (ListView)findViewById(R.id.taglist_list);
-		CheckBox cb = (CheckBox)lv.findViewWithTag((Object)position);
-		cb.setChecked(!cb.isChecked());
-	}
+        mOriginal = mTagStr = getIntent().getStringExtra("TagStrForEdit");
+        mNoteLocalId = getIntent().getLongExtra("ChangeTagForNoteList", -1);
+        if (mNoteLocalId != -1) {
+            mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
+        }
 
-	// Implement OnItemLongClickListener
-	//-------------------------------------------------------------------------------
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, 
-			int position, long id) {
-		MLog.i(TAG, "onItemLongClick");
-		return false;
-	}
+        ListView lv = (ListView) findViewById(R.id.taglist_list);
+        lv.setOnItemClickListener(this);
+        lv.setOnItemLongClickListener(this);
+        mAdapter = new TNTagAdapter();
+        lv.setAdapter(mAdapter);
+    }
 
-	// Private methods
-	//-------------------------------------------------------------------------------
-	private void back(){
-		if( !mTagStr.equals(mOriginal)){
-			DialogInterface.OnClickListener pbtn_Click = 
-				new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(mNote != null){
-						TNAction aAction = TNAction.runAction(TNActionType.NoteLocalChangeTag, mNote.noteLocalId, mTagStr);
-						if (aAction.result == TNActionResult.Finished) {
-							mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
-							finish();
-						}
-					}else{
-						Intent it = new Intent();
-						it.putExtra("EditedTagStr", mTagStr);
-						setResult(Activity.RESULT_OK, it);
-						finish();
-					}
-				}
-			};
+    @Override
+    protected void setViews() {
+        TNUtilsSkin.setViewBackground(this, null, R.id.taglist_toolbar_layout, R.drawable.toolbg);
+        TNUtilsSkin.setImageButtomDrawableAndStateBackground(this, null, R.id.taglist_new, R.drawable.newnote);
+        TNUtilsSkin.setImageButtomDrawableAndStateBackground(this, null, R.id.taglist_save, R.drawable.ok);
+        TNUtilsSkin.setViewBackground(this, null, R.id.taglist_page_bg, R.drawable.page_bg);
+    }
 
-			DialogInterface.OnClickListener nbtn_Click = 
-				new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					finish();
-				}
-			};
+    @Override
+    public void onSaveInstanceState(Bundle outBundle) {
+        outBundle.putString("TAG_STR", mTagStr);
+        super.onSaveInstanceState(outBundle);
+    }
 
-			JSONObject jsonData = TNUtils.makeJSON(
-					"CONTEXT", this,
-					"TITLE", R.string.alert_Title,
-					"MESSAGE", R.string.alert_TagList_BackMsg,
-					"POS_BTN", R.string.alert_Save,
-					"POS_BTN_CLICK", pbtn_Click,
-					"NEU_BTN", R.string.alert_NoSave,
-					"NEU_BTN_CLICK", nbtn_Click,
-					"NEG_BTN", R.string.alert_Cancel
-					);
-			TNUtilsUi.alertDialogBuilder(jsonData).show();		
-		}else{
-			setResult(Activity.RESULT_CANCELED, null);	
-			finish();
-		}
-	}
+    @Override
+    public void onRestoreInstanceState(Bundle outBundle) {
+        super.onRestoreInstanceState(outBundle);
+
+        mTagStr = outBundle.getString("TAG_STR");
+    }
+
+    protected void configView() {
+        ((TextView) findViewById(R.id.taglist_tagstr)).setText(mTagStr);
+        //
+        getTagList();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mProgressDialog.dismiss();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            back();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    // Implement OnClickListener
+    //-------------------------------------------------------------------------------
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.taglist_back:
+                back();
+                break;
+
+            case R.id.taglist_new:
+                Bundle b = new Bundle();
+                b.putString("TextType", "tag_add");
+                b.putString("TextHint", getString(R.string.textedit_tag));
+                b.putString("OriginalText", "");
+                startActivity(TNTextEditAct.class, b);
+                break;
+
+            case R.id.taglist_save:
+                if (!mTagStr.equals(mOriginal)) {
+                    if (mNote != null) {
+                        noteLocalChangeTag();
+                    } else {
+                        Intent it = new Intent();
+                        it.putExtra("EditedTagStr", mTagStr);
+                        setResult(Activity.RESULT_OK, it);
+                        finish();
+                    }
+                } else {
+                    setResult(Activity.RESULT_CANCELED, null);
+                    finish();
+                }
+                break;
+        }
+    }
+
+    /**
+     *
+     */
+    private void noteLocalChangeTag() {
+        final long noteLocalId = mNote.noteLocalId;
+        final String tags = mTagStr;
+        final int lastUpdate = (int) (System.currentTimeMillis() / 1000);
+        TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+        final int syncState = note.noteId == -1 ? 3 : 4;
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    TNNote note = TNDbUtils.getNoteByNoteId(noteLocalId);
+                    //
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_CHANGE_TAG, new String[]{tags, syncState + "", lastUpdate + "", noteLocalId + ""});
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new String[]{System.currentTimeMillis() / 1000 + "", note.catId + ""});
+
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+
+                //
+
+                handler.sendEmptyMessage(BACK_CHECKDB);
+            }
+        });
+
+    }
+
+    @Override
+    protected void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        switch (msg.what) {
+            case BACK_CHECKDB://2-8-2的调用
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
+                finish();
+                break;
+        }
+    }
+
+    // Implement OnItemClickListener
+    //-------------------------------------------------------------------------------
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view,
+                            int position, long id) {
+        MLog.d(TAG, parent.toString() + view.toString() + position + id);
+        ListView lv = (ListView) findViewById(R.id.taglist_list);
+        CheckBox cb = (CheckBox) lv.findViewWithTag((Object) position);
+        cb.setChecked(!cb.isChecked());
+    }
+
+    // Implement OnItemLongClickListener
+    //-------------------------------------------------------------------------------
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                   int position, long id) {
+        MLog.i(TAG, "onItemLongClick");
+        return false;
+    }
+
+    // Private methods
+    //-------------------------------------------------------------------------------
+    private void back() {
+        if (!mTagStr.equals(mOriginal)) {
+            DialogInterface.OnClickListener pbtn_Click =
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (mNote != null) {
+                                noteLocalChangeTag();
+                            } else {
+                                Intent it = new Intent();
+                                it.putExtra("EditedTagStr", mTagStr);
+                                setResult(Activity.RESULT_OK, it);
+                                finish();
+                            }
+                        }
+                    };
+
+            DialogInterface.OnClickListener nbtn_Click =
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    };
+
+            JSONObject jsonData = TNUtils.makeJSON(
+                    "CONTEXT", this,
+                    "TITLE", R.string.alert_Title,
+                    "MESSAGE", R.string.alert_TagList_BackMsg,
+                    "POS_BTN", R.string.alert_Save,
+                    "POS_BTN_CLICK", pbtn_Click,
+                    "NEU_BTN", R.string.alert_NoSave,
+                    "NEU_BTN_CLICK", nbtn_Click,
+                    "NEG_BTN", R.string.alert_Cancel
+            );
+            TNUtilsUi.alertDialogBuilder(jsonData).show();
+        } else {
+            setResult(Activity.RESULT_CANCELED, null);
+            finish();
+        }
+    }
 
 
-	// Class TNTagAdapter
-	//-------------------------------------------------------------------------------
-	private class TNTagAdapter extends BaseAdapter 
-		implements OnCheckedChangeListener{
+    // Class TNTagAdapter
+    //-------------------------------------------------------------------------------
+    private class TNTagAdapter extends BaseAdapter
+            implements OnCheckedChangeListener {
 
-		@Override
-		public int getCount() {
-			return mTags.size();
-		}
+        @Override
+        public int getCount() {
+            return mTags.size();
+        }
 
-		@Override
-		public Object getItem(int position) {
-			return mTags.get(position);
-		}
+        @Override
+        public Object getItem(int position) {
+            return mTags.get(position);
+        }
 
-		@Override
-		public long getItemId(int position) {
-			return mTags.get(position).tagId;
-		}
+        @Override
+        public long getItemId(int position) {
+            return mTags.get(position).tagId;
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View layout = null;
-			if (convertView == null){
-				LayoutInflater layoutInflater = (LayoutInflater) getSystemService(
-						Context.LAYOUT_INFLATER_SERVICE); 
-				layout = layoutInflater.inflate(R.layout.taglistitem, null);	
-			}else{
-				layout = convertView;
-			}
-			setView(layout, position);
-			return layout;
-		}
-		
-		private void setView(View layout, int position){
-			TNTag tag = (TNTag)getItem(position);
-			((TextView)layout.findViewById(R.id.taglistitem_title)).setText(tag.tagName);
-			CheckBox cb = ((CheckBox)layout.findViewById(R.id.taglistitem_select));
-			cb.setTag(position);
-			cb.setOnCheckedChangeListener(this);
-			
-			Vector<String> goodTag = TNUtilsTag.splitTagStr(mTagStr);
-			cb.setChecked( goodTag.contains(tag.tagName));
-		}
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View layout = null;
+            if (convertView == null) {
+                LayoutInflater layoutInflater = (LayoutInflater) getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                layout = layoutInflater.inflate(R.layout.taglistitem, null);
+            } else {
+                layout = convertView;
+            }
+            setView(layout, position);
+            return layout;
+        }
 
-		@Override
-		public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-			TNTag tag = (TNTag)getItem((Integer)arg0.getTag());
-			
-			Vector<String> goodTag = TNUtilsTag.splitTagStr(TNTagListAct.this.mTagStr);
-			if(goodTag.contains(tag.tagName) != arg1){
-				if(arg1){
-					goodTag.add(tag.tagName);
-				}else{
-					goodTag.remove(tag.tagName);
-				}
-				TNTagListAct.this.mTagStr = TNUtilsTag.makeTagStr(goodTag);
-				((TextView)findViewById(R.id.taglist_tagstr)).setText(
-						TNTagListAct.this.mTagStr);
-			}
-		}
-		
-	}
+        private void setView(View layout, int position) {
+            TNTag tag = (TNTag) getItem(position);
+            ((TextView) layout.findViewById(R.id.taglistitem_title)).setText(tag.tagName);
+            CheckBox cb = ((CheckBox) layout.findViewById(R.id.taglistitem_select));
+            cb.setTag(position);
+            cb.setOnCheckedChangeListener(this);
 
-	//---------------------------------------------------p层调用-------------------------------------------------
-	private void getTagList() {
-		presener.pTagList();
-		//TODO
-//		TNAction.runActionAsync(TNActionType.GetTagList);
-	}
+            Vector<String> goodTag = TNUtilsTag.splitTagStr(mTagStr);
+            cb.setChecked(goodTag.contains(tag.tagName));
+        }
 
-	//---------------------------------------------------接口结果回调-------------------------------------------------
-	@Override
-	public void onSuccess(Object obj) {
-		mTags = TNDbUtils.getTagList(TNSettings.getInstance().userId);
-		mAdapter.notifyDataSetChanged();
-	}
+        @Override
+        public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+            TNTag tag = (TNTag) getItem((Integer) arg0.getTag());
 
-	@Override
-	public void onFailed(String msg, Exception e) {
+            Vector<String> goodTag = TNUtilsTag.splitTagStr(TNTagListAct.this.mTagStr);
+            if (goodTag.contains(tag.tagName) != arg1) {
+                if (arg1) {
+                    goodTag.add(tag.tagName);
+                } else {
+                    goodTag.remove(tag.tagName);
+                }
+                TNTagListAct.this.mTagStr = TNUtilsTag.makeTagStr(goodTag);
+                ((TextView) findViewById(R.id.taglist_tagstr)).setText(
+                        TNTagListAct.this.mTagStr);
+            }
+        }
 
-	}
+    }
 
+    //---------------------------------------------------p层调用-------------------------------------------------
+    private void getTagList() {
+        presener.pTagList();
+    }
+
+    //---------------------------------------------------接口结果回调-------------------------------------------------
+
+    @Override
+    public void onTagListSuccess(Object obj) {
+        List<TagItemBean> foldersObj = (List<TagItemBean>) obj;
+        TagDbHelper.clearTags();
+        for (int i = 0; i < foldersObj.size(); i++) {
+            TagItemBean bean = foldersObj.get(i);
+            String tagName = bean.getName();
+            if (TextUtils.isEmpty(tagName)) {
+                tagName = "无";
+            }
+            JSONObject tempObj = TNUtils.makeJSON(
+                    "tagName", tagName,
+                    "userId", TNSettings.getInstance().userId,
+                    "trash", 0,
+                    "tagId", bean.getId(),
+                    "strIndex", TNUtils.getPingYinIndex(tagName),
+                    "count", bean.getCount()
+            );
+            TagDbHelper.addOrUpdateTag(tempObj);
+            //
+            mTags = TNDbUtils.getTagList(TNSettings.getInstance().userId);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onTagListFailed(String msg, Exception e) {
+
+    }
 }
+

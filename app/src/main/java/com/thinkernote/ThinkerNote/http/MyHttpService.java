@@ -643,7 +643,7 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Note.TAGLIST)
-    Observable<CommonBean> getTagList(@Query("session_token") String session_token);
+    Observable<TagListBean> getTagList(@Query("session_token") String session_token);
 
 
     /**

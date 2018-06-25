@@ -200,6 +200,7 @@ public class TNNoteLocalService {
         aAction.finished();
     }
 
+    //TODO
     public void NoteLocalChangeTag(TNAction aAction) {
         long noteLocalId = (Long) aAction.inputs.get(0);
         String tags = (String) aAction.inputs.get(1);
