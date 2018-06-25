@@ -19,10 +19,13 @@ import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
+import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -361,7 +364,7 @@ public interface MyHttpService {
     @POST(URLUtils.Note.UPLOAD_PIC)
     Observable<OldNotePicBean> syncOldNotePic(
             @Part MultipartBody.Part file
-            , @Part("session_token") String session_token);
+            , @Part("session_token") RequestBody session_token);
 
     /**
      * 同步 上传图片
@@ -372,7 +375,18 @@ public interface MyHttpService {
     @POST(URLUtils.Note.UPLOAD_PIC)
     Observable<OldNotePicBean> syncNewNotePic(
             @Part MultipartBody.Part file
-            , @Part("session_token") String session_token);
+            , @Part("session_token") RequestBody session_token);
+
+    /**
+     * 同步 上传图片
+     *
+     * @return
+     */
+    @Multipart
+    @POST(URLUtils.Note.UPLOAD_PIC)
+    Observable<OldNotePicBean> syncEditNotePic(
+            @Part MultipartBody.Part file
+            , @Part("session_token") RequestBody session_token);
 
     /**
      * 同步 上传图片
@@ -382,8 +396,7 @@ public interface MyHttpService {
     @Multipart
     @POST(URLUtils.Note.UPLOAD_PIC)
     Observable<OldNotePicBean> syncRecoveryNotePic(
-            @Part MultipartBody.Part file
-            , @Part("session_token") String session_token);
+            @Part List<MultipartBody.Part> parts);
 
 
     /**
@@ -711,6 +724,18 @@ public interface MyHttpService {
             , @Query("sortord") String sortord
             , @Query("session_token") String session_token);
 
+    //-------------------------------------------------设置相关----------------------------------------------------
+
+    /**
+     * 上传多张图片
+     *
+     * @param parts
+     * @return
+     */
+    @Multipart
+    @POST(URLUtils.Settings.UPLOAD_PIC)
+    Observable<FeedBackBean> upLoadFeedBackPic(
+            @Part List<MultipartBody.Part> parts);
 
 //*************************************************以下不使用***********************************************
 

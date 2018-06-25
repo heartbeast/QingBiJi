@@ -139,7 +139,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNActivityManager.getInstance().finishOtherActivity(this);
 
         //TODO
-        TNAction.regResponder(TNActionType.SynchronizeEdit, this, "respondSynchronizeEdit");
         TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
 
         //
@@ -426,14 +425,21 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      *
      * @param attrId
      */
-    private void upDataAttIdSQL(long attrId) {
-        TNDb.beginTransaction();
-        try {
-            TNDb.getInstance().upDataAttIdSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, -1);
-            TNDb.setTransactionSuccessful();
-        } finally {
-            TNDb.endTransaction();
-        }
+    private void upDataAttIdSQL(final long attrId, final TNNoteAtt tnNoteAtt) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    TNDb.getInstance().upDataAttIdSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, (int) tnNoteAtt.noteLocalId);
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+            }
+        });
+
     }
 
     /**
@@ -775,7 +781,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 break;
             case UPDATA_EDITNOTES://2-11 更新日记时间返回
                 //执行下一个position/执行下一个接口
-                pEditNotes(((int) msg.obj + 1));
+                pEditNotePic((int) msg.obj + 1);
                 break;
         }
     }
@@ -1310,11 +1316,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * (二.11)-1 edit  通过最后更新时间来与云端比较，是否该上传本地编辑的笔记
+     * (二.10)-1 editNote上传图片
+     * 说明：
+     * 2-10-1和2-11-1图片上传和2-5/2-6相同
      *
      * @param position cloudIds数据的其实操作位置
      */
-    private void pEditNotes(int position) {
+    private void pEditNotePic(int position) {
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
@@ -1323,35 +1331,106 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             for (int j = 0; j < editNotes.size(); j++) {
                 if (id == editNotes.get(j).noteId) {
                     if (editNotes.get(j).lastUpdate > lastUpdate) {
-                        pEditNotes(position, editNotes.get(j));
+                        //上传图片，之后上传文本
+                        pEditNotePic(position, 0, editNotes.get(j));
                     } else {
-
                         updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
                     }
                 }
             }
+
         } else {
-            //下一个接口
             pUpdataNote(0, false);
         }
     }
 
     /**
-     * (二.11)-1 edit  通过最后更新时间来与云端比较，上传本地编辑的笔记接口方法
+     * (二.10)-1
+     * 图片上传
      *
-     * @param position
+     * @param cloudsPos cloudIds数据的其实操作位置
      * @param tnNote
      */
-    private void pEditNotes(int position, TNNote tnNote) {
-        presener.pEditNote(position, tnNote);
+    private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+            TNNote note = tnNote;
+            String shortContent = TNUtils.getBriefContent(note.content);
+            String content = note.content;
+            ArrayList list = new ArrayList();
+            int index1 = content.indexOf("<tn-media");
+            int index2 = content.indexOf("</tn-media>");
+            while (index1 >= 0 && index2 > 0) {
+                String temp = content.substring(index1, index2 + 11);
+                list.add(temp);
+                content = content.replaceAll(temp, "");
+                index1 = content.indexOf("<tn-media");
+                index2 = content.indexOf("</tn-media>");
+            }
+            for (int i = 0; i < list.size(); i++) {
+                String temp = (String) list.get(i);
+                boolean isExit = false;
+                for (TNNoteAtt att : note.atts) {
+                    String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
+                    if (temp.equals(temp2)) {
+                        isExit = true;
+                    }
+                }
+                if (!isExit) {
+                    note.content = note.content.replaceAll(temp, "");
+                }
+            }
 
+            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+                //上传attsPos的图片
+                TNNoteAtt att = note.atts.get(attsPos);
+                if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
+                    String s1 = String.format("<tn-media hash=\"%s\" />", att.digest);
+                    String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", att.digest, att.attId);
+                    note.content = note.content.replaceAll(s1, s2);
+                    String s3 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
+                    String s4 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", att.digest, att.attId);
+                    note.content = note.content.replaceAll(s3, s4);
+
+                    //执行下一个attsPos位置的数据
+                    pEditNotePic(cloudsPos, attsPos + 1, note);
+
+                } else {
+                    //接口，上传图片
+                    presener.pEditNotePic(cloudsPos, attsPos, note);
+                }
+            } else {
+                //图片上传完，再上传文本
+                pEditNotes(cloudsPos, note);
+            }
+        } else {
+            //执行下一个接口
+            pUpdataNote(0, false);
+
+        }
+
+    }
+
+
+    /**
+     * (二.11)-1 edit  通过最后更新时间来与云端比较，是否该上传本地编辑的笔记
+     * 上传文本
+     *
+     * @param cloudsPos cloudIds数据的其实操作位置
+     */
+    private void pEditNotes(int cloudsPos, TNNote note) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+            presener.pEditNote(cloudsPos, note);
+        } else {
+            //执行下一个接口
+            pUpdataNote(0, false);
+        }
     }
 
     /**
      * (二.11)-2 更新云端的笔记
      *
      * @param position 执行的位置
-     * @param is13     (二.11)和(二.13)调用同一个接口，用于区分
+     * @param is13     (二.11)-2和(二.13)调用同一个接口，用于区分
      */
     private void pUpdataNote(int position, boolean is13) {
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
@@ -1710,11 +1789,11 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //2-2 OldNotePic
     @Override
-    public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
+    public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
         String content = addOldNotes.get(notePos).content;
         OldNotePicBean oldNotePicBean = (OldNotePicBean) obj;
         //更新图片 数据库
-        upDataAttIdSQL(oldNotePicBean.getId());
+        upDataAttIdSQL(oldNotePicBean.getId(), tnNoteAtt);
 
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
@@ -1824,12 +1903,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //2-5
     @Override
-    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
+    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
 
         String content = addNewNotes.get(notePos).content;
         OldNotePicBean newPicbean = (OldNotePicBean) obj;
         //更新图片 数据库
-        upDataAttIdSQL(newPicbean.getId());
+        upDataAttIdSQL(newPicbean.getId(), tnNoteAtt);
 
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
@@ -1912,12 +1991,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //2-7-2
     @Override
-    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize) {
+    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
         String content = recoveryNotes.get(notePos).content;
         OldNotePicBean recoveryPicbean = (OldNotePicBean) obj;
 
         //更新图片 数据库
-        upDataAttIdSQL(recoveryPicbean.getId());
+        upDataAttIdSQL(recoveryPicbean.getId(), tnNoteAtt);
 
         if (notePos < noteArrySize - 1) {
             if (picPos < picArrySize - 1) {
@@ -2046,6 +2125,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                     break;
                 }
             }
+
             //不存在就删除  /使用异步
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             if (!isExit && note.syncState != 7) {
@@ -2069,19 +2149,43 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
         //edit  通过最后更新时间来与云端比较是否该上传本地编辑的笔记
         editNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 4);
-        pEditNotes(0);
+        //执行下一个接口
+        pEditNotePic(0);
     }
 
     @Override
     public void onSyncAllNotesIdAddFailed(String msg, Exception e) {
-
+        MLog.e(msg);
     }
+
+    //2-10-1
+    @Override
+    public void onSyncEditNotePicSuccess(Object obj, int cloudsPos, int attsPos, TNNote tnNote) {
+        TNNote note = tnNote;
+        OldNotePicBean editPicbean = (OldNotePicBean) obj;
+        note.atts.get(attsPos).digest = editPicbean.getMd5();
+        note.atts.get(attsPos).attId = editPicbean.getId();
+        String s1 = String.format("<tn-media hash=\"%s\" />", note.atts.get(attsPos).digest);
+        String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", note.atts.get(attsPos).digest, note.atts.get(attsPos).attId);
+        note.content = note.content.replaceAll(s1, s2);
+        //更新图片 数据库
+        upDataAttIdSQL(editPicbean.getId(), note.atts.get(attsPos));
+        //执行下一个attsPos的图片上传
+        pEditNotePic(cloudsPos, attsPos + 1, note);
+    }
+
+    @Override
+    public void onSyncEditNotePicFailed(String msg, Exception e, int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.e(msg);
+    }
+
 
     //2-11-1
     @Override
-    public void onSyncEditNoteSuccess(Object obj, int position, TNNote note) {
-        updataEditNotes(position, note);
+    public void onSyncEditNoteSuccess(Object obj, int cloudsPos, TNNote note) {
 
+        //更新下一个cloudsPos位置的数据
+        updataEditNotes(cloudsPos, note);
     }
 
     @Override

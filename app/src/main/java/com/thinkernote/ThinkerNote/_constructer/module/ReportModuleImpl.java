@@ -10,16 +10,21 @@ import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- *  m层 具体实现
+ * m层 具体实现
  */
 public class ReportModuleImpl implements IReportModule {
 
@@ -32,17 +37,30 @@ public class ReportModuleImpl implements IReportModule {
 
     /**
      * TODO 图片上传 后台只上传一张/多张图片，没有表单
-     *
      */
     @Override
     public void mFeedBackPic(final OnReportListener listener, List<String> fileList, final String content, final String email) {
         TNSettings settings = TNSettings.getInstance();
+        //token
+        // 需要加入到MultipartBody中，而不是作为参数传递
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)//表单类型
+                .addFormDataPart("token", settings.token);
+        //file
+        for (String path : fileList) {
+            File file = new File(path);
+            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);//TODO image/jpg
+            builder.addFormDataPart("fileName", file.getName(), photoRequestBody);
+        }
+
+        List<MultipartBody.Part> parts = builder.build().parts();
+
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .upLoadPic(settings.token)//接口方法
+                .upLoadFeedBackPic(parts)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<FeedBackBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
                         MLog.d(TAG, "FeedBackPic--onCompleted");
@@ -55,12 +73,12 @@ public class ReportModuleImpl implements IReportModule {
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
+                    public void onNext(FeedBackBean bean) {
                         MLog.d(TAG, "FeedBackPic-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onPicSuccess(bean,content,email);
+                            listener.onPicSuccess(bean, content, email);
                         } else {
                             listener.onPicFailed(bean.getMessage(), null);
                         }
@@ -73,7 +91,7 @@ public class ReportModuleImpl implements IReportModule {
     public void mFeedBack(final OnReportListener listener, final String content, long pid, final String email) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .feedBack(content,pid,email,settings.token)//接口方法
+                .feedBack(content, pid, email, settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

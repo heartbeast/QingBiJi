@@ -1,6 +1,7 @@
 package com.thinkernote.ThinkerNote._interface.v;
 
 import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public interface OnMainListener {
     void onSyncProfileAddFailed(String msg, Exception e);
 
     //2-2
-    void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
+    void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt);
 
     void onSyncOldNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
@@ -63,7 +64,7 @@ public interface OnMainListener {
 
 
     //2-5
-    void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
+    void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry,TNNoteAtt tnNoteAtt);
 
     void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
@@ -78,7 +79,7 @@ public interface OnMainListener {
     void onSyncRecoveryFailed(String msg, Exception e);
 
     //2-7
-    void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
+    void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt);
 
     void onSyncRecoveryNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
@@ -108,6 +109,11 @@ public interface OnMainListener {
     void onSyncAllNotesIdSuccess(Object obj);
 
     void onSyncAllNotesIdAddFailed(String msg, Exception e);
+
+    //2-10-1
+    void onSyncEditNotePicSuccess(Object obj, int cloudsPos, int attsPos, TNNote tnNote);
+
+    void onSyncEditNotePicFailed(String msg, Exception e, int cloudsPos, int attsPos, TNNote tnNote);
 
     //2-11-1
     void onSyncEditNoteSuccess(Object obj, int position, TNNote note);

@@ -48,9 +48,11 @@ public interface IMainModule {
 
     void mGetAllNotesId(OnMainListener listener);
 
+    void mEditNotePic(OnMainListener listener,int cloudsPos, int attrPos, TNNote note);
+
     void mEditNote(OnMainListener listener, int position, TNNote tnNote);
 
-    void mGetNoteByNoteId(OnMainListener listener, int position, long id,boolean is12);
+    void mGetNoteByNoteId(OnMainListener listener, int position, long id, boolean is12);
 
     void mGetAllTrashNoteIds(OnMainListener listener);
 

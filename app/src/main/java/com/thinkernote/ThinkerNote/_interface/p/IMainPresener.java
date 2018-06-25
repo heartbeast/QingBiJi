@@ -50,6 +50,8 @@ public interface IMainPresener {
 
     void pGetAllNotesId();
 
+    void pEditNotePic(int cloudsPos,int attrPos, TNNote note);
+
     void pEditNote(int position, TNNote note);
 
     void pGetNoteByNoteId(int position,long noteId,boolean is12);

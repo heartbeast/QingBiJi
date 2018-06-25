@@ -24,9 +24,11 @@ import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
+import com.thinkernote.ThinkerNote.http.MyRxUtils;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -274,7 +276,7 @@ public class MainModuleImpl implements IMainModule {
 
     //02-02 OldNotePic
     @Override
-    public void mUploadOldNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
+    public void mUploadOldNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, final TNNoteAtt tnNoteAtt) {
         String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
@@ -284,7 +286,7 @@ public class MainModuleImpl implements IMainModule {
 
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncOldNotePic(part, settings.token)//接口方法
+                .syncOldNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -306,7 +308,7 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncOldNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize);
+                            listener.onSyncOldNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
                         } else {
                             listener.onSyncOldNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
@@ -392,7 +394,7 @@ public class MainModuleImpl implements IMainModule {
 
     //2-5
     @Override
-    public void mNewNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
+    public void mNewNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, final TNNoteAtt tnNoteAtt) {
         String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
@@ -402,7 +404,7 @@ public class MainModuleImpl implements IMainModule {
 
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncNewNotePic(part, settings.token)//接口方法
+                .syncNewNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -424,7 +426,7 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncNewNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize);
+                            listener.onSyncNewNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
                         } else {
                             listener.onSyncNewNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
@@ -507,17 +509,26 @@ public class MainModuleImpl implements IMainModule {
 
     //2-7-2
     @Override
-    public void mRecoveryNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, TNNoteAtt tnNoteAtt) {
+    public void mRecoveryNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, final TNNoteAtt tnNoteAtt) {
+        TNSettings settings = TNSettings.getInstance();
+        //token
+        // 需要加入到MultipartBody中，而不是作为参数传递
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)//表单类型
+                .addFormDataPart("token", settings.token);
         String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
+        //file
+        File file = new File(filename);
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);//TODO image/jpg
+        builder.addFormDataPart("fileName", file.getName(), photoRequestBody);
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
+        List<MultipartBody.Part> parts = builder.build().parts();
 
-        TNSettings settings = TNSettings.getInstance();
+
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncRecoveryNotePic(part, settings.token)//接口方法
+                .syncRecoveryNotePic(parts)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -530,7 +541,7 @@ public class MainModuleImpl implements IMainModule {
                     @Override
                     public void onError(Throwable e) {
                         MLog.e("mRecoveryNotePic 异常onError:" + e.toString());
-                        listener.onSyncNewNotePicFailed("异常", new Exception("接口异常！"), picPos, picArrySize, notePos, noteArrySize);
+                        listener.onSyncRecoveryNotePicFailed("异常", new Exception("接口异常！"), picPos, picArrySize, notePos, noteArrySize);
                     }
 
                     @Override
@@ -539,9 +550,9 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncNewNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize);
+                            listener.onSyncRecoveryNotePicSuccess(bean, picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
                         } else {
-                            listener.onSyncNewNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
+                            listener.onSyncRecoveryNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
                     }
 
@@ -726,6 +737,49 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
+    //2-10-1
+    @Override
+    public void mEditNotePic(final OnMainListener listener, final int cloudsPos, final int attrPos, final TNNote note) {
+        String filename = note.atts.get(attrPos).attName;
+        String filePath = note.atts.get(attrPos).path;
+        long fileId = note.atts.get(attrPos).attId;
+
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
+        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
+
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncEditNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mNewNotePic--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mNewNotePic 异常onError:" + e.toString());
+                        listener.onSyncEditNotePicFailed("异常", new Exception("接口异常！"), cloudsPos, attrPos, note);
+                    }
+
+                    @Override
+                    public void onNext(OldNotePicBean bean) {
+                        MLog.d(TAG, "mNewNotePic-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncEditNotePicSuccess(bean, cloudsPos, attrPos, note);
+                        } else {
+                            listener.onSyncEditNotePicFailed(bean.getMessage(), null, cloudsPos, attrPos, note);
+                        }
+                    }
+
+                });
+    }
+
     //2-11-1
     @Override
     public void mEditNote(final OnMainListener listener, final int position, final TNNote note) {
@@ -789,7 +843,7 @@ public class MainModuleImpl implements IMainModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onSyncpGetNoteByNoteIdSuccess(bean.getNote(), position,is12);
+                            listener.onSyncpGetNoteByNoteIdSuccess(bean.getNote(), position, is12);
                         } else {
                             listener.onSyncpGetNoteByNoteIdFailed(bean.getMsg(), null);
                         }

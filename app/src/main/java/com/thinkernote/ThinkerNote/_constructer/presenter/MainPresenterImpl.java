@@ -165,61 +165,17 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         module.mGetAllNotesId(this);
     }
 
+    //2-10-1
+    @Override
+    public void pEditNotePic(int cloudsPos, int attrPos, TNNote note) {
+        module.mEditNotePic(this, cloudsPos, attrPos, note);
+
+    }
+
     //2-11-1
     @Override
-    public void pEditNote(int position, TNNote tnNote) {
-        TNNote note = tnNote;
-        String shortContent = TNUtils.getBriefContent(note.content);
-        String content = note.content;
-        ArrayList list = new ArrayList();
-        int index1 = content.indexOf("<tn-media");
-        int index2 = content.indexOf("</tn-media>");
-        while (index1 >= 0 && index2 > 0) {
-            String temp = content.substring(index1, index2 + 11);
-            list.add(temp);
-            content = content.replaceAll(temp, "");
-            index1 = content.indexOf("<tn-media");
-            index2 = content.indexOf("</tn-media>");
-        }
-        for (int i = 0; i < list.size(); i++) {
-            String temp = (String) list.get(i);
-            boolean isExit = false;
-            for (TNNoteAtt att : note.atts) {
-                String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
-                if (temp.equals(temp2)) {
-                    isExit = true;
-                }
-            }
-            if (!isExit) {
-                note.content = note.content.replaceAll(temp, "");
-            }
-        }
-        for (TNNoteAtt att : note.atts) {
-            if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
-                String s1 = String.format("<tn-media hash=\"%s\" />", att.digest);
-                String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", att.digest, att.attId);
-                note.content = note.content.replaceAll(s1, s2);
-                String s3 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
-                String s4 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", att.digest, att.attId);
-                note.content = note.content.replaceAll(s3, s4);
-            } else {
-                TNAction action = TNAction.runAction(TNActionType.Upload, att.attName, att.path, att.attLocalId);
-                if (action.outputs.get(0) instanceof String) {
-                    continue;
-                }
-                JSONObject output = (JSONObject) action.outputs.get(0);
-                if ((Integer) TNUtils.getFromJSON(output, "code") == 0) {
-                    att.digest = (String) TNUtils.getFromJSON(output, "md5");
-                    att.attId = (Long) TNUtils.getFromLongJSON(output, "id");
-                    String s1 = String.format("<tn-media hash=\"%s\" />", att.digest);
-                    String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", att.digest, att.attId);
-                    note.content = note.content.replaceAll(s1, s2);
-                } else {
-                    continue;
-                }
-            }
-        }
-
+    public void pEditNote(int position, TNNote note) {
+        //
         if (note.catId == -1) {
             note.catId = TNSettings.getInstance().defaultCatId;
         }
@@ -231,8 +187,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //2-11-2
     @Override
-    public void pGetNoteByNoteId( int position,long noteId,boolean is12) {
-        module.mGetNoteByNoteId(this, position,noteId,is12);
+    public void pGetNoteByNoteId(int position, long noteId, boolean is12) {
+        module.mGetNoteByNoteId(this, position, noteId, is12);
     }
 
     @Override
@@ -324,8 +280,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //2-2 pic
     @Override
-    public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
-        onView.onSyncOldNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
+    public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt) {
+        onView.onSyncOldNotePicSuccess(obj, picPos, picArry, notePos, noteArry, tnNoteAtt);
     }
 
     @Override
@@ -357,8 +313,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //2-5
     @Override
-    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
-        onView.onSyncNewNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
+    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt) {
+        onView.onSyncNewNotePicSuccess(obj, picPos, picArry, notePos, noteArry, tnNoteAtt);
     }
 
     @Override
@@ -392,8 +348,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //2-7-2
     @Override
-    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry) {
-        onView.onSyncRecoveryNotePicSuccess(obj, picPos, picArry, notePos, noteArry);
+    public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt) {
+        onView.onSyncRecoveryNotePicSuccess(obj, picPos, picArry, notePos, noteArry, tnNoteAtt);
     }
 
     @Override
@@ -457,6 +413,18 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
         onView.onSyncAllNotesIdAddFailed(msg, e);
     }
 
+    //2-10-1
+    @Override
+    public void onSyncEditNotePicSuccess(Object obj, int cloudsPos, int attsPos, TNNote tnNote) {
+        onView.onSyncEditNotePicSuccess(obj, cloudsPos, attsPos, tnNote);
+    }
+
+    @Override
+    public void onSyncEditNotePicFailed(String msg, Exception e, int cloudsPos, int attsPos, TNNote tnNote) {
+        onView.onSyncEditNotePicFailed(msg, e, cloudsPos, attsPos, tnNote);
+    }
+
+
     //2-11-1
     @Override
     public void onSyncEditNoteSuccess(Object obj, int position, TNNote note) {
@@ -470,8 +438,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //2-11-2
     @Override
-    public void onSyncpGetNoteByNoteIdSuccess(Object obj, int position,boolean is12) {
-        onView.onSyncpGetNoteByNoteIdSuccess(obj, position,is12);
+    public void onSyncpGetNoteByNoteIdSuccess(Object obj, int position, boolean is12) {
+        onView.onSyncpGetNoteByNoteIdSuccess(obj, position, is12);
     }
 
     @Override

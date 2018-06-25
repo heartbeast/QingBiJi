@@ -198,5 +198,16 @@ public class URLUtils {
 
     }
 
+    /**
+     * 设置相关
+     */
+    public static class Settings {
+        /**
+         * 反馈伤上传图片
+         */
+        public static final String UPLOAD_PIC = "api/feedback";
+
+    }
+
 
 }

@@ -49,6 +49,7 @@ import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
  * 设置--关于我们--反馈
+ * 只支持上传一张图片
  */
 public class TNReportAct extends TNActBase
         implements OnClickListener, OnItemClickListener, OnReportListener {
@@ -139,11 +140,9 @@ public class TNReportAct extends TNActBase
                 mProgressDialog.show();
                 pfeedBack(content, mFiles, email);
 
-
                 break;
         }
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -222,7 +221,6 @@ public class TNReportAct extends TNActBase
     }
 
 
-
     class DeletePhotoClickListener implements OnClickedListener {
 
         @Override
@@ -236,14 +234,16 @@ public class TNReportAct extends TNActBase
     //--------------------------------------p层调用------------------------------------------
 
     /**
-     * 说明 反馈的接口调用方式，是先上传图片，返回一个ID，然后用id再绑定反馈内容，即先调图片接口，再顺序反馈接口
+     * 说明 反馈的接口调用方式，是先上传图片，返回一个ID，然后用id再绑定反馈内容
+     * <p>
+     * 先调图片接口，再顺序反馈接口
      */
 
 
     private void pfeedBack(String content, List<String> mFiles, String email) {
-        if(mFiles.size()>0){
+        if (mFiles.size() > 0) {
             presener.pFeedBackPic(mFiles, content, email);
-        }else{
+        } else {
             presener.pFeedBack(content, -1L, email);
         }
         //TODO
