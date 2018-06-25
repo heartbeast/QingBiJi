@@ -738,6 +738,17 @@ public interface MyHttpService {
             , @Field("email") String email
             , @Field("session_token") String session_token);
 
+    /**
+     * set
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Cat.DEFAULT_FOLDER)
+    Observable<CommonBean> setDefaultFolder(
+            @Field("folder_id") String folder_id
+            , @Field("session_token") String session_token);
+
 //*************************************************以下不使用***********************************************
 
     /**

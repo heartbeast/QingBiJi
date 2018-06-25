@@ -120,7 +120,6 @@ public class URLUtils {
         public static final String SYNCHRONIZE = "api/app/upgrade";
 
 
-
         /**
          * 支付
          */
@@ -132,6 +131,13 @@ public class URLUtils {
         public static final String UPLOAD_PIC = "api/attachment";
 
 
+    }
+
+    public static class Cat {
+        /**
+         * 设置默认路径
+         */
+        public static final String DEFAULT_FOLDER = "api/folders/default";
     }
 
     public static class Note {
