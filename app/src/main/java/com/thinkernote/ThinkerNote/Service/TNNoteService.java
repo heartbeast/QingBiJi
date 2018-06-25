@@ -141,6 +141,7 @@ public class TNNoteService {
         return action;
     }
 
+    // TODO
     public void NoteEdit(TNAction aAction) {
         TNNote note = (TNNote) aAction.inputs.get(0);
         String shortContent = TNUtils.getBriefContent(note.content);
@@ -542,6 +543,7 @@ public class TNNoteService {
         }
     }
 
+    //TODO
     public void GetAllTrashNoteIds(TNAction aAction) {
 
         aAction.runChildAction(TNActionType.TNOpenUrl, "GET", "api/note/trash/ids", null, TNActionType.GetAllTrashNoteIds);

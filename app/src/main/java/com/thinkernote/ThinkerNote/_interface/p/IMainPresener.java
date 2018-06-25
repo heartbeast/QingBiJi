@@ -48,6 +48,11 @@ public interface IMainPresener {
 
     void pDeleteRealNotes(long noteId, int position);
 
+    void pGetAllNotesId();
 
+    void pEditNote(int position, TNNote note);
 
+    void pGetNoteByNoteId(int position,long noteId,boolean is12);
+
+    void pGetAllTrashNoteIds();
 }

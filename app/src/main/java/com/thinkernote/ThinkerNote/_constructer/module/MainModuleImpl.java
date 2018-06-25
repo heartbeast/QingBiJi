@@ -13,9 +13,12 @@ import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
+import com.thinkernote.ThinkerNote.bean.CommonBean3;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
+import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
@@ -680,6 +683,152 @@ public class MainModuleImpl implements IMainModule {
                             listener.onSyncDeleteRealNotes2Success(bean, noteId, poistion);
                         } else {
                             listener.onSyncDeleteRealNotes2Failed(bean.getMessage(), null, poistion);
+                        }
+                    }
+
+                });
+    }
+
+    //2-10
+    @Override
+    public void mGetAllNotesId(final OnMainListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        //2-9-1
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncAllNotsId(settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<AllNotesIdsBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        listener.onSyncAllNotesIdAddFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(AllNotesIdsBean bean) {
+                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncAllNotesIdSuccess(bean.getNote_ids());
+                        } else {
+                            listener.onSyncAllNotesIdAddFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
+
+    //2-11-1
+    @Override
+    public void mEditNote(final OnMainListener listener, final int position, final TNNote note) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncEditNote(note.noteId, note.title, note.content, note.tagStr, note.catId, note.createTime, note.lastUpdate, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mEditNote--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mEditNote 异常onError:" + e.toString());
+                        listener.onSyncEditNoteAddFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mEditNote-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncEditNoteSuccess(bean, position, note);
+                        } else {
+                            listener.onSyncEditNoteAddFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
+
+    //2-11-2
+    @Override
+    public void mGetNoteByNoteId(final OnMainListener listener, final int position, long id, final boolean is12) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .GetNoteByNoteId(id, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean3<GetNoteByNoteIdBean>>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mGetNoteByNoteId--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mGetNoteByNoteId 异常onError:" + e.toString());
+                        listener.onSyncpGetNoteByNoteIdFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean3<GetNoteByNoteIdBean> bean) {
+                        MLog.d(TAG, "mGetNoteByNoteId-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncpGetNoteByNoteIdSuccess(bean.getNote(), position,is12);
+                        } else {
+                            listener.onSyncpGetNoteByNoteIdFailed(bean.getMsg(), null);
+                        }
+                    }
+
+
+                });
+    }
+
+    //2-12
+    @Override
+    public void mGetAllTrashNoteIds(final OnMainListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .GetTrashNoteIds(settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<AllNotesIdsBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mGetAllTrashNoteIds--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mGetAllTrashNoteIds 异常onError:" + e.toString());
+                        listener.onSyncpGetAllTrashNoteIdsFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(AllNotesIdsBean bean) {
+                        MLog.d(TAG, "mGetAllTrashNoteIds-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onSyncpGetAllTrashNoteIdsSuccess(bean.getNote_ids());
+                        } else {
+                            listener.onSyncpGetAllTrashNoteIdsFailed(bean.getMessage(), null);
                         }
                     }
 

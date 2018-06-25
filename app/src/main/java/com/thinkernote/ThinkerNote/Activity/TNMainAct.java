@@ -27,6 +27,8 @@ import android.widget.TextView;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.DBHelper.CatDbHelper;
+import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
+import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.TagDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNCat;
@@ -42,6 +44,7 @@ import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
+import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
@@ -55,6 +58,8 @@ import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
+import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
@@ -84,6 +89,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public static final int DELETE_LOCALNOTE = 101;//1
     public static final int DELETE_REALNOTE = 102;//
     public static final int DELETE_REALNOTE2 = 103;//
+    public static final int UPDATA_EDITNOTES = 104;//
 
     //==================================变量=======================================
     private long mLastClickBackTime = 0;
@@ -93,7 +99,11 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //
     private IMainPresener presener;
-    //
+
+    /**
+     * 如下数据，当最后一个接口调用完成后，一定好清空数据
+     */
+
     private String[] arrayFolderName;//第一次登录，要同步的数据，（1-1）
     private String[] arrayTagName;//第一次登录，要同步的数据，（1-2）
     //
@@ -113,10 +123,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     Vector<TNNote> deleteNotes;//(2-8)正常同步，第8个调用数据
     Vector<TNNote> deleteRealNotes;//(2-9)正常同步，第9个调用数据
-
+    Vector<TNNote> allNotes;//(2-10)正常同步，第10个调用数据
+    Vector<TNNote> editNotes;//(2-11)正常同步，第11个调用数据
+    Vector<TNNote> trashNotes;//(2-12)正常同步，第12个调用数据
     //接口返回数据
     private List<List<AllFolderItemBean>> mapList = new ArrayList<>();//递归调用使用的数据集合，size最大是5；//后台需求
-
+    private List<AllNotesIdsBean.NoteIdItemBean> cloudIds;//2-10接口返回
+    List<AllNotesIdsBean.NoteIdItemBean> trashNoteArr;//(2-12)接口返回，，第13个调用数据
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +139,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNActivityManager.getInstance().finishOtherActivity(this);
 
         //TODO
-        TNAction.regResponder(TNActionType.Synchronize, this, "respondSynchronize");
         TNAction.regResponder(TNActionType.SynchronizeEdit, this, "respondSynchronizeEdit");
         TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
 
@@ -339,29 +351,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         return super.onKeyDown(keyCode, event);
     }
 
-    public void respondSynchronize(TNAction aAction) {
-        if (aAction.inputs.size() > 0 && !aAction.inputs.get(0).equals("home")) {
-            return;
-        }
-
-        if (!TNActionUtils.isSynchronizing(aAction))
-            findViewById(R.id.main_sync_btn).clearAnimation();
-
-        if (aAction.result == TNActionResult.Cancelled) {
-            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
-        } else if (!TNHandleError.handleResult(this, aAction, false)) {
-            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
-            if (TNActionUtils.isSynchroniz(aAction)) {
-                TNSettings settings = TNSettings.getInstance();
-                settings.originalSyncTime = System.currentTimeMillis();
-                settings.savePref(false);
-                mTimeView.setText("上次同步时间：" + TNUtilsUi.formatDate(TNMainAct.this,
-                        settings.originalSyncTime / 1000L));
-            }
-        } else {
-            TNUtilsUi.showNotification(this, R.string.alert_Synchronize_Stoped, true);
-        }
-    }
 
     public void respondSynchronizeEdit(TNAction aAction) {
         if (aAction.result == TNActionResult.Cancelled) {
@@ -549,6 +538,212 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         });
     }
 
+    /**
+     * 2-11-1 更新日记时间
+     *
+     * @param noteId
+     */
+    private void updataEditNotesLastTime(final int position, final long noteId) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    //
+                    String[] args = new String[]{noteId + ""};
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, args);
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+                //
+                Message msg = Message.obtain();
+                msg.obj = position;
+                msg.what = UPDATA_EDITNOTES;
+                handler.sendMessage(msg);
+            }
+        });
+
+    }
+
+    /**
+     * 2-11-1 更新日记时间 （接口返回处理）
+     */
+    private void updataEditNotes(final int position, final TNNote note) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String shortContent = TNUtils.getBriefContent(note.content);
+                TNDb.beginTransaction();
+                try {
+                    //
+                    String[] args = new String[]{shortContent, note.noteId + ""};
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SHORT_CONTENT, args);
+
+                    //
+                    String[] args2 = new String[]{System.currentTimeMillis() / 1000 + "", note.catId + ""};
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, args2);
+
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+                //下一个position
+                //
+                Message msg = Message.obtain();
+                msg.obj = position;
+                msg.what = UPDATA_EDITNOTES;
+                handler.sendMessage(msg);
+            }
+        });
+
+    }
+
+    //2-11-2
+    public static void updateNote(GetNoteByNoteIdBean bean) {
+
+        long noteId = bean.getId();
+        String contentDigest = bean.getContent_digest();
+        TNNote note = TNDbUtils.getNoteByNoteId(noteId);//在全部笔记页同步，会走这里，没在首页同步过的返回为null
+
+        int syncState = note == null ? 1 : note.syncState;
+        List<GetNoteByNoteIdBean.TagBean> tags = bean.getTags();
+
+        String tagStr = "";
+        for (int k = 0; k < tags.size(); k++) {
+            GetNoteByNoteIdBean.TagBean tempTag = tags.get(k);
+            String tag = tempTag.getName();
+            if ("".equals(tag)) {
+                continue;
+            }
+            if (tags.size() == 1) {
+                tagStr = tag;
+            } else {
+                if (k == (tags.size() - 1)) {
+                    tagStr = tagStr + tag;
+                } else {
+                    tagStr = tagStr + tag + ",";
+                }
+            }
+        }
+
+        String thumbnail = "";
+        if (note != null) {
+            thumbnail = note.thumbnail;
+            Vector<TNNoteAtt> localAtts = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
+            List<GetNoteByNoteIdBean.Attachments> atts = bean.getAttachments();
+            if (localAtts.size() != 0) {
+                //循环判断是否与线上同步，线上没有就删除本地
+                for (int k = 0; k < localAtts.size(); k++) {
+                    boolean exit = false;
+                    TNNoteAtt tempLocalAtt = localAtts.get(k);
+                    for (int i = 0; i < atts.size(); i++) {
+                        GetNoteByNoteIdBean.Attachments tempAtt = atts.get(i);
+                        long attId = tempAtt.getId();
+                        if (tempLocalAtt.attId == attId) {
+                            exit = true;
+                        }
+                    }
+                    if (!exit) {
+                        if (thumbnail.indexOf(String.valueOf(tempLocalAtt.attId)) != 0) {
+                            thumbnail = "";
+                        }
+                        NoteAttrDbHelper.deleteAttById(tempLocalAtt.attId);
+                    }
+                }
+                //循环判断是否与线上同步，本地没有就插入数据
+                for (int k = 0; k < atts.size(); k++) {
+                    GetNoteByNoteIdBean.Attachments tempAtt = atts.get(k);
+                    long attId = tempAtt.getId();
+                    boolean exit = false;
+                    for (int i = 0; i < localAtts.size(); i++) {
+                        TNNoteAtt tempLocalAtt = localAtts.get(i);
+                        if (tempLocalAtt.attId == attId) {
+                            exit = true;
+                        }
+                    }
+                    if (!exit) {
+                        syncState = 1;
+                        insertAttr(tempAtt, note.noteLocalId);
+                    }
+                }
+            } else {
+                for (int i = 0; i < atts.size(); i++) {
+                    GetNoteByNoteIdBean.Attachments tempAtt = atts.get(i);
+                    syncState = 1;
+                    insertAttr(tempAtt, note.noteLocalId);
+                }
+            }
+
+            //如果本地的更新时间晚就以本地的为准
+            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+                return;
+            }
+
+            if (atts.size() == 0) {
+                syncState = 2;
+            }
+        }
+
+        int catId = -1;
+        //TODO getFolder_id可以为负值么
+        if (bean.getFolder_id() > 0) {
+            catId = bean.getFolder_id();
+        }
+
+        JSONObject tempObj = TNUtils.makeJSON(
+                "title", bean.getTitle(),
+                "userId", TNSettings.getInstance().userId,
+                "trash", bean.getTrash(),
+                "source", "android",
+                "catId", catId,
+                "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
+                "createTime", bean.getCreate_at() / 1000,
+                "lastUpdate", bean.getUpdate_at() / 1000,
+                "syncState", syncState,
+                "noteId", noteId,
+                "shortContent", TNUtils.getBriefContent(bean.getContent()),
+                "tagStr", tagStr,
+                "lbsLongitude", bean.getLongitude() <= 0 ? 0 : bean.getLongitude(),
+                "lbsLatitude", bean.getLatitude() <= 0 ? 0 : bean.getLatitude(),
+                "lbsRadius", bean.getRadius() <= 0 ? 0 : bean.getRadius(),
+                "lbsAddress", bean.getAddress(),
+                "nickName", TNSettings.getInstance().username,
+                "thumbnail", thumbnail,
+                "contentDigest", contentDigest
+        );
+        if (note == null)
+            NoteDbHelper.addOrUpdateNote(tempObj);
+        else
+            NoteDbHelper.updateNote(tempObj);
+    }
+
+    public static void insertAttr(GetNoteByNoteIdBean.Attachments tempAtt, long noteLocalId) {
+        long attId = tempAtt.getId();
+        String digest = tempAtt.getDigest();
+        //
+        TNNoteAtt noteAtt = TNDbUtils.getAttrById(attId);
+        noteAtt.attName = tempAtt.getName();
+        noteAtt.type = tempAtt.getType();
+        noteAtt.size = tempAtt.getSize();
+        noteAtt.syncState = 1;
+
+        JSONObject tempObj = TNUtils.makeJSON(
+                "attName", noteAtt.attName,
+                "type", noteAtt.type,
+                "path", noteAtt.path,
+                "noteLocalId", noteLocalId,
+                "size", noteAtt.size,
+                "syncState", noteAtt.syncState,
+                "digest", digest,
+                "attId", attId,
+                "width", noteAtt.width,
+                "height", noteAtt.height
+        );
+        NoteAttrDbHelper.addOrUpdateAttr(tempObj);
+    }
     //-------------------------------------handler处理同步------------------------------------------
 
 
@@ -578,6 +773,36 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
 
                 break;
+            case UPDATA_EDITNOTES://2-11 更新日记时间返回
+                //执行下一个position/执行下一个接口
+                pEditNotes(((int) msg.obj + 1));
+                break;
+        }
+    }
+
+    /**
+     * 同步结束后的操作
+     *
+     * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
+     */
+    private void endSynchronize(int state) {
+
+        //结束动画
+        findViewById(R.id.main_sync_btn).clearAnimation();
+
+        if (state == 0) {
+            //正常结束
+            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
+            //
+            TNSettings settings = TNSettings.getInstance();
+            settings.originalSyncTime = System.currentTimeMillis();
+            settings.savePref(false);
+            mTimeView.setText("上次同步时间：" + TNUtilsUi.formatDate(TNMainAct.this,
+                    settings.originalSyncTime / 1000L));
+        } else if (state == 1) {
+            TNUtilsUi.showNotification(this, R.string.alert_Synchronize_Stoped, true);
+        } else {
+            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
         }
     }
 
@@ -849,8 +1074,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void pGetTagList() {
-        Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
-        TNAction.runAction(TNActionType.GetTagList);
         presener.pGetTagList();
     }
 
@@ -1083,7 +1306,122 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pGetAllNoteIds() {
         //
+        presener.pGetAllNotesId();
+    }
 
+    /**
+     * (二.11)-1 edit  通过最后更新时间来与云端比较，是否该上传本地编辑的笔记
+     *
+     * @param position cloudIds数据的其实操作位置
+     */
+    private void pEditNotes(int position) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+            long id = cloudIds.get(position).getId();
+            int lastUpdate = cloudIds.get(position).getUpdate_at();
+
+            //找出该日记，比较时间
+            for (int j = 0; j < editNotes.size(); j++) {
+                if (id == editNotes.get(j).noteId) {
+                    if (editNotes.get(j).lastUpdate > lastUpdate) {
+                        pEditNotes(position, editNotes.get(j));
+                    } else {
+
+                        updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                    }
+                }
+            }
+        } else {
+            //下一个接口
+            pUpdataNote(0, false);
+        }
+    }
+
+    /**
+     * (二.11)-1 edit  通过最后更新时间来与云端比较，上传本地编辑的笔记接口方法
+     *
+     * @param position
+     * @param tnNote
+     */
+    private void pEditNotes(int position, TNNote tnNote) {
+        presener.pEditNote(position, tnNote);
+
+    }
+
+    /**
+     * (二.11)-2 更新云端的笔记
+     *
+     * @param position 执行的位置
+     * @param is13     (二.11)和(二.13)调用同一个接口，用于区分
+     */
+    private void pUpdataNote(int position, boolean is13) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+            boolean isExit = false;
+            long id = cloudIds.get(position).getId();
+            int lastUpdate = cloudIds.get(position).getUpdate_at();
+
+            //本地更新
+            for (int j = 0; j < allNotes.size(); j++) {
+                TNNote note = allNotes.get(j);
+                if (id == note.noteId && lastUpdate > note.lastUpdate) {
+                    isExit = true;
+                    pUpdataNote(position, id, is13);
+                    break;
+                }
+            }
+            if (!isExit) {
+                pUpdataNote(position, id, is13);
+            }
+        } else {
+            //下一个接口
+            //同步回收站的笔记
+            trashNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, TNConst.CREATETIME);
+            pTrashNotes();
+
+        }
+    }
+
+    /**
+     * (二.11)-2/(二.13) 更新云端的笔记
+     * <p>
+     * p层
+     */
+    private void pUpdataNote(int position, long noteId, boolean is13) {
+        presener.pGetNoteByNoteId(position, noteId, is13);
+    }
+
+    /**
+     * (二.12) 同步回收站的笔记
+     */
+    private void pTrashNotes() {
+        presener.pGetAllTrashNoteIds();
+    }
+
+    /**
+     * (二.13) 更新云端的笔记
+     * <p>
+     * 该接口同(二.11)-2
+     *
+     * @param position
+     * @param is13
+     */
+    private void pUpdataNote13(int position, boolean is13) {
+        if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
+            AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
+            long noteId = bean.getId();
+            boolean trashNoteExit = false;
+            for (TNNote trashNote : trashNotes) {
+                if (trashNote.noteId == noteId) {
+                    trashNoteExit = true;
+                    break;
+                }
+            }
+            if (!trashNoteExit) {
+                pUpdataNote(position, noteId, is13);
+            }
+        } else {
+            //同步所有接口完成，结束同步
+            endSynchronize(0);
+        }
     }
 
 
@@ -1689,6 +2027,126 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncDeleteRealNotes2Failed(String msg, Exception e, int position) {
         isRealDelete2 = true;
         MLog.e(msg);
+    }
+
+    //2-10
+    @Override
+    public void onSyncAllNotesIdSuccess(Object obj) {
+        cloudIds = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
+
+        //与云端同步数据 sjy-0623
+        allNotes = TNDbUtils.getAllNoteList(TNSettings.getInstance().userId);
+        for (int i = 0; i < allNotes.size(); i++) {
+            boolean isExit = false;
+            final TNNote note = allNotes.get(i);
+            //查询本地是否存在
+            for (int j = 0; j < cloudIds.size(); j++) {
+                if (note.noteId == cloudIds.get(j).getId()) {
+                    isExit = true;
+                    break;
+                }
+            }
+            //不存在就删除  /使用异步
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            if (!isExit && note.syncState != 7) {
+
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        TNDb.beginTransaction();
+                        try {
+                            //
+                            TNDb.getInstance().deleteNotesByNoteIdSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, note.noteId);
+
+                            TNDb.setTransactionSuccessful();
+                        } finally {
+                            TNDb.endTransaction();
+                        }
+                    }
+                });
+            }
+        }
+
+        //edit  通过最后更新时间来与云端比较是否该上传本地编辑的笔记
+        editNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 4);
+        pEditNotes(0);
+    }
+
+    @Override
+    public void onSyncAllNotesIdAddFailed(String msg, Exception e) {
+
+    }
+
+    //2-11-1
+    @Override
+    public void onSyncEditNoteSuccess(Object obj, int position, TNNote note) {
+        updataEditNotes(position, note);
+
+    }
+
+    @Override
+    public void onSyncEditNoteAddFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //2-11-2
+    @Override
+    public void onSyncpGetNoteByNoteIdSuccess(Object obj, int position, boolean is13) {
+        updateNote((GetNoteByNoteIdBean) obj);
+        if (is13) {
+            pUpdataNote13(position + 1, is13);
+        } else {
+            //执行一个position或下一个接口
+            pUpdataNote(position + 1, false);
+        }
+
+    }
+
+    @Override
+    public void onSyncpGetNoteByNoteIdFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    //2-12
+    @Override
+    public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
+        trashNoteArr = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
+        ExecutorService executorService = Executors.newCachedThreadPool();//开启线程池
+        for (final TNNote trashNote : trashNotes) {
+            boolean trashNoteExit = false;
+            for (int i = 0; i < trashNoteArr.size(); i++) {
+                AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(i);
+                long noteId = bean.getId();
+                if (trashNote.noteId == noteId) {
+                    trashNoteExit = true;
+                    break;
+                }
+            }
+            if (!trashNoteExit) {
+
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        TNDb.beginTransaction();
+                        try {
+                            //
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new String[]{trashNote.noteId + ""});
+                            TNDb.setTransactionSuccessful();
+                        } finally {
+                            TNDb.endTransaction();
+                        }
+                    }
+                });
+            }
+        }
+        //执行下一个接口
+        pUpdataNote13(0, true);
+
+    }
+
+    @Override
+    public void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e) {
+
     }
 
 

@@ -25,6 +25,8 @@ import android.util.Log;
  */
 public class TNSocketNote {
 	private static final String TAG = "TNSocketNote";
+
+	//TODO
 	public static void handle_Notes(TNAction aAction){
 		TNActionType type = (TNActionType)aAction.inputs.get(3);
 		JSONObject outputs = (JSONObject)aAction.outputs.get(0);

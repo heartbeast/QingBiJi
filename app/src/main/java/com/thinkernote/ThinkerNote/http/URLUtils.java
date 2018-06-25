@@ -151,11 +151,19 @@ public class URLUtils {
          * 标签
          */
         public static final String TAGLIST = "api/tags";
+        /**
+         * 标签
+         */
+        public static final String ALLNOTESID = "api/note/idsapi/note/ids";
 
         /**
          * getNote
          */
         public static final String NOTE = "api/note";//
+        /**
+         * getTrashNote
+         */
+        public static final String TRASH_NOTE = "api/note/trash/ids";//
 
         /**
          * recovery

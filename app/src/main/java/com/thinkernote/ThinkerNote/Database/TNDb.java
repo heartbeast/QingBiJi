@@ -355,6 +355,21 @@ public class TNDb extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * 根据noteid，删除指定数据
+     * deleteNotesByNoteIdSQL
+     */
+    public void deleteNotesByNoteIdSQL(String sql, long noteId) {
+        try {
+            String[] args = new String[]{noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
 
     /**
      * 更新 禁用反射 sjy 0621
@@ -363,6 +378,41 @@ public class TNDb extends SQLiteOpenHelper {
     public void updataReadNotesLastTimeSQL(String sql, long currentTime, long noteId) {
         try {
             String[] args = new String[]{currentTime + "", noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    /**
+     * 更新 禁用反射 sjy 0621
+     */
+    public void updataEditNotesLastTimeSQL(String sql, long noteId) {
+        try {
+            String[] args = new String[]{noteId + ""};
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    //TODO 重构 updata可以使用一个方法
+    public void updataSQL(String sql, String[] args) {
+        try {
+            db.execSQL(sql, args);
+
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
+        }
+    }
+
+    public void deleteSQL(String sql, String[] args) {
+        try {
             db.execSQL(sql, args);
 
         } catch (SQLiteException e) {

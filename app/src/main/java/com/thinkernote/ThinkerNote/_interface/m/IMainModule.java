@@ -46,4 +46,12 @@ public interface IMainModule {
 
     void mDeleteRealNotes(OnMainListener listener, long noteId, int poistion);
 
+    void mGetAllNotesId(OnMainListener listener);
+
+    void mEditNote(OnMainListener listener, int position, TNNote tnNote);
+
+    void mGetNoteByNoteId(OnMainListener listener, int position, long id,boolean is12);
+
+    void mGetAllTrashNoteIds(OnMainListener listener);
+
 }

@@ -1,5 +1,6 @@
 package com.thinkernote.ThinkerNote._interface.v;
 
+import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
@@ -60,6 +61,7 @@ public interface OnMainListener {
 
     void onSyncTagListAddFailed(String msg, Exception e);
 
+
     //2-5
     void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry);
 
@@ -94,13 +96,34 @@ public interface OnMainListener {
     //2-9-1
     void onSyncpDeleteRealNotes1Success(Object obj, long noteId, int position);
 
-    void onSyncDeleteRealNotes1Failed(String msg, Exception e,int position);
+    void onSyncDeleteRealNotes1Failed(String msg, Exception e, int position);
 
 
     //2-9-2
     void onSyncDeleteRealNotes2Success(Object obj, long noteId, int position);
 
-    void onSyncDeleteRealNotes2Failed(String msg, Exception e,int position);
+    void onSyncDeleteRealNotes2Failed(String msg, Exception e, int position);
+
+    //2-10
+    void onSyncAllNotesIdSuccess(Object obj);
+
+    void onSyncAllNotesIdAddFailed(String msg, Exception e);
+
+    //2-11-1
+    void onSyncEditNoteSuccess(Object obj, int position, TNNote note);
+
+    void onSyncEditNoteAddFailed(String msg, Exception e);
+
+    //2-11-2
+    void onSyncpGetNoteByNoteIdSuccess(Object obj, int position,boolean is12);
+
+    void onSyncpGetNoteByNoteIdFailed(String msg, Exception e);
+
+
+    //2-12
+    void onSyncpGetAllTrashNoteIdsSuccess(Object obj);
+
+    void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e);
 
 
 }

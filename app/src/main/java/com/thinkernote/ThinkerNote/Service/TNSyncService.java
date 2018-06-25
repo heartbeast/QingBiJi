@@ -195,7 +195,6 @@ public class TNSyncService {
                     }
                 }
             } catch (Exception e) {
-                // TODO: handle exception
                 MLog.e("Synchronize", "==================================================Synchronize");
             }
 

@@ -4,12 +4,15 @@ package com.thinkernote.ThinkerNote.http;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
+import com.thinkernote.ThinkerNote.bean.CommonBean3;
 import com.thinkernote.ThinkerNote.bean.CommonListBean;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
+import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
+import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
@@ -525,6 +528,52 @@ public interface MyHttpService {
     Observable<CommonBean> syncDeleteRealNote2(
             @Field("note_id") long note_id
             , @Field("session_token") String session_token);
+
+    /**
+     * 同步 getAllNotsId
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.ALLNOTESID)
+    Observable<AllNotesIdsBean> syncAllNotsId(@Query("session_token") String session_token);
+
+
+    /**
+     * 同步 EditNote
+     * TODO 需要测试put请求
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Note.NOTE)
+    Observable<CommonBean> syncEditNote(
+            @Field("note_id") long note_id
+            , @Field("title") String title
+            , @Field("content") String content
+            , @Field("tags") String tags
+            , @Field("folder_id") long folder_id
+            , @Field("create_time") int create_time
+            , @Field("update_time") int update_time
+            , @Field("session_token") String session_token);
+
+    /**
+     * 同步 getAllNotsId
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.NOTE)
+    Observable<CommonBean3<GetNoteByNoteIdBean>> GetNoteByNoteId(
+            @Query("note_id") long note_id
+            , @Query("session_token") String session_token);
+
+
+    /**
+     * 同步 GetTrashNoteIds
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.TRASH_NOTE)
+    Observable<AllNotesIdsBean> GetTrashNoteIds(@Query("session_token") String session_token);
 
 
     //-------------------------------------------------写笔记相关----------------------------------------------------
