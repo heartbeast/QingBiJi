@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.ClipboardManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -17,16 +18,15 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.LinearLayout;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
-import com.thinkernote.ThinkerNote.General.TNActionType;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
@@ -45,13 +45,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * menu 属性
  * sjy 0615
  */
 public class TNNoteInfoAct extends TNActBase implements OnClickListener, OnChildClickListener, OnGroupClickListener {
-	/*
+    public static final int TAGINFO = 101;//1
+
+    /*
 	 * Bundle: NoteLocalId
 	 */
 
@@ -383,15 +387,47 @@ public class TNNoteInfoAct extends TNActBase implements OnClickListener, OnChild
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date dt = sdf.parse(year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + "00");
 			mNote.createTime = (int) (dt.getTime() / 1000);
-			TNAction action = TNAction.runAction(TNActionType.NoteLocalChangeCreateTime, mNote.noteLocalId, mNote.createTime);
-			if (action.result == TNActionResult.Finished) {
-				configView();
-			}
+			NoteLocalChangeCreateTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
 
+	private void NoteLocalChangeCreateTime() {
+		final long noteLocalId = mNote.noteLocalId;
+		final int createTime = mNote.createTime;
+		final int lastUpdate = (int) (System.currentTimeMillis() / 1000);
+		final TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+		final int syncState = note.noteId == -1 ? 3 : 4;
+
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    //
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_CHANGE_CREATETIME, new String[]{createTime+"", syncState+"", lastUpdate+"", noteLocalId+""});
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new String[]{System.currentTimeMillis() / 1000+"", syncState+"", lastUpdate+"",  note.catId+""});
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+                //
+                handler.sendEmptyMessage(TAGINFO);
+            }
+        });
+	}
+
+    @Override
+    protected void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        switch (msg.what) {
+            case TAGINFO://2-8-2的调用
+                configView();
+                break;
+        }
+    }
 	private void showWheelView(boolean animate) {
 		if (animate)
 			mWheelLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.ak_translate_in_bottom));

@@ -47,6 +47,7 @@ import java.util.List;
 /**
  * 设置--关于我们--反馈
  * 只支持上传一张图片
+ * 0625
  */
 public class TNReportAct extends TNActBase
         implements OnClickListener, OnItemClickListener, OnReportListener {

@@ -69,6 +69,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
+ * TODO
  * 主页--写笔记界面
  */
 public class TNNoteEditAct extends TNActBase implements OnClickListener,

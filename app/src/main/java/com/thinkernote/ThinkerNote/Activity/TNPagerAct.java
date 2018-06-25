@@ -45,6 +45,7 @@ import java.util.Vector;
 import static com.thinkernote.ThinkerNote.Utils.MLog.i;
 
 /**
+ * TODO
  * 主页--我的笔记
  */
 
@@ -695,7 +696,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     }
 
     @Override
-    public void onTagDeleteSuccess(Object obj,long tagID) {
+    public void onTagDeleteSuccess(Object obj, long tagID) {
         TNDb.getInstance().execSQL(TNSQLString.TAG_REAL_DELETE, tagID);
         mProgressDialog.hide();
         if (isInFront) {

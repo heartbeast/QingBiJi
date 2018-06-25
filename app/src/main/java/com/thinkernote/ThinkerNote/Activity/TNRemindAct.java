@@ -9,6 +9,7 @@ import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
  * 广播通知--显示界面
+ * sjy 0625
  */
 public class TNRemindAct extends TNActBase {
 

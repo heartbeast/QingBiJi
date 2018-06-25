@@ -11,7 +11,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
- *
+ *sjy 0625
  */
 public class TNHtmlViewAct extends TNActBase
 	implements OnClickListener{

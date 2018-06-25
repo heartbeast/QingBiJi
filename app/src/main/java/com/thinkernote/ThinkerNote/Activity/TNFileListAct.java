@@ -31,6 +31,7 @@ import com.thinkernote.ThinkerNote.base.TNActBase;
 
 /**
  * 主页--写笔记界面--添加附件
+ * sjy 0625
  */
 public class TNFileListAct extends TNActBase
 	implements OnClickListener, OnItemClickListener{

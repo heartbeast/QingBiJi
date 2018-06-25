@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 /**
  * 主页--设置--用户信息--具体修改界面（密码 用户名 邮箱等）
+ * TODO
  */
 public class TNChangeUserInfoAct extends TNActBase implements OnClickListener {
 	

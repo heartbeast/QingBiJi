@@ -18,8 +18,6 @@ import com.alipay.sdk.app.PayTask;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
@@ -108,8 +106,6 @@ public class TNPayTipAct extends TNActBase implements OnClickListener, android.w
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pay_tip);
         api = WXAPIFactory.createWXAPI(this, TNConst.WX_APP_ID);
-        //TODO
-        TNAction.regResponder(TNActionType.Pay, this, "respondPay");
 
         presener = new PayPresenterImpl(this, this);
         setViews();
@@ -267,24 +263,9 @@ public class TNPayTipAct extends TNActBase implements OnClickListener, android.w
         } else {
             presener.pWxpay(mAmount, mType);
         }
-
-        //TODO
-//        TNAction.runActionAsync(TNActionType.Pay, mAmount, mType);
     }
 
     //---------------------------------接口结果回调-------------------------------------------
-
-    //    public void respondPay(TNAction aAction) {
-//        if (!TNHandleError.handleResult(this, aAction)) {
-//            JSONObject obj = (JSONObject) aAction.outputs.get(0);
-//            if (aAction.inputs.get(1) == "alipay") {
-//                JSONObject data = (JSONObject) TNUtils.getFromJSON(obj, "data");
-//                payAli(data);
-//            } else {
-//                payWx(obj);
-//            }
-//        }
-//    }
 
     @Override
     public void onAlipaySuccess(Object obj) {

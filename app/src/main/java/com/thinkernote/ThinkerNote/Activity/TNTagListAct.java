@@ -51,6 +51,7 @@ import java.util.concurrent.Executors;
 
 /**
  * 选择标签/更换标签
+ * sjy 0625
  */
 public class TNTagListAct extends TNActBase implements OnClickListener, OnItemClickListener, OnItemLongClickListener, OnTagListListener {
 

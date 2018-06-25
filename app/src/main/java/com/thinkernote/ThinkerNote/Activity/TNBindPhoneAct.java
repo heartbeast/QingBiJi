@@ -31,6 +31,7 @@ import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 /**
  * 主界面-绑定新手机号/设置-修改手机号
  * 说明：登录进入主界面后，仍未绑定手机号，则再次绑定
+ * sjy 0625
  */
 public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindPhoneListener {
 	

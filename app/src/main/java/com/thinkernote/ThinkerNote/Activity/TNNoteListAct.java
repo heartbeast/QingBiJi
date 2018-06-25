@@ -51,6 +51,7 @@ import java.util.Vector;
  * <p>
  * //1 allNote, 2 cat, 3 recycle, 4 tag, 5 serch, 7 个人公开, 8  他人公开
  * 5--搜索结果 展示界面
+ * TODO
  */
 public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemLongClickListener,
         OnLastItemVisibleListener, OnRefreshListener, OnItemClickListener, OnNoteListListener {
