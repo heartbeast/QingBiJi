@@ -12,4 +12,5 @@ public interface OnNoteListListener {
 
     void onNoteListByTagIdFailed(String msg, Exception e);
 
+
 }

@@ -65,6 +65,7 @@ public class NoteListModuleImpl implements INoteListModule {
                 });
     }
 
+    //1-2
     @Override
     public void mGetNotelistByTagId(final OnNoteListListener listener, final long mListDetail, final int mPageNum, final int pageSize, final String sort) {
         TNSettings settings = TNSettings.getInstance();

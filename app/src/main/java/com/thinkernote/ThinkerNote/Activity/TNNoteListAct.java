@@ -3,6 +3,7 @@ package com.thinkernote.ThinkerNote.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +19,7 @@ import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNNotesAdapter;
+import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNTag;
@@ -42,9 +44,13 @@ import com.thinkernote.ThinkerNote._interface.v.OnNoteListListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 重要的类
@@ -52,10 +58,11 @@ import java.util.Vector;
  * //1 allNote, 2 cat, 3 recycle, 4 tag, 5 serch, 7 个人公开, 8  他人公开
  * 5--搜索结果 展示界面
  * TODO
+ * 说明：
  */
 public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemLongClickListener,
         OnLastItemVisibleListener, OnRefreshListener, OnItemClickListener, OnNoteListListener {
-
+    private static final int SEARCH = 101;
     /*
      * Bundle: ListType ListDetail
      */
@@ -101,13 +108,11 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
         // TODO register action
         TNAction.regResponder(TNActionType.SynchronizeEdit, this, "respondSynchronizeEdit");
+
         TNAction.regResponder(TNActionType.Synchronize, this, "respondSynchronize");
-        TNAction.regResponder(TNActionType.GetNoteListBySearch, this, "respondGetNoteListBySearch");
+
         TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
-
-        TNAction.regResponder(TNActionType.GetNoteListByFolderId, this, "respondGetNoteList");
-        TNAction.regResponder(TNActionType.GetNoteListByTagId, this, "respondGetNoteList");
 
         //
         presener = new NoteListPresenterImpl(this, this);
@@ -192,7 +197,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 return;
             }
             TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-            TNAction.runActionAsync(TNActionType.SynchronizeEdit);
+            syncEdit();
+
         }
     }
 
@@ -203,7 +209,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 return;
             }
             TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-            TNAction.runActionAsync(TNActionType.SynchronizeEdit);
+            syncEdit();
         }
     }
 
@@ -367,8 +373,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 if (note.noteId == -1) {
                     break;
                 }
-                TNUtilsDialog.synchronize(this, null, null,
-                        TNActionType.GetAllDataByNoteId, note.noteId);
+                TNUtilsDialog.synchronize(this, null, null, TNActionType.GetAllDataByNoteId, note.noteId);
                 break;
             }
 
@@ -495,7 +500,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void getNativeData() {
         if (mListType == 5) {
-            TNAction.runActionAsync(TNActionType.GetNoteListBySearch, mKeyWord);
+            pNoteListSearch(mKeyWord);
+
         } else {
             switch (mListType) {
                 case 2:
@@ -524,14 +530,15 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             case 3:
                 if (mPageNum == 1)
-                    TNAction.runActionAsync(TNActionType.Synchronize, "Trash");
+                    syncData();
+
                 break;
             case 4:
                 getNoteListByTagId(mListDetail, mPageNum, TNConst.PAGE_SIZE, mSettings.sort);
 
                 break;
             case 5:
-                TNAction.runActionAsync(TNActionType.GetNoteListBySearch, mKeyWord);
+                pNoteListSearch(mKeyWord);
                 break;
         }
     }
@@ -540,7 +547,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         mPullListview.onRefreshComplete();
     }
 
-    // TODO
+    //
     private void notifyData(TNAction aAction) {
         JSONObject outputs = (JSONObject) aAction.outputs.get(0);
         mPageNum = (Integer) TNUtils.getFromJSON(outputs, "pagenum");
@@ -591,8 +598,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         setButtonsAndNoteList();
     }
 
-    // respond Action
-    // -------------------------------------------------------------------------------
 
     public void respondSynchronize(TNAction aAction) {
         mLoadingView.setVisibility(View.GONE);
@@ -612,15 +617,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 //		}
 //	}
 
-    @SuppressWarnings("unchecked")
-    public void respondGetNoteListBySearch(TNAction aAction) {
-        mPullListview.onRefreshComplete();
-        mLoadingView.setVisibility(View.GONE);
-        mNotes = (Vector<TNNote>) aAction.outputs.get(0);
-        mNotesAdapter.updateNotes(mNotes);
-        mNotesAdapter.notifyDataSetChanged();
-        setButtonsAndNoteList();
-    }
 
     public void respondGetAllData(TNAction aAction) {
         if (aAction.result == TNActionResult.Cancelled) {
@@ -660,45 +656,171 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         }
     }
 
-    //-------------------------------------p层调用----------------------------------------
-    private void getNoteListByFolderId(long mListDetail, int mPageNum, int size, String sort) {
-        presener.pGetNoteListByFolderID(mListDetail, mPageNum, size, sort);
+    // ---------------------------------------handler----------------------------------------
 
-        //TODO
-//        TNAction.runActionAsync(TNActionType.GetNoteListByFolderId, mListDetail, mPageNum, size, sort);
+    @Override
+    protected void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        switch (msg.what) {
+            case SEARCH:
+                mPullListview.onRefreshComplete();
+                mLoadingView.setVisibility(View.GONE);
+                mNotes = (Vector<TNNote>) msg.obj;
+                mNotesAdapter.updateNotes(mNotes);
+                mNotesAdapter.notifyDataSetChanged();
+                setButtonsAndNoteList();
+                break;
+        }
     }
 
+    // ---------------------------------------数据库操作----------------------------------------
+    //异步
+    public static void insertDbNotes(final NoteListBean bean, final boolean isTrash) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<NoteListBean.NoteItemBean> notesObj = bean.getNotes();
+                int trash = isTrash ? 2 : 0;
+                for (int i = 0; i < notesObj.size(); i++) {
+                    NoteListBean.NoteItemBean obj = notesObj.get(i);
+                    long noteId = obj.getId();
+                    long lastUpdate = TNUtils.formatStringToTime((obj.getUpdate_at()) + "") / 1000;
+
+                    List<NoteListBean.NoteItemBean.TagItemBean> tags = obj.getTags();
+                    String tagStr = "";
+                    for (int k = 0; k < tags.size(); k++) {
+                        NoteListBean.NoteItemBean.TagItemBean tempTag = tags.get(k);
+                        String tag = tempTag.getName();
+                        if ("".equals(tag)) {
+                            continue;
+                        }
+                        if (tags.size() == 1) {
+                            tagStr = tag;
+                        } else {
+                            if (k == (tags.size() - 1)) {
+                                tagStr = tagStr + tag;
+                            } else {
+                                tagStr = tagStr + tag + ",";
+                            }
+                        }
+                    }
+
+                    int catId = -1;
+                    if (obj.getFolder_id() > 0) {
+                        catId = obj.getFolder_id();
+                    } else {
+                        catId = -1;
+                    }
+
+                    int syncState = 1;
+                    TNNote note = TNDbUtils.getNoteByNoteId(noteId);
+                    if (note != null) {
+                        if (note.lastUpdate > lastUpdate) {
+                            continue;
+                        } else {
+                            syncState = note.syncState;
+                        }
+                    }
+                    JSONObject tempObj = TNUtils.makeJSON(
+                            "title", obj.getTitle(),
+                            "userId", TNSettings.getInstance().userId,
+                            "trash", trash,
+                            "source", "android",
+                            "catId", catId,
+                            "content", obj.getSummary(),
+                            "createTime", obj.getCreate_at() / 1000,
+                            "lastUpdate", lastUpdate,
+                            "syncState", syncState,
+                            "noteId", noteId,
+                            "shortContent", obj.getSummary(),
+                            "tagStr", tagStr,
+                            "lbsLongitude", 0,
+                            "lbsLatitude", 0,
+                            "lbsRadius", 0,
+                            "lbsAddress", "",
+                            "nickName", TNSettings.getInstance().username,
+                            "thumbnail", "",
+                            "contentDigest", obj.getContent_digest()
+                    );
+                    NoteDbHelper.addOrUpdateNote(tempObj);
+                }
+            }
+        });
+
+    }
+
+    // 本地搜做
+    private void pNoteListSearch(final String mKeyWord) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNSettings settings = TNSettings.getInstance();
+                Vector<TNNote> notes = TNDbUtils.getNoteListBySearch(settings.userId, mKeyWord, settings.sort);
+
+                Message msg = Message.obtain();
+                msg.what = SEARCH;
+                msg.obj = notes;
+                handler.sendMessage(msg);
+            }
+        });
+
+    }
+
+    //-------------------------------------p层调用----------------------------------------
+    //1-1
+    private void getNoteListByFolderId(long mListDetail, int mPageNum, int size, String sort) {
+        presener.pGetNoteListByFolderID(mListDetail, mPageNum, size, sort);
+    }
+
+    //1-2
     private void getNoteListByTagId(long mListDetail, int mPageNum, int size, String sort) {
+
         presener.pGetNoteListByTagID(mListDetail, mPageNum, size, sort);
+    }
+
+
+    //-------------------------------------p层调用 同步所有数据----------------------------------------
+
+    /**
+     * 同步所有数据
+     */
+    private void syncData() {
 
         //TODO
-//        TNAction.runActionAsync(TNActionType.GetNoteListByTagId, mListDetail, mPageNum, TNConst.PAGE_SIZE, mSettings.sort);
+        TNAction.runActionAsync(TNActionType.Synchronize, "Trash");
+    }
+
+    //-------------------------------------p层调用 同步Edit数据----------------------------------------
+
+    /**
+     * 同步edit
+     */
+    private void syncEdit() {
+        //TODO
+        TNAction.runActionAsync(TNActionType.SynchronizeEdit);
     }
 
 
     //-------------------------------------接口结果回调----------------------------------------
 
-    public void respondGetNoteList(TNAction aAction) {
-        mLoadingView.setVisibility(View.GONE);
-        mPullListview.onRefreshComplete();
-        if (!TNHandleError.handleResult(this, aAction)) {
-            notifyData(aAction);
-        }
-    }
 
-
+    //1-1/同1-2
     @Override
     public void onListByFolderIdSuccess(Object obj, long tagId, int mPageNum, int pageSize, String sort) {
-        NoteListBean bean  = (NoteListBean) obj;
+        NoteListBean bean = (NoteListBean) obj;
+        insertDbNotes(bean, false);//异步
+
         mLoadingView.setVisibility(View.GONE);
         mPullListview.onRefreshComplete();
 
         if (pageSize == TNConst.MAX_PAGE_SIZE) {
-            int currentCount = mPageNum*TNConst.PAGE_SIZE;
+            int currentCount = mPageNum * TNConst.PAGE_SIZE;
             int count = bean.getCount();
             if (count > currentCount) {
-                mPageNum ++;
-                getNoteListByFolderId( tagId, mPageNum, TNConst.MAX_PAGE_SIZE, sort);
+                mPageNum++;
+                getNoteListByFolderId(tagId, mPageNum, TNConst.MAX_PAGE_SIZE, sort);
             }
             notifyData(bean);
         } else {
@@ -712,19 +834,22 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         mPullListview.onRefreshComplete();
     }
 
-
+    //1-2/同1-1
     @Override
     public void onNoteListByTagIdSuccess(Object obj, long tagId, int mPageNum, int pageSize, String sort) {
-        NoteListBean bean  = (NoteListBean) obj;
+
+        NoteListBean bean = (NoteListBean) obj;
+        insertDbNotes(bean, false);//异步
+
         mLoadingView.setVisibility(View.GONE);
         mPullListview.onRefreshComplete();
 
         if (pageSize == TNConst.MAX_PAGE_SIZE) {
-            int currentCount = mPageNum*TNConst.PAGE_SIZE;
+            int currentCount = mPageNum * TNConst.PAGE_SIZE;
             int count = bean.getCount();
             if (count > currentCount) {
-                mPageNum ++;
-                getNoteListByTagId( tagId, mPageNum, TNConst.MAX_PAGE_SIZE, sort);
+                mPageNum++;
+                getNoteListByTagId(tagId, mPageNum, TNConst.MAX_PAGE_SIZE, sort);
             }
             notifyData(bean);
         } else {
@@ -738,4 +863,9 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         mLoadingView.setVisibility(View.GONE);
         mPullListview.onRefreshComplete();
     }
+    //==================================p层调用=======================================
+
+
+    //==================================接口结果返回=======================================
+
 }

@@ -283,7 +283,8 @@ public class TNUserService {
 		aAction.runChildAction(TNActionType.GetNoteList, 1, TNConst.MAX_PAGE_SIZE, TNSettings.getInstance().sort);
 		aAction.finished();
 	}
-	
+
+	//TODO
 	public void GetAllDataByNoteId(TNAction aAction) {	
 		long noteId = (Long) aAction.inputs.get(0);
 		aAction.runChildAction(TNActionType.GetNoteByNoteId, noteId);

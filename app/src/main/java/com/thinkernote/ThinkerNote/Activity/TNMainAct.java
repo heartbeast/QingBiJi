@@ -802,7 +802,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //TODO
     private void downloadNewAPK(String url, Dialog dialog) {
 //        presener.pDownload(url, dialog);
-
         TNAction.runActionAsync(TNActionType.UpdateSoftware, url, dialog);
     }
 

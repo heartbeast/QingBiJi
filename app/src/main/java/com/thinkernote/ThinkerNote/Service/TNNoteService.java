@@ -571,6 +571,7 @@ public class TNNoteService {
         }
     }
 
+    //TODO
     public void GetNoteListBySearch(TNAction aAction) {
         //暂时只做了本地搜索，以后会增加网络搜索
         String keyWord = (String) aAction.inputs.get(0);
