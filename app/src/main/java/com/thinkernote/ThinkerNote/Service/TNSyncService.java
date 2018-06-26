@@ -246,6 +246,7 @@ public class TNSyncService {
 
     }
 
+    //TODO
     public void SynchronizeEdit(TNAction aAction) {
         //add
         Vector<TNNote> addNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);

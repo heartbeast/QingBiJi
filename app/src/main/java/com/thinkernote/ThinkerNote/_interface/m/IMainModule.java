@@ -14,6 +14,7 @@ import java.util.List;
 public interface IMainModule {
     void mUpgrade(OnMainListener onMainListener);
 
+    void mProfile(OnMainListener listener);
     void GetFolder(OnMainListener onMainListener);
 
     void mGetTagList(OnMainListener onMainListener);
@@ -33,8 +34,6 @@ public interface IMainModule {
     void mNewNote(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
     void mNewNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
-
-    void mProfile(OnMainListener listener);
 
     void mRecoveryNote(OnMainListener listener, long noteID, int position, int arrySize);
 
