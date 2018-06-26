@@ -320,7 +320,8 @@ public class TNUserService {
 			aAction.failed(outputs);
 		}
 	}
-	
+
+	//TODO
 	public void ChangePassword(TNAction aAction) {	
 		String newPassword = aAction.inputs.get(1).toString();
 		JSONObject jsonData = TNUtils.makeJSON(

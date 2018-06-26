@@ -240,6 +240,44 @@ public interface MyHttpService {
             , @Field("session_token") String session_token);
 
     /**
+     * 11 修改密码
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Log.CHANGE_PS)
+    Observable<CommonBean> changePs(
+            @Field("oldpassword") String oldpassword
+            , @Field("newpassword") String newpassword
+            , @Field("session_token") String session_token);
+
+    /**
+     * 11 修改name
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Log.CHANGE_NAME_OR_EMAIL)
+    Observable<CommonBean> changeUserName(
+            @Field("username") String username
+            , @Field("password") String password
+            , @Field("session_token") String session_token);
+
+
+    /**
+     * 11 修改email
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Log.CHANGE_NAME_OR_EMAIL)
+    Observable<CommonBean> changeUserEmail(
+            @Field("email") String email
+            , @Field("password") String password
+            , @Field("session_token") String session_token);
+
+
+    /**
      * 12 获取用户信息
      *
      * @return

@@ -90,6 +90,16 @@ public class URLUtils {
         public static final String CHANGE_PHONE = "api/user/profile";
 
         /**
+         * 修改手机号 提交
+         */
+        public static final String CHANGE_PS = "api/user/password";
+
+        /**
+         * 修改手机号 提交
+         */
+        public static final String CHANGE_NAME_OR_EMAIL = "api/user/profile";
+
+        /**
          * 获取用户信息
          */
         public static final String USER_INFO = "api/user/profile";
