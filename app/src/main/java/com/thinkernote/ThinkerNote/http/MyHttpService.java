@@ -475,7 +475,8 @@ public interface MyHttpService {
      * @return
      */
     @GET(URLUtils.Note.FOLDER)
-    Observable<AllFolderBean> syncGetFolderByFodlerId(@Query("folder_id") long folder_id
+    Observable<AllFolderBean> syncGetFolderByFodlerId(
+            @Query("folder_id") long folder_id
             , @Query("session_token") String session_token);
 
 
@@ -711,6 +712,29 @@ public interface MyHttpService {
             , @Query("pagesize") int pagesize
             , @Query("sortord") String sortord
             , @Query("session_token") String session_token);
+
+    //-------------------------------------------------folder/cat相关----------------------------------------------------
+
+    /**
+     * getParentFolder
+     *
+     * @return
+     */
+    @GET(URLUtils.Note.FOLDER)
+    Observable<AllFolderBean> getParentFolder(
+            @Query("session_token") String session_token);
+
+    /**
+     * 同步syncRecoveryNote
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @PUT(URLUtils.Cat.FOLDER_MOVE)
+    Observable<CommonBean> folderMove(
+            @Field("folder_id") long note_id
+            , @Field("parent_id") long parent_id
+            , @Field("session_token") String session_token);
 
     //-------------------------------------------------设置相关----------------------------------------------------
 

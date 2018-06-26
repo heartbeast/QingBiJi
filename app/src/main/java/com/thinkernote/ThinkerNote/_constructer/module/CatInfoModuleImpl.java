@@ -20,7 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * 登录 m层 具体实现
+ *  m层 具体实现
  */
 public class CatInfoModuleImpl implements ICatInfoModule {
 

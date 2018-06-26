@@ -34,6 +34,7 @@ public class TNSocketCat {
 				if (result == 0) {
 					insertDBCats(outputs, -1);
 				}
+
 				//该处不会执行
 				if (settings.firstLaunch) {
 					Vector<TNCat> cats = TNDbUtils.getAllCatList(settings.userId);

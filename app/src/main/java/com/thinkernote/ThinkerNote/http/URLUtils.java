@@ -138,6 +138,10 @@ public class URLUtils {
          * 设置默认路径
          */
         public static final String DEFAULT_FOLDER = "api/folders/default";
+        /**
+         * 设置默认路径
+         */
+        public static final String FOLDER_MOVE = "api/folders/move";
     }
 
     public static class Note {
