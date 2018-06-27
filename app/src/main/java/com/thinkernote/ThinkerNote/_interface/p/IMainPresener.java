@@ -9,7 +9,7 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import java.util.List;
 
 /**
- * 手机号注册 p层interface
+ * main p层interface
  */
 public interface IMainPresener {
     void pDownload(String url, Dialog dialog);

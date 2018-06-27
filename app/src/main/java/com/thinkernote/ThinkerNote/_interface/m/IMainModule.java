@@ -15,6 +15,7 @@ public interface IMainModule {
     void mUpgrade(OnMainListener onMainListener);
 
     void mProfile(OnMainListener listener);
+
     void GetFolder(OnMainListener onMainListener);
 
     void mGetTagList(OnMainListener onMainListener);
