@@ -171,7 +171,7 @@ public class URLUtils {
         /**
          * 标签
          */
-        public static final String ALLNOTESID = "api/note/idsapi/note/ids";
+        public static final String ALLNOTESID = "api/note/ids";
 
         /**
          * getNote

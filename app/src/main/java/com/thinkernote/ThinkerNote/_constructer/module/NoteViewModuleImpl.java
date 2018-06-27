@@ -9,6 +9,8 @@ import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.CommonBean3;
+import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;
@@ -32,33 +34,35 @@ public class NoteViewModuleImpl implements INoteViewModule {
     public void mGetNote(final OnNoteViewListener listener, long noteId) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .getNote(noteId,settings.token)//接口方法
+                .GetNoteByNoteId(noteId, settings.token)
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<CommonBean3<GetNoteByNoteIdBean>>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "upgrade--onCompleted");
+                        MLog.d(TAG, "mGetNoteByNoteId--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("upgrade 异常onError:" + e.toString());
+                        MLog.e("mGetNoteByNoteId 异常onError:" + e.toString());
                         listener.onGetNoteFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "upgrade-onNext");
+                    public void onNext(CommonBean3<GetNoteByNoteIdBean> bean) {
+                        MLog.d(TAG, "mGetNoteByNoteId-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onGetNoteSuccess(bean);
+                            listener.onGetNoteSuccess(bean.getNote());
                         } else {
-                            listener.onGetNoteFailed(bean.getMessage(), null);
+                            listener.onGetNoteFailed(bean.getMsg(), null);
                         }
                     }
+
+
                 });
     }
 }

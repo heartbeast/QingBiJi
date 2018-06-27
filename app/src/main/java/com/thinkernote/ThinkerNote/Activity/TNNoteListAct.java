@@ -169,7 +169,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
 
         // TODO register action
-
         TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
 

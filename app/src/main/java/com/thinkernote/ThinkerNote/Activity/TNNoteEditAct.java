@@ -82,7 +82,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 主页--写笔记界面
+ * 主页--写笔记界面 sjy 0626
  */
 public class TNNoteEditAct extends TNActBase implements OnClickListener,
         OnFocusChangeListener, TextWatcher, RecognizerDialogListener,

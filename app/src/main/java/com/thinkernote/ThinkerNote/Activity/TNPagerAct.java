@@ -47,6 +47,7 @@ import static com.thinkernote.ThinkerNote.Utils.MLog.i;
 /**
  * TODO
  * 主页--我的笔记
+ * 样式：act+3个frag
  */
 
 public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnClickListener,
@@ -71,7 +72,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
         TNAction.regResponder(TNActionType.SynchronizeCat, this, "respondSynchronizeCat");
 
-        //
+        //TODO 未做
         TNAction.regResponder(TNActionType.FolderDelete, this, "respondFolderDelete");
         TNAction.regResponder(TNActionType.ClearRecycle, this, "respondNoteHandle");
 
@@ -217,7 +218,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 }
                 break;
 
-            //================================笔记相关的点击事件================================
+            //================================01 笔记相关的点击事件================================
             case R.id.notelistitem_menu_view: {// 查看
                 mMenuBuilder.destroy();
                 if (mCurrNote == null)
@@ -288,6 +289,8 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 mMenuBuilder.destroy();
                 if (mCurrNote == null || mCurrNote.noteId == -1)
                     break;
+
+                //TODO
                 TNUtilsDialog.synchronize(this, null, null,
                         TNActionType.GetAllDataByNoteId, mCurrNote.noteId, "noteItem");//增加noteItem是为了防止完全同步文件夹时也会走到这个的响应函数导致的报错
                 break;
@@ -317,11 +320,13 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 break;
             }
 
-            //================================文件夹相关的点击事件================================
+            //================================02 文件夹相关的点击事件================================
             case R.id.folder_menu_sync: {// 同步
                 mMenuBuilder.destroy();
                 if (mCurrCat == null)
                     break;
+
+                //TODO
                 TNUtilsDialog.synchronize(this, null, null,
                         TNActionType.SynchronizeCat, mCurrCat.catId);
                 break;
@@ -393,7 +398,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 break;
             }
 
-            //================================标签相关的点击事件================================
+            //================================03 标签相关的点击事件================================
             case R.id.tag_menu_display: {// 详情
                 mMenuBuilder.destroy();
                 if (mCurTag == null)

@@ -704,7 +704,6 @@ public class MainModuleImpl implements IMainModule {
     @Override
     public void mGetAllNotesId(final OnMainListener listener) {
         TNSettings settings = TNSettings.getInstance();
-        //2-9-1
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .syncAllNotsId(settings.token)
                 .subscribeOn(Schedulers.io())//固定样式
