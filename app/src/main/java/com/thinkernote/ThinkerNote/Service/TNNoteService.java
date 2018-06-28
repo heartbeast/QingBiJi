@@ -410,6 +410,7 @@ public class TNNoteService {
         }
     }
 
+    //TODO
     public void GetNoteListByTrash(TNAction aAction) {
         int pageNum = (Integer) aAction.inputs.get(0);
         int pageSize = (Integer) aAction.inputs.get(1);
@@ -423,11 +424,13 @@ public class TNNoteService {
 
         JSONObject outputs = (JSONObject) aAction.childAction.outputs.get(0);
         if ((Integer) TNUtils.getFromJSON(outputs, "code") == 0) {
+
             if (pageSize == TNConst.MAX_PAGE_SIZE) {
                 int currentCount = pageNum * TNConst.PAGE_SIZE;
                 int count = (Integer) TNUtils.getFromJSON(outputs, "count");
                 if (count > currentCount) {
                     pageNum++;
+                    //循环调用
                     aAction.runChildAction(TNActionType.GetNoteListByTrash, pageNum, TNConst.MAX_PAGE_SIZE, sortord);
                 }
                 aAction.finished(outputs);

@@ -10,12 +10,18 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import java.util.List;
 
 /**
- *  m层interface
+ * m层interface
  */
 public interface ICatFragModule {
 
     //
     void mGetParentFolder(OnCatFragListener listener);
+
+    void mGetFolderByFolderId(OnCatFragListener listener, long catId);
+
+    void mGetNoteListByTrash(OnCatFragListener listener, int pagerSize, int pagenum, String sortType);
+
+    void mGetNotelistByFolderId(OnCatFragListener listener, long folderid,int pagerSize, int pagenum, String sortType);
 
     //syncData
     void mProfile(OnSynchronizeDataListener listener);
@@ -26,7 +32,7 @@ public interface ICatFragModule {
 
     void mGetFoldersByFolderId(OnSynchronizeDataListener OnSynchronizeDataListenerl, long id, int position, List<AllFolderItemBean> beans);
 
-    void mFirstFolderAdd(OnSynchronizeDataListener listener, int workPos, int workSize, long catID,String name, int catPos, int flag);
+    void mFirstFolderAdd(OnSynchronizeDataListener listener, int workPos, int workSize, long catID, String name, int catPos, int flag);
 
     void mfolderAdd(OnSynchronizeDataListener listener, int position, int arraySize, String name);
 

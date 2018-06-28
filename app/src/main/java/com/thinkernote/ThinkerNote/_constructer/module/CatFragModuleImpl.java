@@ -4,10 +4,12 @@ import android.content.Context;
 
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ICatFragModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCatFragListener;
+import com.thinkernote.ThinkerNote._interface.v.OnNoteListListener;
 import com.thinkernote.ThinkerNote._interface.v.OnSynchronizeDataListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
@@ -17,6 +19,7 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
 import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
+import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
@@ -34,7 +37,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * 登录 m层 具体实现
+ * frag cat m层 具体实现
  */
 public class CatFragModuleImpl implements ICatFragModule {
 
@@ -46,11 +49,149 @@ public class CatFragModuleImpl implements ICatFragModule {
     }
 
     //=========================================其他===========================================
+    //1
     @Override
-    public void mGetParentFolder(OnCatFragListener listener) {
+    public void mGetParentFolder(final OnCatFragListener listener) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .getParentFolder(settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<AllFolderBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mParentFolder--onCompleted");
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e(TAG, "mParentFolder--onError:" + e.toString());
+                        listener.onGetParentFolderFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(AllFolderBean bean) {
+                        MLog.d(TAG, "mParentFolder-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            MLog.d(TAG, "mParentFolder-成功");
+                            listener.onGetParentFolderSuccess(bean);
+                        } else {
+                            listener.onGetParentFolderFailed(bean.getMsg(), null);
+                        }
+                    }
+
+                });
     }
 
+    //2
+    @Override
+    public void mGetFolderByFolderId(final OnCatFragListener listener, final long catId) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .syncGetFolderByFodlerId(catId, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<AllFolderBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "GetFoldersByFolderId--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("GetFoldersByFolderId 异常onError:" + e.toString());
+                        listener.onGetFolderByFolderIdFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(AllFolderBean bean) {
+                        MLog.d(TAG, "GetFoldersByFolderId-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onGetFolderByFolderIdSuccess(bean, catId);
+                        } else {
+                            listener.onGetFolderByFolderIdFailed(bean.getMsg(), null);
+                        }
+                    }
+
+                });
+    }
+
+    //3
+    @Override
+    public void mGetNoteListByTrash(final OnCatFragListener listener, int pagerSize, final int pagenum, final String sortType) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .getNoteListByTrash(pagerSize, pagenum, sortType, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<NoteListBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "GetFoldersByFolderId--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("GetFoldersByFolderId 异常onError:" + e.toString());
+                        listener.onGetNoteListByTrashFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(NoteListBean bean) {
+                        MLog.d(TAG, "GetFoldersByFolderId-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onGetNoteListByTrashSuccess(bean, pagenum, sortType);
+                        } else {
+                            listener.onGetNoteListByTrashFailed(bean.getMessage(), null);
+                        }
+                    }
+
+                });
+    }
+
+    //4
+    @Override
+    public void mGetNotelistByFolderId(final OnCatFragListener listener, final long folderId, final int mPageNum, final int pageSize, final String sort) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .getNoteListByFolderId(folderId, mPageNum, TNConst.PAGE_SIZE, sort, settings.token)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<NoteListBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "upgrmGetNotelistByFolderIdade--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mGetNotelistByFolderId 异常onError:" + e.toString());
+                        listener.onGetNoteListByFolderIdFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(NoteListBean bean) {
+                        MLog.d(TAG, "mGetNotelistByFolderId-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onGetNoteListByFolderIdSuccess(bean, folderId, mPageNum, sort);
+                        } else {
+                            listener.onGetNoteListByFolderIdFailed(bean.getMessage(), null);
+                        }
+                    }
+                });
+    }
 
     //=========================================syncData===========================================
 

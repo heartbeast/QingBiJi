@@ -774,6 +774,20 @@ public interface MyHttpService {
             , @Field("parent_id") long parent_id
             , @Field("session_token") String session_token);
 
+
+    /**
+     * 同步获取GetFolderByFodlerId
+     *
+     *
+     * @return
+     */
+    @GET(URLUtils.Cat.FOLDER_TRASH)
+    Observable<NoteListBean> getNoteListByTrash(
+            @Query("pagesize") int pagesize
+            , @Query("pagenum") int pagenum
+            , @Query("sortord") String sortord
+            , @Query("session_token") String session_token);
+
     //-------------------------------------------------设置相关----------------------------------------------------
 
     /**

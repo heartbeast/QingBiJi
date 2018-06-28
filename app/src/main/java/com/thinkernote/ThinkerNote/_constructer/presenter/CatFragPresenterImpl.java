@@ -33,12 +33,30 @@ public class CatFragPresenterImpl implements ICatFragPresenter, OnCatFragListene
 
 
     //============================p层重写，用于调用m层方法============================
-    //=========================================syncData===========================================
 
     @Override
     public void pGetParentFolder() {
         module.mGetParentFolder(this);
     }
+
+    @Override
+    public void pGetFolderByFolderId(long catId) {
+        module.mGetFolderByFolderId(this, catId);
+    }
+
+    @Override
+    public void pGetNoteListByTrash(int pagerSize, int pagenum, String sortType) {
+        module.mGetNoteListByTrash(this, pagerSize, pagenum, sortType);
+    }
+
+    @Override
+    public void pGetNoteListByFolderId(long folderId, int pagerSize, int pagenum, String sortType) {
+        module.mGetNotelistByFolderId(this, folderId, pagerSize, pagenum, sortType);
+    }
+
+
+    //=========================================syncData===========================================
+
 
     //=第一次登录的同步方法=
     //1
@@ -68,8 +86,8 @@ public class CatFragPresenterImpl implements ICatFragPresenter, OnCatFragListene
 
     //5
     @Override
-    public void pFirstFolderAdd(int workPos, int workSize, long catID, String name,int catPos, int flag) {
-        module.mFirstFolderAdd(dataListener, workPos, workSize, catID,name, catPos, flag);
+    public void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        module.mFirstFolderAdd(dataListener, workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -234,8 +252,8 @@ public class CatFragPresenterImpl implements ICatFragPresenter, OnCatFragListene
 
         //5 TNCat
         @Override
-        public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
-            onDataView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, name,catPos, flag);
+        public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+            onDataView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, name, catPos, flag);
         }
 
         @Override
@@ -446,6 +464,36 @@ public class CatFragPresenterImpl implements ICatFragPresenter, OnCatFragListene
     @Override
     public void onGetParentFolderFailed(String msg, Exception e) {
         onView.onGetParentFolderFailed(msg, e);
+    }
+
+    @Override
+    public void onGetFolderByFolderIdSuccess(Object obj, long catId) {
+        onView.onGetFolderByFolderIdSuccess(obj, catId);
+    }
+
+    @Override
+    public void onGetFolderByFolderIdFailed(String msg, Exception e) {
+        onView.onGetFolderByFolderIdFailed(msg, e);
+    }
+
+    @Override
+    public void onGetNoteListByTrashSuccess(Object obj, int pageNum, String sortType) {
+        onView.onGetNoteListByTrashSuccess(obj, pageNum, sortType);
+    }
+
+    @Override
+    public void onGetNoteListByTrashFailed(String msg, Exception e) {
+        onView.onGetNoteListByTrashFailed(msg, e);
+    }
+
+    @Override
+    public void onGetNoteListByFolderIdSuccess(Object obj, long folderid, int pageNum, String sortType) {
+        onView.onGetNoteListByFolderIdSuccess(obj, folderid, pageNum, sortType);
+    }
+
+    @Override
+    public void onGetNoteListByFolderIdFailed(String msg, Exception e) {
+        onView.onGetNoteListByFolderIdFailed(msg, e);
     }
 
 }

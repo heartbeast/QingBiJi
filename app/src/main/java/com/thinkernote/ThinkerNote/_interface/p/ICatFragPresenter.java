@@ -7,12 +7,19 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import java.util.List;
 
 /**
- *  p层interface
+ * p层interface
  */
 public interface ICatFragPresenter {
 
     //其他
     void pGetParentFolder();
+
+    void pGetFolderByFolderId(long catId);
+
+    void pGetNoteListByTrash(int pagerSize,int pagenum,String sortType);
+
+    void pGetNoteListByFolderId(long folderId,int pagerSize,int pagenum,String sortType);
+
     //syncData
     void folderAdd(int position, int arraySize, String folderName);
 
@@ -22,7 +29,7 @@ public interface ICatFragPresenter {
 
     void pGetFoldersByFolderId(long id, int position, List<AllFolderItemBean> beans);
 
-    void pFirstFolderAdd(int workPos, int workSize, long catID, String name,int catPos, int flag);
+    void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag);
 
     void tagAdd(int position, int arraySize, String tagName);
 

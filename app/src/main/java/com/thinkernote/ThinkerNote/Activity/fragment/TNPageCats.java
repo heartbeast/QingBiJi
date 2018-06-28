@@ -101,7 +101,7 @@ public class TNPageCats extends TNChildViewBase implements
     private TNSettings mSettings;
     private LinearLayout mLoadingView;
     //p
-    ICatFragPresenter presender;
+    ICatFragPresenter presenter;
 
     /**
      * 如下数据，当最后一个接口调用完成后，一定好清空数据
@@ -141,14 +141,8 @@ public class TNPageCats extends TNChildViewBase implements
         pageId = R.id.page_cats;
         mSettings = TNSettings.getInstance();
 
-        // TODO register action
-        TNAction.regResponder(TNActionType.GetParentFolders, this, "respondGetParentFolders");
-        TNAction.regResponder(TNActionType.GetFoldersByFolderId, this, "respondGetFoldersByFolderId");
-        TNAction.regResponder(TNActionType.GetNoteListByTrash, this, "respondGetNoteListByTrash");
-        TNAction.regResponder(TNActionType.GetNoteListByFolderId, this, "respondGetNoteListByFolderId");
-
         //p
-        presender = new CatFragPresenterImpl(mActivity, this, dataListener);
+        presenter = new CatFragPresenterImpl(mActivity, this, dataListener);
 
         init();
     }
@@ -622,7 +616,7 @@ public class TNPageCats extends TNChildViewBase implements
         mCatList.clear();
         mNoteList.clear();
         if (mPCat.catId == -1) {
-            pGetNoteListByTrash();
+            pGetNoteListByTrash(TNConst.MAX_PAGE_SIZE, 1, mSettings.sort);
         } else {
             pGetFolderByFolderId(mPCat.catId);
         }
@@ -652,35 +646,6 @@ public class TNPageCats extends TNChildViewBase implements
         int groupId;
     }
 
-    public void respondGetParentFolders(TNAction aAction) {
-        //判断是不是本页的注册响应事件
-        if (aAction.inputs.size() < 1) {
-            return;
-        }
-        mCatListView.onRefreshComplete();
-        refreshParentCats();
-    }
-
-    public void respondGetFoldersByFolderId(TNAction aAction) {
-        //判断是不是本页的注册响应事件
-        if (aAction.inputs.size() < 2) {
-            return;
-        }
-        mCatList = TNDbUtils.getCatsByCatId(mSettings.userId, mPCat.catId);
-
-        pGetNoteListByFolderId();
-
-    }
-
-    public void respondGetNoteListByTrash(TNAction aAction) {
-        pGetParentFolder();
-    }
-
-    public void respondGetNoteListByFolderId(TNAction aAction) {
-        mCatListView.onRefreshComplete();
-        mNoteList = TNDbUtils.getNoteListByCatId(mSettings.userId, mPCat.catId, mSettings.sort, TNConst.MAX_PAGE_SIZE);
-        notifyExpandList();
-    }
 
     /**
      * 同步结束后的操作
@@ -703,7 +668,36 @@ public class TNPageCats extends TNChildViewBase implements
             TNUtilsUi.showNotification(mActivity, R.string.alert_SynchronizeCancell, true);
         }
     }
+
     // ---------------------------------------数据库操作----------------------------------------
+
+    /**
+     * 调用GetFoldersByFolderId接口，就触发插入db
+     */
+    private void insertDBCatsSQL(AllFolderBean allFolderBean, long pCatId) {
+        TNSettings settings = TNSettings.getInstance();
+        CatDbHelper.clearCatsByParentId(pCatId);
+        List<AllFolderItemBean> beans = allFolderBean.getFolders();
+        for (int i = 0; i < beans.size(); i++) {
+            AllFolderItemBean bean = beans.get(i);
+
+            JSONObject tempObj = TNUtils.makeJSON(
+                    "catName", bean.getName(),
+                    "userId", settings.userId,
+                    "trash", 0,
+                    "catId", bean.getId(),
+                    "noteCounts", bean.getCount(),
+                    "catCounts", bean.getFolder_count(),
+                    "deep", bean.getFolder_count() > 0 ? 1 : 0,
+                    "pCatId", pCatId,
+                    "isNew", -1,
+                    "createTime", TNUtils.formatStringToTime(bean.getCreate_at()),
+                    "lastUpdateTime", TNUtils.formatStringToTime(bean.getUpdate_at()),
+                    "strIndex", TNUtils.getPingYinIndex(bean.getName())
+            );
+            CatDbHelper.addOrUpdateCat(tempObj);
+        }
+    }
 
     //异步
     public static void insertDbNotes(final NoteListBean bean, final boolean isTrash) {
@@ -1146,30 +1140,28 @@ public class TNPageCats extends TNChildViewBase implements
                 break;
         }
     }
+
     //===================================================================================
+    //01
+    private void pGetNoteListByTrash(int pageSize, int pageNum, String sortType) {
+        presenter.pGetNoteListByTrash(pageSize, pageNum, sortType);
+    }
 
-    //GetNoteListByTrash后调用
+    // 02 GetNoteListByTrash后调用
     private void pGetParentFolder() {
-        presender.pGetParentFolder();
-        //TODO
-        TNAction.runActionAsync(TNActionType.GetParentFolders, "page");
+        presenter.pGetParentFolder();
     }
 
+    //03
     private void pGetFolderByFolderId(long catId) {
-
-        // TODO
-        TNAction.runActionAsync(TNActionType.GetFoldersByFolderId, catId, "page");
+        presenter.pGetFolderByFolderId(catId);
     }
 
-    private void pGetNoteListByTrash() {
 
-        // TODO
-        TNAction.runActionAsync(TNActionType.GetNoteListByTrash, TNConst.MAX_PAGE_SIZE, 1, mSettings.sort);
-    }
-
-    //GetFoldersByFolderId后调用
-    private void pGetNoteListByFolderId() {
-        //
+    //04 GetFoldersByFolderId后调用
+    private void pGetNoteListByFolderId(long foldeid, int pageSize, int pageNum, String sortType) {
+        presenter.pGetNoteListByFolderId(foldeid, pageSize, pageNum, sortType);
+        //TODO
         TNAction.runActionAsync(TNActionType.GetNoteListByFolderId, mPCat.catId, 1, TNConst.MAX_PAGE_SIZE, mSettings.sort);
     }
 
@@ -1204,7 +1196,7 @@ public class TNPageCats extends TNChildViewBase implements
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
-        presender.folderAdd(position, arraySize, name);
+        presenter.folderAdd(position, arraySize, name);
     }
 
     /**
@@ -1213,7 +1205,7 @@ public class TNPageCats extends TNChildViewBase implements
      * （一.2）更新 tag
      */
     private void pTagAdd(int position, int arraySize, String name) {
-        presender.tagAdd(position, arraySize, name);
+        presenter.tagAdd(position, arraySize, name);
     }
 
     /**
@@ -1222,7 +1214,7 @@ public class TNPageCats extends TNChildViewBase implements
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        presender.pGetFolder();
+        presenter.pGetFolder();
     }
 
     /**
@@ -1283,7 +1275,7 @@ public class TNPageCats extends TNChildViewBase implements
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
-            presender.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
+            presenter.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
         }
     }
 
@@ -1366,7 +1358,7 @@ public class TNPageCats extends TNChildViewBase implements
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
-        presender.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
+        presenter.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -1376,7 +1368,7 @@ public class TNPageCats extends TNChildViewBase implements
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
-        presender.pProfile();
+        presenter.pProfile();
     }
 
     /**
@@ -1413,7 +1405,7 @@ public class TNPageCats extends TNChildViewBase implements
      * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presender.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
@@ -1422,7 +1414,7 @@ public class TNPageCats extends TNChildViewBase implements
      */
 
     private void pOldNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-        presender.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -1431,7 +1423,7 @@ public class TNPageCats extends TNChildViewBase implements
      */
 
     private void pGetTagList1() {
-        presender.pGetTagList();
+        presenter.pGetTagList();
     }
 
 
@@ -1465,7 +1457,7 @@ public class TNPageCats extends TNChildViewBase implements
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presender.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
@@ -1475,7 +1467,7 @@ public class TNPageCats extends TNChildViewBase implements
 
     private void pNewNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
 
-        presender.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -1513,21 +1505,21 @@ public class TNPageCats extends TNChildViewBase implements
      * (二.7)01
      */
     private void pRecoveryNote1(long noteID, int position, int arrySize) {
-        presender.pRecoveryNote(noteID, position, arrySize);
+        presenter.pRecoveryNote(noteID, position, arrySize);
     }
 
     /**
      * (二.7)02
      */
     private void pRecoveryNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presender.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
      * (二.7)03
      */
     private void pRecoveryNoteAdd1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-        presender.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -1556,7 +1548,7 @@ public class TNPageCats extends TNChildViewBase implements
      * (二.8)
      */
     private void pNoteDelete1(long noteId, int postion) {
-        presender.pDeleteNote(noteId, postion);
+        presenter.pDeleteNote(noteId, postion);
     }
 
     /**
@@ -1654,7 +1646,7 @@ public class TNPageCats extends TNChildViewBase implements
      */
     private void pDeleteRealNotes1(long noteId, int postion) {
         //
-        presender.pDeleteRealNotes(noteId, postion);
+        presenter.pDeleteRealNotes(noteId, postion);
 
     }
 
@@ -1663,7 +1655,7 @@ public class TNPageCats extends TNChildViewBase implements
      */
     private void pGetAllNoteIds1() {
         //
-        presender.pGetAllNotesId();
+        presenter.pGetAllNotesId();
     }
 
     /**
@@ -1748,7 +1740,7 @@ public class TNPageCats extends TNChildViewBase implements
 
                 } else {
                     //接口，上传图片
-                    presender.pEditNotePic(cloudsPos, attsPos, note);
+                    presenter.pEditNotePic(cloudsPos, attsPos, note);
                 }
             } else {
                 //图片上传完，再上传文本
@@ -1771,7 +1763,7 @@ public class TNPageCats extends TNChildViewBase implements
      */
     private void pEditNotes1(int cloudsPos, TNNote note) {
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
-            presender.pEditNote(cloudsPos, note);
+            presenter.pEditNote(cloudsPos, note);
         } else {
             //执行下一个接口
             pUpdataNote1(0, false);
@@ -1817,14 +1809,14 @@ public class TNPageCats extends TNChildViewBase implements
      * p层
      */
     private void pUpdataNote1(int position, long noteId, boolean is13) {
-        presender.pGetNoteByNoteId(position, noteId, is13);
+        presenter.pGetNoteByNoteId(position, noteId, is13);
     }
 
     /**
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes1() {
-        presender.pGetAllTrashNoteIds();
+        presenter.pGetAllTrashNoteIds();
     }
 
     /**
@@ -2509,13 +2501,82 @@ public class TNPageCats extends TNChildViewBase implements
     }
 
     //====================================结果回调===============================================
+    //1
     @Override
     public void onGetParentFolderSuccess(Object obj) {
+        insertDBCatsSQL((AllFolderBean) obj, -1);
 
+        mCatListView.onRefreshComplete();
+        refreshParentCats();
     }
 
     @Override
     public void onGetParentFolderFailed(String msg, Exception e) {
+        mCatListView.onRefreshComplete();
+        TNUtilsUi.showToast(msg);
+    }
 
+    //2
+    @Override
+    public void onGetFolderByFolderIdSuccess(Object obj, long catId) {
+        insertDBCatsSQL((AllFolderBean) obj, catId);
+        //
+        mCatList = TNDbUtils.getCatsByCatId(mSettings.userId, mPCat.catId);
+        pGetNoteListByFolderId(mPCat.catId, TNConst.MAX_PAGE_SIZE, 1, mSettings.sort);
+    }
+
+    @Override
+    public void onGetFolderByFolderIdFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    @Override
+    public void onGetNoteListByTrashSuccess(Object obj, int pageNum, String sortType) {
+        NoteListBean bean = (NoteListBean) obj;
+        //保存
+        insertDbNotes(bean, true);
+
+        //是否继续循环调用
+        int currentCount = pageNum * TNConst.PAGE_SIZE;
+        int count = bean.getCount();
+
+        if (count > currentCount) {
+            pageNum++;
+            //循环调用
+            pGetNoteListByTrash(TNConst.MAX_PAGE_SIZE, pageNum, sortType);
+        } else {
+            //结束
+            pGetParentFolder();
+        }
+    }
+
+    @Override
+    public void onGetNoteListByTrashFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
+
+    @Override
+    public void onGetNoteListByFolderIdSuccess(Object obj, long folderid, int pageNum, String sortType) {
+        NoteListBean bean = (NoteListBean) obj;
+        insertDbNotes(bean, false);//异步
+        //是否继续循环调用
+        int currentCount = pageNum * TNConst.PAGE_SIZE;
+        int count = bean.getCount();
+
+        if (count > currentCount) {
+            pageNum++;
+            //循环调用
+            pGetNoteListByFolderId(folderid, TNConst.MAX_PAGE_SIZE, pageNum, sortType);
+        } else {
+            //更新显示
+            mCatListView.onRefreshComplete();
+            mNoteList = TNDbUtils.getNoteListByCatId(mSettings.userId, mPCat.catId, mSettings.sort, TNConst.MAX_PAGE_SIZE);
+            notifyExpandList();
+        }
+    }
+
+    @Override
+    public void onGetNoteListByFolderIdFailed(String msg, Exception e) {
+        MLog.e(msg);
     }
 }
