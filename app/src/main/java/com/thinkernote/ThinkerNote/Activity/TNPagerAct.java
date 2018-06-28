@@ -33,7 +33,7 @@ import com.thinkernote.ThinkerNote.Other.HorizontalPager;
 import com.thinkernote.ThinkerNote.Other.HorizontalPager.OnScreenSwitchListener;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.PagerPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IPagerPresener;
+import com.thinkernote.ThinkerNote._interface.p.IPagerPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnPagerListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.base.TNChildViewBase;
@@ -62,7 +62,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     private TNTag mCurTag;
 
     //p
-    IPagerPresener presener;
+    IPagerPresenter presener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
         TNAction.regResponder(TNActionType.SynchronizeCat, this, "respondSynchronizeCat");
 
-        //TODO 未做
+        //TODO 未做 ??
         TNAction.regResponder(TNActionType.FolderDelete, this, "respondFolderDelete");
         TNAction.regResponder(TNActionType.ClearRecycle, this, "respondNoteHandle");
 

@@ -26,7 +26,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.FindPsPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
+import com.thinkernote.ThinkerNote._interface.p.IFindPsPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
@@ -58,7 +58,7 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
     private LinearLayout mImageCodeView;
 
     //
-    private IFindPsPresener presener;
+    private IFindPsPresenter presener;
     private VerifyPicBean verifyPicBean;//验证码数据
     private LoginBean loginBean;
     private ProfileBean profileBean;

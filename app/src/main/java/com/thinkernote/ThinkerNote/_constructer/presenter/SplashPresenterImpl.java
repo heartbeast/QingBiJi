@@ -3,19 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.SplashModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.TagInfoModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
-import com.thinkernote.ThinkerNote._interface.m.ITagInfoModule;
-import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.p.ITagInfoPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.ISplashPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnSplashListener;
-import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
 
 /**
  * p层 具体实现
  */
-public class SplashPresenterImpl implements ISplashPresener, OnSplashListener {
+public class SplashPresenterImpl implements ISplashPresenter, OnSplashListener {
     private Context context;
     private OnSplashListener onView;
     //p层调用M层方法

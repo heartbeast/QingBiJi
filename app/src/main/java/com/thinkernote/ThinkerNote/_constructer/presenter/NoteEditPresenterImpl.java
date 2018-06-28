@@ -5,22 +5,15 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote._constructer.module.FindPsModuleImpl;
 import com.thinkernote.ThinkerNote._constructer.module.NoteEditModuleImpl;
-import com.thinkernote.ThinkerNote._interface.m.IFindPsModule;
 import com.thinkernote.ThinkerNote._interface.m.INoteEditModule;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
-import com.thinkernote.ThinkerNote._interface.p.INoteEditPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
+import com.thinkernote.ThinkerNote._interface.p.INoteEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteEditListener;
-import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
-
-import java.util.List;
 
 /**
  * 登录 p层 具体实现
  */
-public class NoteEditPresenterImpl implements INoteEditPresener, OnNoteEditListener {
+public class NoteEditPresenterImpl implements INoteEditPresenter, OnNoteEditListener {
     private Context context;
     private OnNoteEditListener onView;
     //p层调用M层方法

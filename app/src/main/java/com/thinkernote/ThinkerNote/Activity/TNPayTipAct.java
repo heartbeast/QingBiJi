@@ -24,7 +24,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.PayResult;
 import com.thinkernote.ThinkerNote._constructer.presenter.PayPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IPayPresener;
+import com.thinkernote.ThinkerNote._interface.p.IPayPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnPayListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
@@ -66,7 +66,7 @@ public class TNPayTipAct extends TNActBase implements OnClickListener, android.w
     private String info = "";
 
     //p
-    private IPayPresener presener;
+    private IPayPresenter presener;
     private AlipayBean alipayBean;
     private WxpayBean wxpayBean;
 

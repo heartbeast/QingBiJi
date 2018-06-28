@@ -24,7 +24,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.TextEditPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ITextEditPresener;
+import com.thinkernote.ThinkerNote._interface.p.ITextEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
@@ -55,7 +55,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     private EditText textedit = null;
 
     //
-    ITextEditPresener presener;
+    ITextEditPresenter presener;
 
     // Activity methods
     //-------------------------------------------------------------------------------

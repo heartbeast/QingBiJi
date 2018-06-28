@@ -20,7 +20,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.BindAccountPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresener;
+import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
@@ -44,7 +44,7 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
 
 
     //
-    private IBindAccountPresener presener;
+    private IBindAccountPresenter presener;
     private LoginBean loginBean;
     private ProfileBean profileBean;
 

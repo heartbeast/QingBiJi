@@ -3,7 +3,7 @@ package com.thinkernote.ThinkerNote._interface.p;
 /**
  * 手机号注册 p层interface
  */
-public interface IRegistPresener {
+public interface IRegistPresenter {
     void getVerifyPic();
     void phoneVerifyCode(String mPhone, String name, String mAnswer, String mNonce, String mHashKey);
     void submitRegister(String phone, String ps, String vcode);

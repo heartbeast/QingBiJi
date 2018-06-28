@@ -5,7 +5,7 @@ import java.util.List;
 /**
  *  p层interface
  */
-public interface IReportPresener {
+public interface IReportPresenter {
     void pFeedBackPic(List<String> mFiles,String content,String email);
     void pFeedBack(String content, long pid,String email);
 

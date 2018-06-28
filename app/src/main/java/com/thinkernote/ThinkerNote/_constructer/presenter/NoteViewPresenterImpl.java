@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.NoteViewModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.SplashModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.INoteViewModule;
-import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
-import com.thinkernote.ThinkerNote._interface.p.INoteViewPresener;
-import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.INoteViewPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
 
 /**
  * 笔记详情 p层 具体实现
  */
-public class NoteViewPresenterImpl implements INoteViewPresener, OnNoteViewListener {
+public class NoteViewPresenterImpl implements INoteViewPresenter, OnNoteViewListener {
     private Context context;
     private OnNoteViewListener onView;
     //p层调用M层方法

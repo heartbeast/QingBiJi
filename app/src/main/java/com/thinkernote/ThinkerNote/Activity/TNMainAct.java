@@ -50,7 +50,7 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.Utils.TNActivityManager;
 import com.thinkernote.ThinkerNote.Views.CustomDialog;
 import com.thinkernote.ThinkerNote._constructer.presenter.MainPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IMainPresener;
+import com.thinkernote.ThinkerNote._interface.p.IMainPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
@@ -96,7 +96,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     private TNSettings mSettings = TNSettings.getInstance();
 
     //
-    private IMainPresener presener;
+    private IMainPresenter presener;
 
     /**
      * 如下数据，当最后一个接口调用完成后，一定好清空数据
@@ -959,16 +959,16 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             } else {
                 if (groupWorks != null) {
                     //执行顺序:groupWorks-->groupLife-->groupFun
-                    pFirstFolderAdd(0, groupWorks.length, tempCat.catId, postion, 1);//执行第一个
+                    pFirstFolderAdd(0, groupWorks.length, tempCat.catId, tempCat.catName, postion, 1);//执行第一个
                 } else {
                     if (groupLife != null) {
                         //执行顺序:groupWorks-->groupLife-->groupFun
-                        pFirstFolderAdd(0, groupLife.length, tempCat.catId, postion, 2);//执行第2个
+                        pFirstFolderAdd(0, groupLife.length, tempCat.catId, tempCat.catName, postion, 2);//执行第2个
                     } else {
                         //保险一点，我对这个数据不甚了解 sjy 0622
                         if (groupFun != null) {
                             //执行顺序:groupWorks-->groupLife-->groupFun
-                            pFirstFolderAdd(0, groupFun.length, tempCat.catId, postion, 2);//执行第3个
+                            pFirstFolderAdd(0, groupFun.length, tempCat.catId, tempCat.catName, postion, 2);//执行第3个
                         } else {
                             //postion下没有数据，执行下个position
                             syncTNCat(postion + 1, catsSize);
@@ -992,8 +992,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param catPos
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
-    private void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag) {
-        presener.pFirstFolderAdd(workPos, workSize, catID, catPos, flag);
+    private void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
+        presener.pFirstFolderAdd(workPos, workSize, catID, name,catPos, flag);
     }
 
 
@@ -1687,23 +1687,23 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //1-5
     @Override
-    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
         if (catPos < cats.size() - 1) {
             if (flag == 1) {//groupWorks
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID, catPos, 1);//继续执行第1个
+                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID,name, catPos, 1);//继续执行第1个
                 } else {//groupWorks执行完，执行groupLife
-                    pFirstFolderAdd(0, groupLife.length, catID, catPos, 2);//执行第2个
+                    pFirstFolderAdd(0, groupLife.length, catID,name, catPos, 2);//执行第2个
                 }
             } else if (flag == 2) {//groupLife
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupLife.length, catID, catPos, 2);//继续执行第2个
+                    pFirstFolderAdd(workPos + 1, groupLife.length, catID,name, catPos, 2);//继续执行第2个
                 } else {//groupLife执行完，执行groupFun
-                    pFirstFolderAdd(0, groupFun.length, catID, catPos, 3);//执行第3个
+                    pFirstFolderAdd(0, groupFun.length, catID,name, catPos, 3);//执行第3个
                 }
             } else if (flag == 3) {//groupFun
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupFun.length, catID, catPos, 3);//继续执行第3个
+                    pFirstFolderAdd(workPos + 1, groupFun.length, catID,name, catPos, 3);//继续执行第3个
                 } else {//groupFun执行完，执行下个TNCat
                     syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }

@@ -5,14 +5,8 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ICatInfoModule;
-import com.thinkernote.ThinkerNote._interface.m.ILogModule;
-import com.thinkernote.ThinkerNote._interface.p.ICatInfoPresener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
-import com.thinkernote.ThinkerNote.bean.CommonBean2;
-import com.thinkernote.ThinkerNote.bean.login.LoginBean;
-import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;

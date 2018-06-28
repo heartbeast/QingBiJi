@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.PagerModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.SplashModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IPagerModule;
-import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
-import com.thinkernote.ThinkerNote._interface.p.IPagerPresener;
-import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.IPagerPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnPagerListener;
 
 /**
  * 我的笔记 p层 具体实现
  */
-public class PagerPresenterImpl implements IPagerPresener, OnPagerListener {
+public class PagerPresenterImpl implements IPagerPresenter, OnPagerListener {
     private Context context;
     private OnPagerListener onView;
     //p层调用M层方法

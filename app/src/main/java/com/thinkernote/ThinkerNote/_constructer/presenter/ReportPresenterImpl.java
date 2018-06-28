@@ -3,12 +3,8 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.ReportModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.TagListModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IReportModule;
-import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
-import com.thinkernote.ThinkerNote._interface.p.IReportPresener;
-import com.thinkernote.ThinkerNote._interface.p.ITagListPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.IReportPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 
 import java.util.List;
@@ -16,7 +12,7 @@ import java.util.List;
 /**
  * p层 具体实现
  */
-public class ReportPresenterImpl implements IReportPresener, OnReportListener {
+public class ReportPresenterImpl implements IReportPresenter, OnReportListener {
     private Context context;
     private OnReportListener onView;
     //p层调用M层方法

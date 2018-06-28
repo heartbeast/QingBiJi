@@ -37,7 +37,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.TagListPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ITagListPresener;
+import com.thinkernote.ThinkerNote._interface.p.ITagListPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnTagListListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.TagItemBean;
@@ -69,7 +69,7 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
     private ProgressDialog mProgressDialog = null;
 
     // p
-    private ITagListPresener presener;
+    private ITagListPresenter presener;
 
     // Activity methods
     //-------------------------------------------------------------------------------

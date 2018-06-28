@@ -2,20 +2,15 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 
 import android.content.Context;
 
-import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote._constructer.module.BindAcccountModuleImpl;
 import com.thinkernote.ThinkerNote._constructer.module.BindPhoneModuleImpl;
-import com.thinkernote.ThinkerNote._interface.m.IBindAccountModule;
 import com.thinkernote.ThinkerNote._interface.m.IBindPhoneModule;
-import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresener;
-import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresener;
-import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
+import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
 
 /**
  * 绑定新手机 p层 具体实现
  */
-public class BindPhonePresenterImpl implements IBindPhonePresener, OnBindPhoneListener {
+public class BindPhonePresenterImpl implements IBindPhonePresenter, OnBindPhoneListener {
     private Context context;
     private OnBindPhoneListener onView;
     //p层调用M层方法

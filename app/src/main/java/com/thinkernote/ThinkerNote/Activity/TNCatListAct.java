@@ -33,7 +33,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.CatListPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ICatListPresener;
+import com.thinkernote.ThinkerNote._interface.p.ICatListPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnCatListListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
@@ -71,7 +71,7 @@ public class TNCatListAct extends TNActBase
     private ProgressDialog mProgressDialog;
 
     //p
-    ICatListPresener presener;
+    ICatListPresenter presener;
 
     // Activity methods
     //-------------------------------------------------------------------------------

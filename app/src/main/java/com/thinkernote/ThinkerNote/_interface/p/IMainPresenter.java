@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * main p层interface
  */
-public interface IMainPresener {
+public interface IMainPresenter {
     void pDownload(String url, Dialog dialog);
 
     void pUpgrade(String home);
@@ -24,7 +24,7 @@ public interface IMainPresener {
 
     void pGetFoldersByFolderId(long id, int position, List<AllFolderItemBean> beans);
 
-    void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag);
+    void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag);
 
     void tagAdd(int position, int arraySize, String tagName);
 

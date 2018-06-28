@@ -3,19 +3,15 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote._constructer.module.FindPsModuleImpl;
 import com.thinkernote.ThinkerNote._constructer.module.RegistModuleImpl;
-import com.thinkernote.ThinkerNote._interface.m.IFindPsModule;
 import com.thinkernote.ThinkerNote._interface.m.IRegistModule;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
-import com.thinkernote.ThinkerNote._interface.p.IRegistPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
+import com.thinkernote.ThinkerNote._interface.p.IRegistPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 
 /**
  * 注册 p层 具体实现
  */
-public class RegistPresenterImpl implements IRegistPresener, OnRegistListener {
+public class RegistPresenterImpl implements IRegistPresenter, OnRegistListener {
     private Context context;
     private OnRegistListener onView;
     //p层调用M层方法

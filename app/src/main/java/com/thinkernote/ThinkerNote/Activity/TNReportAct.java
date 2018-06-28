@@ -33,7 +33,7 @@ import com.thinkernote.ThinkerNote.Utils.KeyBoardManager;
 import com.thinkernote.ThinkerNote.Utils.UiUtils;
 import com.thinkernote.ThinkerNote.Views.MyGridView;
 import com.thinkernote.ThinkerNote._constructer.presenter.ReportPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IReportPresener;
+import com.thinkernote.ThinkerNote._interface.p.IReportPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
@@ -64,7 +64,7 @@ public class TNReportAct extends TNActBase
 //	private Uri mOutUri;
 
     //p
-    IReportPresener presener;
+    IReportPresenter presener;
 
 
     // Activity methods

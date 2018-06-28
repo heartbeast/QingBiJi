@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.TextEditModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.UserInfoModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ITextEditModule;
-import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
-import com.thinkernote.ThinkerNote._interface.p.ITextEditPresener;
-import com.thinkernote.ThinkerNote._interface.p.IUserInfoPresener;
+import com.thinkernote.ThinkerNote._interface.p.ITextEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
-import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 
 /**
  *  p层 具体实现
  */
-public class TextEditPresenterImpl implements ITextEditPresener, OnTextEditListener {
+public class TextEditPresenterImpl implements ITextEditPresenter, OnTextEditListener {
     private Context context;
     private OnTextEditListener onView;
     //p层调用M层方法

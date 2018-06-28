@@ -60,7 +60,7 @@ import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Service.TNLBSService;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteEditPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.INoteEditPresener;
+import com.thinkernote.ThinkerNote._interface.p.INoteEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteEditListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
@@ -119,7 +119,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     private TNSettings mSettings = TNSettings.getInstance();
     //p
-    INoteEditPresener presener;
+    INoteEditPresenter presener;
 
     //
     private Vector<TNNote> addNewNotes;//（2-5）正常同步，第5个调用数据

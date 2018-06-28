@@ -22,7 +22,7 @@ public interface IMainModule {
 
     void mGetFoldersByFolderId(OnMainListener onMainListenerl, long id, int position, List<AllFolderItemBean> beans);
 
-    void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID, int catPos, int flag);
+    void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID,String name, int catPos, int flag);
 
     void mfolderAdd(OnMainListener listener, int position, int arraySize, String name);
 

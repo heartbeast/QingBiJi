@@ -2,20 +2,20 @@ package com.thinkernote.ThinkerNote._interface.m;
 
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
-import com.thinkernote.ThinkerNote._interface.v.OnSynchronizeEditListener;
-import com.thinkernote.ThinkerNote._interface.v.OnNoteListListener;
+import com.thinkernote.ThinkerNote._interface.v.OnCatFragListener;
+import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 import com.thinkernote.ThinkerNote._interface.v.OnSynchronizeDataListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
 
 /**
- * m层interface
+ *  m层interface
  */
-public interface INoteListModule {
-    void mGetNotelistByFolderId(OnNoteListListener listener, long mListDetail, int mPageNum, int size, String sort);
+public interface ICatFragModule {
 
-    void mGetNotelistByTagId(OnNoteListListener listener, long mListDetail, int mPageNum, int size, String sort);
+    //
+    void mGetParentFolder(OnCatFragListener listener);
 
     //syncData
     void mProfile(OnSynchronizeDataListener listener);
@@ -59,29 +59,4 @@ public interface INoteListModule {
     void mGetNoteByNoteId(OnSynchronizeDataListener listener, int position, long id, boolean is12);
 
     void mGetAllTrashNoteIds(OnSynchronizeDataListener listener);
-
-    //syncEdit
-    void mNewNote(OnSynchronizeEditListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
-
-    void mNewNotePic(OnSynchronizeEditListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
-
-    void mRecoveryNote(OnSynchronizeEditListener listener, long noteID, int position, int arrySize);
-
-    void mRecoveryNotePic(OnSynchronizeEditListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
-
-    void mRecoveryNoteAdd(OnSynchronizeEditListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
-
-    void mDeleteNote(OnSynchronizeEditListener listener, long noteId, int poistion);
-
-    void mDeleteRealNotes(OnSynchronizeEditListener listener, long noteId, int poistion);
-
-    void mGetAllNotesId(OnSynchronizeEditListener listener);
-
-    void mEditNotePic(OnSynchronizeEditListener listener, int cloudsPos, int attrPos, TNNote note);
-
-    void mEditNote(OnSynchronizeEditListener listener, int position, TNNote tnNote);
-
-    void mGetNoteByNoteId(OnSynchronizeEditListener listener, int position, long id, boolean is12);
-
-    void mGetAllTrashNoteIds(OnSynchronizeEditListener listener);
 }

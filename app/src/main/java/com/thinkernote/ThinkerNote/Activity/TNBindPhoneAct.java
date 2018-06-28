@@ -22,7 +22,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.BindPhonePresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresener;
+import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
@@ -48,7 +48,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	private String mAnswer;
 
 	//
-	private IBindPhonePresener presener;
+	private IBindPhonePresenter presener;
 	private VerifyPicBean verifyPicBean;//验证码数据
 
 	@Override

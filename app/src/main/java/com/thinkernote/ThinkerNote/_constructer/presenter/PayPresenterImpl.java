@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.PayModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.SplashModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IPayModule;
-import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
-import com.thinkernote.ThinkerNote._interface.p.IPayPresener;
-import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.IPayPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnPayListener;
 
 /**
  * p层 具体实现
  */
-public class PayPresenterImpl implements IPayPresener, OnPayListener {
+public class PayPresenterImpl implements IPayPresenter, OnPayListener {
     private Context context;
     private OnPayListener onView;
     //p层调用M层方法

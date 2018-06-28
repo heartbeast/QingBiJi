@@ -37,7 +37,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.SettingsPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ISettingsPresener;
+import com.thinkernote.ThinkerNote._interface.p.ISettingsPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnSettingsListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
@@ -65,7 +65,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
     private Dialog mProgressDialog = null;
     private TNSettings mSettings;
     //p
-    private ISettingsPresener presener;
+    private ISettingsPresenter presener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

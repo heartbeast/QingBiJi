@@ -234,7 +234,71 @@ public class MainModuleImpl implements IMainModule {
 
     //1-5
     @Override
-    public void mFirstFolderAdd(OnMainListener listener, int workPos, int workSize, long catID, int catPos, int flag) {
+    public void mFirstFolderAdd(final OnMainListener listener, final int workPos, final int workSize, final long catID, final String name, final int catPos, final int flag) {
+        TNSettings settings = TNSettings.getInstance();
+        if (catID == -1L) {
+            MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                    .folderAdd(name, settings.token)//接口方法
+                    .subscribeOn(Schedulers.io())//固定样式
+                    .unsubscribeOn(Schedulers.io())//固定样式
+                    .observeOn(AndroidSchedulers.mainThread())//固定样式
+                    .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                        @Override
+                        public void onCompleted() {
+                            MLog.d(TAG, "FolderAdd--onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            MLog.e("FolderAdd 异常onError:" + e.toString());
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                        }
+
+                        @Override
+                        public void onNext(CommonBean bean) {
+                            MLog.d(TAG, "FolderAdd-onNext");
+
+                            //处理返回结果
+                            if (bean.getCode() == 0) {
+                                listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
+                            } else {
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                            }
+                        }
+
+                    });
+        } else {
+            MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                    .folderAdd(name, catID, settings.token)//接口方法
+                    .subscribeOn(Schedulers.io())//固定样式
+                    .unsubscribeOn(Schedulers.io())//固定样式
+                    .observeOn(AndroidSchedulers.mainThread())//固定样式
+                    .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                        @Override
+                        public void onCompleted() {
+                            MLog.d(TAG, "upgrade--onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            MLog.e("upgrade 异常onError:" + e.toString());
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                        }
+
+                        @Override
+                        public void onNext(CommonBean bean) {
+                            MLog.d(TAG, "upgrade-onNext");
+
+                            //处理返回结果
+                            if (bean.getCode() == 0) {
+                                listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
+                            } else {
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                            }
+                        }
+
+                    });
+        }
 
     }
 

@@ -2,20 +2,15 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 
 import android.content.Context;
 
-import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote._constructer.module.CatInfoModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.LogModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ICatInfoModule;
-import com.thinkernote.ThinkerNote._interface.m.ILogModule;
-import com.thinkernote.ThinkerNote._interface.p.ICatInfoPresener;
-import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
+import com.thinkernote.ThinkerNote._interface.p.ICatInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 
 /**
  * 登录 p层 具体实现
  */
-public class CatInfoPresenterImpl implements ICatInfoPresener, OnCommonListener {
+public class CatInfoPresenterImpl implements ICatInfoPresenter, OnCommonListener {
     private Context context;
     private OnCommonListener onView;
     //p层调用M层方法

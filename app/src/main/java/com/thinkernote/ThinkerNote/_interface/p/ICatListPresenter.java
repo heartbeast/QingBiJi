@@ -3,7 +3,7 @@ package com.thinkernote.ThinkerNote._interface.p;
 /**
  * p层interface
  */
-public interface ICatListPresener {
+public interface ICatListPresenter {
     void pParentFodler();
 
     void pGetFolderByFolderId(long catId);

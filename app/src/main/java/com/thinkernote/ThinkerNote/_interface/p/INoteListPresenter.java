@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * p层interface
  */
-public interface INoteListPresener {
+public interface INoteListPresenter {
     void pGetNoteListByFolderID(long mListDetail, int mPageNum, int size, String sort);
 
     void pGetNoteListByTagID(long mListDetail, int mPageNum, int size, String sort);
@@ -23,7 +23,7 @@ public interface INoteListPresener {
 
     void pGetFoldersByFolderId(long id, int position, List<AllFolderItemBean> beans);
 
-    void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag);
+    void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag);
 
     void tagAdd(int position, int arraySize, String tagName);
 

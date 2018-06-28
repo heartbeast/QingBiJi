@@ -22,7 +22,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.TagInfoPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ITagInfoPresener;
+import com.thinkernote.ThinkerNote._interface.p.ITagInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
@@ -47,7 +47,7 @@ public class TNTagInfoAct extends TNActBase
     private TNTag mTag;
 
     //p
-    private ITagInfoPresener presener;
+    private ITagInfoPresenter presener;
 
     // Activity methods
     //-------------------------------------------------------------------------------

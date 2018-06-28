@@ -23,7 +23,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote._constructer.presenter.RegistPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IRegistPresener;
+import com.thinkernote.ThinkerNote._interface.p.IRegistPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
@@ -53,7 +53,7 @@ public class TNRegistAct extends TNActBase implements OnClickListener, OnRegistL
     private String mAnswer;
 
     //
-    private IRegistPresener presener;
+    private IRegistPresenter presener;
     private VerifyPicBean verifyPicBean;
     private LoginBean loginBean;
     private ProfileBean profileBean;

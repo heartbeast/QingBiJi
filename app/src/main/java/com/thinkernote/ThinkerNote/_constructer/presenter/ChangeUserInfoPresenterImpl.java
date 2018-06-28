@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.ChangeUserInfoModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.FindPsModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IChangeUserInfoModule;
-import com.thinkernote.ThinkerNote._interface.m.IFindPsModule;
-import com.thinkernote.ThinkerNote._interface.p.IChangeUserInfoPresener;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
+import com.thinkernote.ThinkerNote._interface.p.IChangeUserInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnChangeUserInfoListener;
-import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 
 /**
  * p层 具体实现
  */
-public class ChangeUserInfoPresenterImpl implements IChangeUserInfoPresener, OnChangeUserInfoListener {
+public class ChangeUserInfoPresenterImpl implements IChangeUserInfoPresenter, OnChangeUserInfoListener {
     private Context context;
     private OnChangeUserInfoListener onView;
     //p层调用M层方法

@@ -31,7 +31,7 @@ import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.Utils.TNActivityManager;
 import com.thinkernote.ThinkerNote._constructer.presenter.LogPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
+import com.thinkernote.ThinkerNote._interface.p.ILogPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
@@ -74,7 +74,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     private String mLoginId;
 
     //p层相关
-    private ILogPresener logPresener;
+    private ILogPresenter logPresener;
     private LoginBean loginBean;
     private ProfileBean profileBean;//登录更新
 

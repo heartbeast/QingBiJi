@@ -64,12 +64,11 @@ import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListene
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.INoteViewPresener;
+import com.thinkernote.ThinkerNote._interface.p.INoteViewPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -111,7 +110,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     private WebView mWebView;
 
     //p
-    private INoteViewPresener presener;
+    private INoteViewPresenter presener;
 
     private Handler mHandler = new Handler() {
         @Override

@@ -647,7 +647,7 @@ public interface MyHttpService {
     @FormUrlEncoded
     @POST(URLUtils.Note.FOLDER)
     Observable<CommonBean> folderAdd(
-            @Field("name") String phone
+            @Field("name") String name
             , @Field("pid") long pid
             , @Field("session_token") String session_token);
 

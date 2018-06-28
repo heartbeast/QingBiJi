@@ -2,20 +2,15 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 
 import android.content.Context;
 
-import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote._constructer.module.FindPsModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.LogModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IFindPsModule;
-import com.thinkernote.ThinkerNote._interface.m.ILogModule;
-import com.thinkernote.ThinkerNote._interface.p.IFindPsPresener;
-import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
+import com.thinkernote.ThinkerNote._interface.p.IFindPsPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 
 /**
  * 登录 p层 具体实现
  */
-public class FindPsPresenterImpl implements IFindPsPresener, OnFindPsListener {
+public class FindPsPresenterImpl implements IFindPsPresenter, OnFindPsListener {
     private Context context;
     private OnFindPsListener onView;
     //p层调用M层方法

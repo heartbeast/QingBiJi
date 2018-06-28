@@ -4,18 +4,14 @@ import android.content.Context;
 
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote._constructer.module.BindAcccountModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.LogModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IBindAccountModule;
-import com.thinkernote.ThinkerNote._interface.m.ILogModule;
-import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresener;
-import com.thinkernote.ThinkerNote._interface.p.ILogPresener;
+import com.thinkernote.ThinkerNote._interface.p.IBindAccountPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 
 /**
  * 登录 p层 具体实现
  */
-public class BindAccountPresenterImpl implements IBindAccountPresener, OnBindAccountListener {
+public class BindAccountPresenterImpl implements IBindAccountPresenter, OnBindAccountListener {
     private Context context;
     private OnBindAccountListener onView;
     //p层调用M层方法

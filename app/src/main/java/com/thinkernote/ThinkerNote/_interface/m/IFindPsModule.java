@@ -3,7 +3,7 @@ package com.thinkernote.ThinkerNote._interface.m;
 import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 
 /**
- * 登录 m层interface
+ *  m层interface
  */
 public interface IFindPsModule {
     void getVerifyPic(OnFindPsListener onFindPsListener);

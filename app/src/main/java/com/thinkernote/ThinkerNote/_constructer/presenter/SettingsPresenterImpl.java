@@ -3,18 +3,14 @@ package com.thinkernote.ThinkerNote._constructer.presenter;
 import android.content.Context;
 
 import com.thinkernote.ThinkerNote._constructer.module.SettingsModuleImpl;
-import com.thinkernote.ThinkerNote._constructer.module.SplashModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ISettingsModule;
-import com.thinkernote.ThinkerNote._interface.m.ISplashModule;
-import com.thinkernote.ThinkerNote._interface.p.ISettingsPresener;
-import com.thinkernote.ThinkerNote._interface.p.ISplashPresener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.p.ISettingsPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnSettingsListener;
 
 /**
  * p层 具体实现
  */
-public class SettingsPresenterImpl implements ISettingsPresener, OnSettingsListener {
+public class SettingsPresenterImpl implements ISettingsPresenter, OnSettingsListener {
     private Context context;
     private OnSettingsListener onView;
     //p层调用M层方法

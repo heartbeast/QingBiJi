@@ -8,7 +8,7 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote._constructer.module.MainModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IMainModule;
-import com.thinkernote.ThinkerNote._interface.p.IMainPresener;
+import com.thinkernote.ThinkerNote._interface.p.IMainPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * 注册 p层 具体实现
  */
-public class MainPresenterImpl implements IMainPresener, OnMainListener {
+public class MainPresenterImpl implements IMainPresenter, OnMainListener {
     private Context context;
     private OnMainListener onView;
 
@@ -72,8 +72,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //5
     @Override
-    public void pFirstFolderAdd(int workPos, int workSize, long catID, int catPos, int flag) {
-        module.mFirstFolderAdd(this, workPos, workSize, catID, catPos, flag);
+    public void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
+        module.mFirstFolderAdd(this, workPos, workSize, catID, name,catPos, flag);
     }
 
 
@@ -245,8 +245,8 @@ public class MainPresenterImpl implements IMainPresener, OnMainListener {
 
     //5 TNCat
     @Override
-    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag) {
-        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, catPos, flag);
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
+        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID,name, catPos, flag);
     }
 
     @Override

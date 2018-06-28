@@ -33,7 +33,7 @@ public interface OnMainListener {
     void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long catID, int posstartPosition, List<AllFolderItemBean> beans);
 
     //5
-    void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, int catPos, int flag);
+    void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag);
 
     void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag);
 

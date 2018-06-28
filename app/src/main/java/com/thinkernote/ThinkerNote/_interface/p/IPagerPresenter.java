@@ -3,7 +3,7 @@ package com.thinkernote.ThinkerNote._interface.p;
 /**
  * 我的笔记 p层interface
  */
-public interface IPagerPresener {
+public interface IPagerPresenter {
 
     void pSetDefaultFolder(long tagID);
 

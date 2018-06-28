@@ -6,7 +6,7 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 /**
  * 登录 p层interface
  */
-public interface INoteEditPresener {
+public interface INoteEditPresenter {
 
     void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 

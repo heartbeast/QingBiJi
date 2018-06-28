@@ -13,7 +13,7 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.ChangeUserInfoPresenterImpl;
-import com.thinkernote.ThinkerNote._interface.p.IChangeUserInfoPresener;
+import com.thinkernote.ThinkerNote._interface.p.IChangeUserInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnChangeUserInfoListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
@@ -44,7 +44,7 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
     private Dialog mProgressDialog = null;
 
     //p
-    IChangeUserInfoPresener presener;
+    IChangeUserInfoPresenter presener;
     ProfileBean profileBean;
 
     @Override
