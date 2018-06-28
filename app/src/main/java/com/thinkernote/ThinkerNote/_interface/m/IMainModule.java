@@ -9,7 +9,7 @@ import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import java.util.List;
 
 /**
- * 登录 m层interface
+ * main m层interface
  */
 public interface IMainModule {
     void mUpgrade(OnMainListener onMainListener);

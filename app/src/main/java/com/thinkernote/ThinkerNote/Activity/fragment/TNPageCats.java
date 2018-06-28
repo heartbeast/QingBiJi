@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Activity.TNNoteEditAct;
 import com.thinkernote.ThinkerNote.Activity.TNNoteListAct;
 import com.thinkernote.ThinkerNote.Activity.TNNoteViewAct;
@@ -42,7 +41,6 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
@@ -1161,8 +1159,6 @@ public class TNPageCats extends TNChildViewBase implements
     //04 GetFoldersByFolderId后调用
     private void pGetNoteListByFolderId(long foldeid, int pageSize, int pageNum, String sortType) {
         presenter.pGetNoteListByFolderId(foldeid, pageSize, pageNum, sortType);
-        //TODO
-        TNAction.runActionAsync(TNActionType.GetNoteListByFolderId, mPCat.catId, 1, TNConst.MAX_PAGE_SIZE, mSettings.sort);
     }
 
     //-------------------------------------p层调用 同步所有数据----------------------------------------
