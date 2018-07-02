@@ -13,9 +13,9 @@ import java.util.List;
  * main p层interface
  */
 public interface IMainPresenter {
-    void pDownload(String url, FileProgressListener progressListener);
-
     void pUpgrade(String home);
+
+    void pDownload(String url, FileProgressListener progressListener);
 
     void folderAdd(int position, int arraySize, String folderName);
 

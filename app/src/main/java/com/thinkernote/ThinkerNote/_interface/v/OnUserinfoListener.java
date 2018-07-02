@@ -1,5 +1,7 @@
 package com.thinkernote.ThinkerNote._interface.v;
 
+import java.io.File;
+
 /**
  * 主页--设置界面 v层
  */
@@ -11,4 +13,8 @@ public interface OnUserinfoListener {
     void onUpgradeSuccess(Object obj);
 
     void onUpgradeFailed(String msg, Exception e);
+
+    void onDownloadSuccess(File file);
+
+    void onDownloadFailed(String msg, Exception e);
 }

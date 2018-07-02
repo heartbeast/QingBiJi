@@ -423,11 +423,13 @@ public class TNDb extends SQLiteOpenHelper {
 
     /**
      * NoteEditAct使用
+     *
      * @param sql
      * @param args
      * @return
      */
     public long insertSQL(String sql, String[] args) {
+        db = getWritableDatabase();
         int start = 0, end = 0;
         String tableName = "";
         ContentValues values = new ContentValues();
@@ -435,14 +437,21 @@ public class TNDb extends SQLiteOpenHelper {
         start = sql.indexOf("`");
         end = sql.indexOf("`", start + 1);
         tableName = sql.substring(start, end + 1);
-        //Log.i(TAG, "tableName:" + tableName + start + end);
+        MLog.d("tableName:" + tableName + start + end);
 
         for (int i = 1; i < args.length; i++) {
             start = sql.indexOf("`", end + 1);
             end = sql.indexOf("`", start + 1);
             values.put(sql.substring(start, end + 1), args[i].toString());
+
+            //打印
+            int s = start;
+            int e = end;
+            MLog.e("values-->key:" + sql.substring(s, e+1) +"values:"+args[i].toString());
         }
+
         long id = db.insertOrThrow(tableName, null, values);
+        MLog.d("TNDb--insertSQL-->noteLocalId=" + id);
         return id;
     }
 

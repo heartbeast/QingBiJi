@@ -1,5 +1,7 @@
 package com.thinkernote.ThinkerNote.Service;
 
+import android.util.Log;
+
 import java.util.Vector;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
@@ -10,6 +12,7 @@ import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 
 public class TNNoteLocalService {
 
@@ -79,9 +82,11 @@ public class TNNoteLocalService {
                         TNSettings.getInstance().username,
                         note.thumbnail,
                         note.contentDigest);
+                MLog.d("noteLocalId<0=" + (Long) act.outputs.get(0),note.noteLocalId);
                 note.noteLocalId = (Long) act.outputs.get(0);
             } else {
                 // update
+                MLog.d("noteLocalId>0 =" + note.noteLocalId);
                 note.syncState = note.noteId != -1 ? 4 : 3;
                 TNAction.runAction(TNActionType.Db_Execute,
                         TNSQLString.NOTE_LOCAL_UPDATE,

@@ -1,7 +1,6 @@
 package com.thinkernote.ThinkerNote.Activity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
@@ -24,11 +23,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
@@ -41,9 +37,11 @@ import com.thinkernote.ThinkerNote._interface.p.IUserInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -67,9 +65,6 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.userinfo);
         setViews();
-        //TODO delete
-        TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
-
         //
         presener = new UserInfoPresenterImpl(this, this);
 
@@ -234,8 +229,10 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         if (activityName != null && activityName.length() > 0) {
             if ("ABOUT".equals(activityName)) {
                 startActivity(TNAboutAct.class);//关于我们
+
             } else if ("PAY_TIP".equals(activityName)) {
                 startActivity(TNPayTipAct.class);//打赏
+
             } else {
                 Bundle b = new Bundle();
                 b.putString("Type", mCurrentChild.getOther());
@@ -276,40 +273,21 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
     }
 
 
-    public void respondUpdateSoftware(TNAction aAction) {
-        if (aAction.result == TNActionResult.Working) {
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            ProgressBar pb = (ProgressBar) dialog
-                    .findViewById(R.id.update_progressbar);
-            pb.setProgress((Integer) aAction.progressInfo);
-            TextView percent = (TextView) dialog
-                    .findViewById(R.id.update_percent);
-            percent.setText(String.format("%.2fM / %.2fM (%.2f%%)",
-                    pb.getProgress() / 1024f / 1024f,
-                    pb.getMax() / 1024f / 1024f,
-                    100f * pb.getProgress() / pb.getMax()));
-        } else if (aAction.result == TNActionResult.Finished) {
-            MLog.d(TAG, "respondUpdateSoftware finished");
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            dialog.dismiss();
-            String filePath = (String) aAction.outputs.get(0);
-            if (filePath != null)
-                TNUtilsUi.openFile(filePath);
-        }
-    }
+
+    //更新弹窗的自定义监听（确定按钮的监听）
+    private AlertDialog upgradeDialog;
 
     class CustomListener implements View.OnClickListener {
-        private final AlertDialog dialog;
 
         public CustomListener(AlertDialog dialog) {
-            this.dialog = dialog;
+            upgradeDialog = dialog;
         }
 
         @Override
         public void onClick(View v) {
-            dialog.setCancelable(false);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setOnKeyListener(new OnKeyListener() {
+            upgradeDialog.setCancelable(false);
+            upgradeDialog.setCanceledOnTouchOutside(false);
+            upgradeDialog.setOnKeyListener(new OnKeyListener() {
                 @Override
                 public boolean onKey(DialogInterface dialog, int keyCode,
                                      KeyEvent event) {
@@ -321,15 +299,15 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
                 }
             });
 
-            Button theButton = dialog
+            Button theButton = upgradeDialog
                     .getButton(DialogInterface.BUTTON_POSITIVE);
             theButton.setText(getString(R.string.update_downloading));
             theButton.setEnabled(false);
 
-            Button negButton = dialog
+            Button negButton = upgradeDialog
                     .getButton(DialogInterface.BUTTON_NEGATIVE);
             negButton.setEnabled(false);
-            download(mDownLoadAPKPath,dialog);
+            download(mDownLoadAPKPath);
 
 
         }
@@ -352,12 +330,25 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         }
     }
 
-    private void download(String mDownLoadAPKPath,Dialog dialog){
 
-        //TODO 未做
-        TNAction.runActionAsync(TNActionType.UpdateSoftware, mDownLoadAPKPath, dialog);
+    private void download(String url) {
+        presener.pDownload(url, progressListener);
     }
 
+    //监听下载文件进度,包括文件大小
+    FileProgressListener progressListener = new FileProgressListener() {
+
+        @Override
+        public void onFileProgressing(int progress) {
+            MLog.d("实时progress=" + progress);
+            ProgressBar pb = (ProgressBar) upgradeDialog.findViewById(R.id.update_progressbar);
+            TextView percent = (TextView) upgradeDialog.findViewById(R.id.update_percent);
+
+            pb.setProgress(progress);//进度
+            percent.setText(progress + "%");//显示
+        }
+
+    };
 
     //-----------------------------------------接口回调--------------------------------------------
     @Override
@@ -423,7 +414,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
 
                 ProgressBar pb = (ProgressBar) fl
                         .findViewById(R.id.update_progressbar);
-                pb.setMax(newSize);
+                pb.setMax(100);//100 /newSize
                 pb.setProgress(0);
                 TextView percent = (TextView) fl
                         .findViewById(R.id.update_percent);
@@ -452,8 +443,25 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         }
     }
 
+    //下载完成
     @Override
     public void onUpgradeFailed(String msg, Exception e) {
         TNUtilsUi.showToast(msg);
     }
+
+    @Override
+    public void onDownloadSuccess(File filePath) {
+        upgradeDialog.dismiss();
+        MLog.d("下载完成--apk路径：" + filePath);
+        if (filePath != null) {
+            //打开文件
+            TNUtilsUi.openFile(filePath.toString());
+        }
+    }
+
+    @Override
+    public void onDownloadFailed(String msg, Exception e) {
+        TNUtilsUi.showToast(msg);
+    }
+
 }

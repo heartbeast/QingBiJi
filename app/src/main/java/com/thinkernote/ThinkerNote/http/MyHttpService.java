@@ -716,6 +716,7 @@ public interface MyHttpService {
      *
      * @return
      */
+    @FormUrlEncoded
     @PUT(URLUtils.Note.DEFAULT_FOLDER)
     Observable<CommonBean> setDefaultFolder(@Field("folder_id") long pid
             , @Field("session_token") String session_token);
@@ -726,6 +727,7 @@ public interface MyHttpService {
      *
      * @return
      */
+    @FormUrlEncoded
     @POST(URLUtils.Note.VERIFY_EMAIL)
     Observable<CommonBean> verifyEmail(@Field("session_token") String session_token);
 
@@ -804,7 +806,8 @@ public interface MyHttpService {
     @Multipart
     @POST(URLUtils.Settings.UPLOAD_PIC)
     Observable<FeedBackBean> upLoadFeedBackPic(
-            @Part List<MultipartBody.Part> parts);
+            @Part List<MultipartBody.Part> parts
+    ,@Part("session_token") String session_token);
 
     /**
      * feedBack

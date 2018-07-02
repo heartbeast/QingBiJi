@@ -49,14 +49,14 @@ public class ReportModuleImpl implements IReportModule {
         //file
         for (String path : fileList) {
             File file = new File(path);
-            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);//TODO image/jpg
-            builder.addFormDataPart("fileName", file.getName(), photoRequestBody);
+            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO image/jpg
+            builder.addFormDataPart("file", file.getName(), photoRequestBody);
         }
 
         List<MultipartBody.Part> parts = builder.build().parts();
 
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .upLoadFeedBackPic(parts)//接口方法
+                .upLoadFeedBackPic(parts, settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

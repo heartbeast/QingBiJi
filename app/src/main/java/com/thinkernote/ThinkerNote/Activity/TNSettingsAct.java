@@ -46,7 +46,7 @@ import org.json.JSONObject;
 import java.util.Vector;
 
 /**
- * 主页--设置--用户信息
+ * 主页--设置--多个功能共用界面：用户信息/个性化设置/空间信息
  */
 public class TNSettingsAct extends TNActBase implements OnClickListener, OnChildClickListener, OnGroupClickListener
         , OnSettingsListener {
@@ -287,7 +287,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
     }
 
     //------------------------------------------------触发功能-----------------------------------------
-    //
+    //修改用户信息
     public void changeUserName() {
         if (!TNUtilsDialog.checkNetwork(this))
             return;
@@ -296,6 +296,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         startActivity(TNChangeUserInfoAct.class, bundle);
     }
 
+    //更换手机号
     public void changePhone() {
         if (!TNUtilsDialog.checkNetwork(this))
             return;
@@ -305,6 +306,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     }
 
+    //修改密码
     public void changePassword() {
         if (!TNUtilsDialog.checkNetwork(this))
             return;
@@ -314,6 +316,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         startActivity(TNChangeUserInfoAct.class, bundle);
     }
 
+    //修改邮箱
     public void changeEmail() {
         if (!TNUtilsDialog.checkNetwork(this))
             return;
@@ -323,6 +326,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         startActivity(TNChangeUserInfoAct.class, bundle);
     }
 
+    //邮箱验证
     public void verifyemail() {
         if (!TNUtilsDialog.checkNetwork(this))
             return;
@@ -339,6 +343,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     }
 
+    //设置默认文件路径
     public void changeDefauldtFolder() {
         Bundle b = new Bundle();
         b.putLong("OriginalCatId", TNSettings.getInstance().defaultCatId);
@@ -346,6 +351,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         startActForResult(TNCatListAct.class, b, R.string.userinfo_defaultfolder);// TODO
     }
 
+    //
     public void changeSyncMode() {
         DialogInterface.OnClickListener pbtn_Click = new DialogInterface.OnClickListener() {
             @Override
@@ -371,6 +377,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         addDialog(builder.show());
     }
 
+    //修改锁
     public void ChangeLockpattern() {
         Bundle b = new Bundle();
         b.putInt("Type", 0);
@@ -378,6 +385,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         startActivity(TNLockAct.class, b);
     }
 
+    //
     public void ChangeRemindLockGroup() {
         TNSettings settings = TNSettings.getInstance();
         if (settings.remindLockGroup) {
@@ -393,6 +401,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         configView();
     }
 
+    //
     public void ChangeRemindLockNote() {
         TNSettings settings = TNSettings.getInstance();
         if (settings.remindLockNote) {
@@ -408,6 +417,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         configView();
     }
 
+    //
     public void ChangePictureCompressionmode() {
         DialogInterface.OnClickListener pbtn_Click = new DialogInterface.OnClickListener() {
             @Override
@@ -438,6 +448,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         addDialog(builder.show());
     }
 
+    //修改声音
     public void ChangeVoice() {
         TNSettings settings = TNSettings.getInstance();
         if (settings.voice.equals("xiaoyan")) {
@@ -449,6 +460,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         configView();
     }
 
+    //修改语音
     public void ChangeSpeed() {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final LinearLayout fl = (LinearLayout) layoutInflater.inflate(
@@ -500,6 +512,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         TNUtilsUi.alertDialogBuilder(jsonData).show();
     }
 
+    //设置音量
     public void ChangeVolume() {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final LinearLayout fl = (LinearLayout) layoutInflater.inflate(
@@ -551,6 +564,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
         TNUtilsUi.alertDialogBuilder(jsonData).show();
     }
 
+    //清楚缓存
     public void clearCache() {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout fl = (LinearLayout) layoutInflater.inflate(

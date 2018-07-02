@@ -78,7 +78,7 @@ import java.util.concurrent.Executors;
  * 主界面
  * 说明：进入主界面：会同时执行2个异步：onCreate的更新 和 onResume下的configView的同步
  * 同步功能说明：由10多个接口串行调用，比较复杂，所以要注意调用顺序
- * sjy 0525 TODO 下载未做
+ * sjy 0702
  */
 public class TNMainAct extends TNActBase implements OnClickListener, OnMainListener {
     //==================================同步常量=======================================
@@ -137,10 +137,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         setContentView(R.layout.main);
         //关闭其他界面
         TNActivityManager.getInstance().finishOtherActivity(this);
-
-        //TODO
-        TNAction.regResponder(TNActionType.UpdateSoftware, this, "respondUpdateSoftware");
-
         //
         presener = new MainPresenterImpl(this, this);
         setViews();
@@ -1542,7 +1538,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //=============================================接口结果回调(成对的success+failed)======================================================
 
 
-    //TODO 检查更新
     @Override
     public void onUpgradeSuccess(Object obj) {
 

@@ -37,6 +37,7 @@ import com.iflytek.speech.SpeechConfig.RATE;
 import com.iflytek.speech.SpeechError;
 import com.iflytek.ui.RecognizerDialog;
 import com.iflytek.ui.RecognizerDialogListener;
+import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -44,6 +45,7 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
+import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNRecord;
@@ -914,6 +916,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             handleProgressDialog("show");
             mNote.prepareToSave();
             pNoteSave(mNote, true);
+            // TODO
+            // TNAction action = TNAction.runAction(TNActionType.NoteSave, mNote);
         }
     }
 
@@ -1155,26 +1159,30 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     if (note.noteLocalId < 0) {
                         // insert
                         note.createTime = (int) (System.currentTimeMillis() / 1000);
+                        MLog.e("note内容:" + "note.contentDigest" + note.contentDigest);
+                        long id = TNDb.getInstance().insertSQL(TNSQLString.NOTE_INSERT//19个参数
+                                , new String[]{note.title,//1
+                                        TNSettings.getInstance().userId + "",//2
+                                        note.catId + "",//3
+                                        note.trash + "",//4
+                                        note.content + "",//5
+                                        note.source,//6
+                                        note.createTime + "",//7
+                                        note.lastUpdate + "",//8
+                                        3 + "",//9
+                                        -1 + "",//10
+                                        note.shortContent,//11
+                                        note.tagStr,//12
+                                        note.lbsLongitude + "",//13
+                                        note.lbsLatitude + "",//14
+                                        note.lbsRadius + "",//15
+                                        note.lbsAddress,//16
+                                        TNSettings.getInstance().username,//17
+                                        note.thumbnail,//18
+                                        note.contentDigest});//19
+                        MLog.d("");
+                        note.noteLocalId = id;
 
-                        note.noteLocalId = TNDb.getInstance().insertSQL(TNSQLString.NOTE_INSERT, new String[]{note.title,
-                                TNSettings.getInstance().userId + "",
-                                note.catId + "",
-                                note.trash + "",
-                                note.content + "",
-                                note.source,
-                                note.createTime + "",
-                                note.lastUpdate + "",
-                                3 + "",
-                                -1 + "",
-                                note.shortContent,
-                                note.tagStr,
-                                note.lbsLongitude + "",
-                                note.lbsLatitude + "",
-                                note.lbsRadius + "",
-                                note.lbsAddress,
-                                TNSettings.getInstance().username,
-                                note.thumbnail,
-                                note.contentDigest});
                     } else {
                         // update
                         note.syncState = note.noteId != -1 ? 4 : 3;
@@ -1533,7 +1541,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at() )/ 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
                 "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,

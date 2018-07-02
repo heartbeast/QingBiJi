@@ -6,6 +6,9 @@ import com.thinkernote.ThinkerNote._constructer.module.UserInfoModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
 import com.thinkernote.ThinkerNote._interface.p.IUserInfoPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
+
+import java.io.File;
 
 /**
  * 主页--设置界面 p层 具体实现
@@ -24,7 +27,6 @@ public class UserInfoPresenterImpl implements IUserInfoPresenter, OnUserinfoList
     }
 
 
-
     //============================p层重写，用于调用m层方法============================
     @Override
     public void pLogout() {
@@ -34,6 +36,11 @@ public class UserInfoPresenterImpl implements IUserInfoPresenter, OnUserinfoList
     @Override
     public void pUpgrade() {
         module.mUpgrade(this);
+    }
+
+    @Override
+    public void pDownload(String url, FileProgressListener listener) {
+        module.mDownload(this, url, listener);
     }
 
 
@@ -46,7 +53,7 @@ public class UserInfoPresenterImpl implements IUserInfoPresenter, OnUserinfoList
 
     @Override
     public void onLogoutFailed(String msg, Exception e) {
-        onView.onLogoutFailed(msg,e);
+        onView.onLogoutFailed(msg, e);
     }
 
     @Override
@@ -56,6 +63,16 @@ public class UserInfoPresenterImpl implements IUserInfoPresenter, OnUserinfoList
 
     @Override
     public void onUpgradeFailed(String msg, Exception e) {
-        onView.onUpgradeFailed(msg,e);
+        onView.onUpgradeFailed(msg, e);
+    }
+
+    @Override
+    public void onDownloadSuccess(File file) {
+        onView.onDownloadSuccess(file);
+    }
+
+    @Override
+    public void onDownloadFailed(String msg, Exception e) {
+        onView.onDownloadFailed(msg, e);
     }
 }
