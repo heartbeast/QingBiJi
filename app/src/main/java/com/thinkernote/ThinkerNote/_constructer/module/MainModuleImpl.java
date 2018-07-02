@@ -1,6 +1,7 @@
 package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -25,17 +26,26 @@ import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 import com.thinkernote.ThinkerNote.http.MyRxUtils;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -86,6 +96,85 @@ public class MainModuleImpl implements IMainModule {
                 });
     }
 
+
+    //下载文件 实时进度
+    @Override
+    public void mDownload(final OnMainListener listener, String url, final FileProgressListener progressListener) {
+        final File filePath = new File(Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_DOWNLOADS), "qingbiji.apk");
+
+        MyHttpService.DownloadBuilder.getHttpServer(progressListener)//固定样式，可自定义其他网络
+                .download(url)//接口方法
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .map(new Func1<ResponseBody, InputStream>() {
+
+                    @Override
+                    public InputStream call(ResponseBody responseBody) {
+                        return responseBody.byteStream();
+                    }
+                })
+                .observeOn(Schedulers.computation()) // 用于计算任务
+                .doOnNext(new Action1<InputStream>() {
+                    @Override
+                    public void call(InputStream inputStream) {
+
+                        writeFile(inputStream, filePath);//保存下载文件
+
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())//返回主线程
+                .subscribe(new Subscriber() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "upgrade--onCompleted");
+                        listener.onDownloadSuccess(filePath);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mDownload 异常onError:" + e.toString());
+                        listener.onDownloadFailed("下载失败", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+
+                });
+    }
+
+    /**
+     * 将输入流写入文件
+     *
+     * @param inputString
+     * @param file
+     */
+    private void writeFile(InputStream inputString, File file) {
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+
+            byte[] b = new byte[1024];
+
+            int len;
+            while ((len = inputString.read(b)) != -1) {
+                fos.write(b, 0, len);
+            }
+            inputString.close();
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        }
+
+    }
 
     //01-01第一次登录同步 folder
     @Override

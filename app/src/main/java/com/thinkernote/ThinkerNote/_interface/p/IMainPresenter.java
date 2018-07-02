@@ -5,6 +5,7 @@ import android.app.Dialog;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * main p层interface
  */
 public interface IMainPresenter {
-    void pDownload(String url, Dialog dialog);
+    void pDownload(String url, FileProgressListener progressListener);
 
     void pUpgrade(String home);
 

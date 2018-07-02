@@ -20,12 +20,14 @@ import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.bean.main.WxpayBean;
 import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -37,6 +39,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 import rx.Observable;
 
@@ -73,11 +76,11 @@ public interface MyHttpService {
     }
 
     /**
-     * （2）put方式调用
+     * （2）查看文件上传下载进度/结合progress使用
      */
-    class FileBuilder {
-        public static MyHttpService getHttpServer() {
-            return HttpUtils.getInstance().getFileServer(MyHttpService.class);
+    class DownloadBuilder {
+        public static MyHttpService getHttpServer(FileProgressListener listener) {
+            return HttpUtils.getInstance().getFileServer(MyHttpService.class,listener);
         }
     }
 
@@ -85,6 +88,8 @@ public interface MyHttpService {
     /**
      ********************************************--接口相关--**************************************************
      */
+
+
 
 //-------------------------------------------------登录相关----------------------------------------------------
 
@@ -305,15 +310,14 @@ public interface MyHttpService {
     Observable<CommonBean1<MainUpgradeBean>> upgrade(@Query("session_token") String session_token);
 
     /**
-     * 下载安装包，动态路径形式
+     * 下载文件 查看进度
      *
+     * @param url 完整路径
      * @return
      */
+    @Streaming
     @GET
-    Observable<CommonBean1<MainUpgradeBean>> download(@Url String url
-            , @Query("session_token") String session_token);
-
-
+    Observable<ResponseBody> download(@Url String url);
     /**
      * 14 同步数据
      *
@@ -777,7 +781,6 @@ public interface MyHttpService {
 
     /**
      * 同步获取GetFolderByFodlerId
-     *
      *
      * @return
      */

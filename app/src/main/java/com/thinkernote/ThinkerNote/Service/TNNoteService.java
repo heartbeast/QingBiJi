@@ -125,6 +125,7 @@ public class TNNoteService {
     }
 
     /**
+     * TODO
      * 上传图片，count记数，上传失败就重复上传3次
      *
      * @param att
@@ -312,6 +313,7 @@ public class TNNoteService {
         }
     }
 
+    //TODO
     public void GetNoteList(TNAction aAction) {
         int pageNum = (Integer) aAction.inputs.get(0);
         int pageSize = (Integer) aAction.inputs.get(1);
@@ -450,6 +452,7 @@ public class TNNoteService {
         }
     }
 
+    //TODO
     public void NoteMoveTo(TNAction aAction) {
         long noteId = (Long) aAction.inputs.get(0);
         long catId = (Long) aAction.inputs.get(1);

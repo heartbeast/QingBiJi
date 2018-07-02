@@ -29,6 +29,7 @@ import com.thinkernote.ThinkerNote.Other.TNLinearLayout;
 import com.thinkernote.ThinkerNote.Other.TNLinearLayout.TNLinearLayoutListener;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.Utils.SPUtil;
 import com.thinkernote.ThinkerNote.Utils.TNActivityManager;
 import com.thinkernote.ThinkerNote._constructer.presenter.LogPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ILogPresenter;
@@ -36,6 +37,9 @@ import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.http.rx.RxBus;
+import com.thinkernote.ThinkerNote.http.rx.RxBusBaseMessage;
+import com.thinkernote.ThinkerNote.http.rx.RxCodeConstants;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.Weibo;
 import com.weibo.sdk.android.WeiboAuthListener;
@@ -45,6 +49,8 @@ import com.weibo.sdk.android.sso.SsoHandler;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
+
+import rx.functions.Action1;
 
 /**
  * sjy 0607
@@ -88,7 +94,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         initView();
         //初始化 p
         logPresener = new LogPresenterImpl(this, this);
-
     }
 
     private void initView() {
@@ -112,8 +117,13 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         mLoginingDialog = TNUtilsUi.progressDialog(TNLoginAct.this, R.string.logging_in);
         mAlphaAnimation = new AlphaAnimation(0, 1);
         mAlphaAnimation.setDuration(1500);
+
+        initRxBus();
     }
 
+    /**
+     * 该处是onResume的重写
+     */
     protected void configView() {
         if (createStatus == 0) {
             TNSettings settings = TNSettings.getInstance();
@@ -137,6 +147,15 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             if (!isClickQQ)
                 mLoginingDialog.hide();//获取第三方信息后直接点返回
         }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MLog.e("onResume-->getWechatIntent");
+
     }
 
     @Override
@@ -145,8 +164,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         super.onDestroy();
     }
 
-    // implements OnClickListener
-    //-------------------------------------------------------------------------------
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -243,7 +260,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             public void onCancel() {
                 isClickQQ = false;
                 mLoginingDialog.hide();
-                Toast.makeText(getApplicationContext(), "Auth cancel",
+                Toast.makeText(getApplicationContext(), "QQ login cancel",
                         Toast.LENGTH_LONG).show();
             }
         };
@@ -287,6 +304,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         WXapi.sendReq(req);
     }
 
+
     //-------------------------------------sina登录------------------------------------------
 
     private void loginSina() {
@@ -329,7 +347,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         @Override
         public void onCancel() {
             mLoginingDialog.hide();
-            Toast.makeText(getApplicationContext(), "Auth cancel",
+            Toast.makeText(getApplicationContext(), "sina login cancel",
                     Toast.LENGTH_LONG).show();
         }
 
@@ -349,16 +367,16 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         MLog.d("登录返回结果处理" + requestCode + "--" + resultCode);
         //wechat
         if (resultCode == 11) {//微信登录 成功返回
-            MLog.d("登录返回结果处理");
+            MLog.d("wechat-->onActivityResult");
             String access_token = data.getStringExtra("access_token");
             String refresh_token = data.getStringExtra("refresh_token");
             String uid = data.getStringExtra("unionid");
             String nickName = data.getStringExtra("nickName");
-            MLog.d("登录返回结果处理" + nickName);
             //微信登录
             pLoginThird(9, uid, System.currentTimeMillis(), access_token, refresh_token, nickName);
 
         } else {
+            MLog.d("qq--sina-->onActivityResult");
             //qq
             if (mTencent != null) {
                 mTencent.onActivityResult(requestCode, resultCode, data);
@@ -471,7 +489,7 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
             b.putString("accessToken", accessToken);
             b.putString("refreshToken", refreshToken);
             b.putString("name", name);
-            b.putString("password",mPassword);
+            b.putString("password", mPassword);
             startActivity(TNBindAccountAct.class, b);//绑定手机号
         } else {
             TNUtilsUi.alert(this, msg);
@@ -522,6 +540,53 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     public void onLogProfileFailed(String msg, Exception e) {
         mLoginingDialog.hide();
         profileBean = null;
+    }
+
+    /**
+     * 说明：WXEntryActivity是获取微信登录信息的界面，拿到信息后，返回该界面走轻笔记的登录接口
+     */
+    private void getWechatIntent() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle == null || bundle.getString("unionid") == null || bundle.getString("unionid").isEmpty()) {
+            MLog.d("微信登录--获取微信返回信息-->null");
+            return;
+        } else {
+            MLog.d("微信登录--获取微信返回信息-->登录");
+            //获取微信登录返回的信息
+            String unionid = bundle.getString("unionid");
+            String access_token = bundle.getString("access_token");
+            String refresh_token = bundle.getString("refresh_token");
+            String nickName = bundle.getString("nickName");
+            //
+            //TNAction.runActionAsync(TNActionType.LoginThird, 9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
+            pLoginThird(9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
+        }
+    }
+    //
+    /**
+     * 使用RxBus 实现微信登录信息返回
+     * home页跳转到new页
+     */
+    /**
+     * 使用RxBus 实现fragment之间的跳转
+     * home页跳转到new页
+     */
+    private void initRxBus() {
+        RxBus.getDefault().toObservable(RxCodeConstants.WEChat_BACK_LOG, RxBusBaseMessage.class)
+                .subscribe(new Action1<RxBusBaseMessage>() {
+                    @Override
+                    public void call(RxBusBaseMessage rxBusBaseMessage) {
+                        String unionid = SPUtil.getString("unionid", "");
+                        String access_token = SPUtil.getString("access_token", "");
+                        String refresh_token = SPUtil.getString("refresh_token", "");
+                        String nickName = SPUtil.getString("nickName", "");
+                        MLog.d("TNLoginAct-->RxBus", unionid, access_token, refresh_token, nickName);
+
+                        //
+                        //TNAction.runActionAsync(TNActionType.LoginThird, 9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
+                        pLoginThird(9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
+                    }
+                });
     }
 
 }

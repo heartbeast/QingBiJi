@@ -11,7 +11,9 @@ import com.thinkernote.ThinkerNote._interface.m.IMainModule;
 import com.thinkernote.ThinkerNote._interface.p.IMainPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
 
     //============================p层重写，用于调用m层方法============================
 
+
     //更新检查
     @Override
     public void pUpgrade(String home) {
@@ -40,8 +43,8 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
 
     //下载
     @Override
-    public void pDownload(String url, Dialog dialog) {
-
+    public void pDownload(String url, FileProgressListener progressListener) {
+        module.mDownload(this, url, progressListener);
     }
 
     //=第一次登录的同步方法=
@@ -72,8 +75,8 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
 
     //5
     @Override
-    public void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        module.mFirstFolderAdd(this, workPos, workSize, catID, name,catPos, flag);
+    public void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        module.mFirstFolderAdd(this, workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -187,6 +190,7 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
 
     //==========================接口结果回调==============================
 
+    //
     @Override
     public void onUpgradeSuccess(Object obj) {
         onView.onUpgradeSuccess(obj);
@@ -195,6 +199,17 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
     @Override
     public void onUpgradeFailed(String msg, Exception e) {
         onView.onUpgradeFailed(msg, e);
+    }
+
+    //下载
+    @Override
+    public void onDownloadSuccess(File file) {
+        onView.onDownloadSuccess(file);
+    }
+
+    @Override
+    public void onDownloadFailed(String msg, Exception e) {
+        onView.onDownloadFailed(msg, e);
     }
 
     //=第一次登录的回调==
@@ -245,8 +260,8 @@ public class MainPresenterImpl implements IMainPresenter, OnMainListener {
 
     //5 TNCat
     @Override
-    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID,name, catPos, flag);
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, name, catPos, flag);
     }
 
     @Override

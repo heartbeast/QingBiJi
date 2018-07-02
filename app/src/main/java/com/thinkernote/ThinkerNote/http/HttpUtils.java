@@ -11,6 +11,8 @@ import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.CheckNetworkUtils;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.base.Constants;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressInterceptor;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +42,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by jingbin on 2017/2/14.
+ * Created by sjy on 2018/6/14.
  * 网络请求工具类 用于集成retrofit+okhttp3
  * 由 MyHttpService负责调用
  * <p>
@@ -103,21 +105,21 @@ public class HttpUtils {
     }
 
     /**
-     * 05 Retrofit构建:Retrofit+okhttp,添加token验证
+     * 02 Retrofit构建:Retrofit+okhttp
+     * 查看文件上传下载进度/结合progress使用
      */
 
-    public <T> T getFileServer(Class<T> clz) {
+    public <T> T getFileServer(Class<T> clz, FileProgressListener listener) {
         if (https == null) {
             synchronized (HttpUtils.class) {
-                https = getFileBuilder(URLUtils.API_BASE_URL).build().create(clz);
+                https = getFileBuilder(URLUtils.API_BASE_URL, listener).build().create(clz);
             }
         }
-        initCache();//再设置一遍，可以注销
         return (T) https;
     }
 
     /**
-     * 04 Retrofit构建:Retrofit+okhttp
+     * 0 Retrofit构建:Retrofit+okhttp
      */
 
     public <T> T getNoCacheServer(Class<T> clz) {
@@ -132,7 +134,7 @@ public class HttpUtils {
 
 
     /**
-     * 05 Retrofit构建:Retrofit+okhttp,header+token+无缓存
+     * 0 Retrofit构建:Retrofit+okhttp,header+token+无缓存
      */
 
     public <T> T getGETServer(Class<T> clz) {
@@ -204,13 +206,15 @@ public class HttpUtils {
 
 
     /**
-     * 03 put接口使用
+     * 02 GET
+     * <p>
+     * 查看文件上传下载进度/结合progress使用
      */
-    private Retrofit.Builder getFileBuilder(String apiUrl) {
+    private Retrofit.Builder getFileBuilder(String apiUrl, FileProgressListener listener) {
 
         //retrofit配置
         Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(getFileOkHttp());//设置okhttp（重点），不设置走默认的
+        builder.client(getFileOkHttp(listener));//设置okhttp（重点），不设置走默认的
         builder.baseUrl(apiUrl);//设置远程地址
         builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
         builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
@@ -267,7 +271,7 @@ public class HttpUtils {
     //================================= okhttp构建 该处根据你的后台灵活设置====================================
 
     /**
-     * header+token+无缓存
+     * 01 header+token+无缓存
      *
      * @return
      */
@@ -314,10 +318,12 @@ public class HttpUtils {
     }
 
     /**
-     * 处理文件上传专用，（后台处理文件和表单的格式有区别）
+     * 02 查看文件上传下载进度/结合progress使用
+     * 不需要使用token
+     *
      * @return
      */
-    private OkHttpClient getFileOkHttp() {
+    private OkHttpClient getFileOkHttp(FileProgressListener listener) {
         //log打印级别
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -333,17 +339,13 @@ public class HttpUtils {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request okhttpRequest = chain.request();
-                    TNSettings settings = TNSettings.getInstance();
-                    String myToken = settings.token;//添加你的token
 
                     Request.Builder okhttpRequst = okhttpRequest.newBuilder()
                             .addHeader("user-agent", HttpHead.getHeader());
-                    if (myToken != null) {
-                        okhttpRequst.addHeader("session_token", myToken);//TODO token 位置
-                    }
                     return chain.proceed(okhttpRequst.build());
                 }
             });
+            okBuilder.addInterceptor(new FileProgressInterceptor(listener));//文件进度
             okBuilder.hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {

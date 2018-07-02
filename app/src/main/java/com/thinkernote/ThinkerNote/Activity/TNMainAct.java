@@ -63,9 +63,11 @@ import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagItemBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -388,18 +390,20 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     //更新弹窗的自定义监听（确定按钮的监听）
+    private AlertDialog upgradeDialog;
+
     class CustomListener implements View.OnClickListener {
-        private final AlertDialog dialog;
+
 
         public CustomListener(AlertDialog dialog) {
-            this.dialog = dialog;
+            upgradeDialog = dialog;
         }
 
         @Override
         public void onClick(View v) {
-            dialog.setCancelable(false);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setOnKeyListener(new OnKeyListener() {
+            upgradeDialog.setCancelable(false);
+            upgradeDialog.setCanceledOnTouchOutside(false);
+            upgradeDialog.setOnKeyListener(new OnKeyListener() {
                 @Override
                 public boolean onKey(DialogInterface dialog, int keyCode,
                                      KeyEvent event) {
@@ -411,15 +415,15 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             });
 
-            Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);//开始下载按钮
+            Button theButton = upgradeDialog.getButton(DialogInterface.BUTTON_POSITIVE);//开始下载按钮
             theButton.setText(getString(R.string.update_downloading));
             theButton.setEnabled(false);
 
-            Button negButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);//取消下载按钮
+            Button negButton = upgradeDialog.getButton(DialogInterface.BUTTON_NEGATIVE);//取消下载按钮
             negButton.setEnabled(false);
 
             //下载接口
-            downloadNewAPK(mDownLoadAPKPath, dialog);
+            downloadNewAPK(mDownLoadAPKPath);
         }
     }
 
@@ -800,10 +804,51 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     //TODO
-    private void downloadNewAPK(String url, Dialog dialog) {
-//        presener.pDownload(url, dialog);
-        TNAction.runActionAsync(TNActionType.UpdateSoftware, url, dialog);
+    private void downloadNewAPK(String url) {
+        presener.pDownload(url, progressListener);
+
+//        //TODO
+//        TNAction.runActionAsync(TNActionType.UpdateSoftware, url, upgradeDialog);
     }
+
+    //监听下载文件进度
+    FileProgressListener progressListener = new FileProgressListener() {
+
+        @Override
+        public void onFileProgressing(int progress) {
+            MLog.e("实时progress=" + progress);
+            ProgressBar pb = (ProgressBar) upgradeDialog.findViewById(R.id.update_progressbar);
+            TextView percent = (TextView) upgradeDialog.findViewById(R.id.update_percent);
+
+            pb.setProgress(progress);
+            percent.setText(progress + "%");
+        }
+
+    };
+
+    //下载
+    public void respondUpdateSoftware(TNAction aAction) {
+
+        if (aAction.result == TNActionResult.Working) {
+            Dialog dialog = (Dialog) aAction.inputs.get(1);
+            ProgressBar pb = (ProgressBar) dialog.findViewById(R.id.update_progressbar);
+            pb.setProgress((Integer) aAction.progressInfo);
+            TextView percent = (TextView) dialog.findViewById(R.id.update_percent);
+            percent.setText(String.format("%.2fM / %.2fM (%.2f%%)",
+                    pb.getProgress() / 1024f / 1024f,
+                    pb.getMax() / 1024f / 1024f,
+                    100f * pb.getProgress() / pb.getMax()));
+        } else if (aAction.result == TNActionResult.Finished) {
+            MLog.d(TAG, "respondUpdateSoftware finished");
+            Dialog dialog = (Dialog) aAction.inputs.get(1);
+            dialog.dismiss();
+            String filePath = (String) aAction.outputs.get(0);
+            if (filePath != null)
+                //打开文件
+                TNUtilsUi.openFile(filePath);
+        }
+    }
+
 
     //-------第一次登录同步的p调用-------
 
@@ -992,8 +1037,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param catPos
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
-    private void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        presener.pFirstFolderAdd(workPos, workSize, catID, name,catPos, flag);
+    private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        presener.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -1482,31 +1527,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
 
-    //下载
-    public void respondUpdateSoftware(TNAction aAction) {
-
-        if (aAction.result == TNActionResult.Working) {
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            ProgressBar pb = (ProgressBar) dialog.findViewById(R.id.update_progressbar);
-            pb.setProgress((Integer) aAction.progressInfo);
-            TextView percent = (TextView) dialog.findViewById(R.id.update_percent);
-            percent.setText(String.format("%.2fM / %.2fM (%.2f%%)",
-                    pb.getProgress() / 1024f / 1024f,
-                    pb.getMax() / 1024f / 1024f,
-                    100f * pb.getProgress() / pb.getMax()));
-        } else if (aAction.result == TNActionResult.Finished) {
-            MLog.d(TAG, "respondUpdateSoftware finished");
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            dialog.dismiss();
-            String filePath = (String) aAction.outputs.get(0);
-            if (filePath != null)
-                //打开文件
-                TNUtilsUi.openFile(filePath);
-        }
-    }
-
-
     //=============================================接口结果回调(成对的success+failed)======================================================
+
 
     //检查更新
     @Override
@@ -1571,16 +1593,30 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             AlertDialog dialog = TNUtilsUi.alertDialogBuilder(jsonData);
             dialog.show();
 
-            Button theButton = dialog
-                    .getButton(DialogInterface.BUTTON_POSITIVE);
+            Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
             theButton.setOnClickListener(new CustomListener(dialog));
         } else {
             TNUtilsUi.showToast("当前版本已是最新");
         }
     }
 
+    //下载完成
     @Override
     public void onUpgradeFailed(String msg, Exception e) {
+        TNUtilsUi.showToast(msg);
+    }
+
+    @Override
+    public void onDownloadSuccess(File filePath) {
+        upgradeDialog.dismiss();
+        if (filePath != null) {
+            //打开文件
+            TNUtilsUi.openFile(filePath.toString());
+        }
+    }
+
+    @Override
+    public void onDownloadFailed(String msg, Exception e) {
         TNUtilsUi.showToast(msg);
     }
 
@@ -1687,23 +1723,23 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //1-5
     @Override
-    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
         if (catPos < cats.size() - 1) {
             if (flag == 1) {//groupWorks
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID,name, catPos, 1);//继续执行第1个
+                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID, name, catPos, 1);//继续执行第1个
                 } else {//groupWorks执行完，执行groupLife
-                    pFirstFolderAdd(0, groupLife.length, catID,name, catPos, 2);//执行第2个
+                    pFirstFolderAdd(0, groupLife.length, catID, name, catPos, 2);//执行第2个
                 }
             } else if (flag == 2) {//groupLife
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupLife.length, catID,name, catPos, 2);//继续执行第2个
+                    pFirstFolderAdd(workPos + 1, groupLife.length, catID, name, catPos, 2);//继续执行第2个
                 } else {//groupLife执行完，执行groupFun
-                    pFirstFolderAdd(0, groupFun.length, catID,name, catPos, 3);//执行第3个
+                    pFirstFolderAdd(0, groupFun.length, catID, name, catPos, 3);//执行第3个
                 }
             } else if (flag == 3) {//groupFun
                 if (workPos < workSize - 1) {
-                    pFirstFolderAdd(workPos + 1, groupFun.length, catID,name, catPos, 3);//继续执行第3个
+                    pFirstFolderAdd(workPos + 1, groupFun.length, catID, name, catPos, 3);//继续执行第3个
                 } else {//groupFun执行完，执行下个TNCat
                     syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }

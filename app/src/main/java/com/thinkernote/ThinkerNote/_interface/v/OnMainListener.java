@@ -1,15 +1,23 @@
 package com.thinkernote.ThinkerNote._interface.v;
 
+import android.app.Dialog;
+
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
+import java.io.File;
 import java.util.List;
 
 public interface OnMainListener {
     void onUpgradeSuccess(Object obj);
 
     void onUpgradeFailed(String msg, Exception e);
+
+    void onDownloadSuccess(File file);
+
+    void onDownloadFailed(String msg, Exception e);
+
 
     //第一次登录同步1
     //1
@@ -33,7 +41,7 @@ public interface OnMainListener {
     void onSyncGetFoldersByFolderIdFailed(String msg, Exception e, long catID, int posstartPosition, List<AllFolderItemBean> beans);
 
     //5
-    void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag);
+    void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag);
 
     void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag);
 
@@ -64,7 +72,7 @@ public interface OnMainListener {
 
 
     //2-5
-    void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry,TNNoteAtt tnNoteAtt);
+    void onSyncNewNotePicSuccess(Object obj, int picPos, int picArry, int notePos, int noteArry, TNNoteAtt tnNoteAtt);
 
     void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry);
 
@@ -121,7 +129,7 @@ public interface OnMainListener {
     void onSyncEditNoteAddFailed(String msg, Exception e);
 
     //2-11-2
-    void onSyncpGetNoteByNoteIdSuccess(Object obj, int position,boolean is12);
+    void onSyncpGetNoteByNoteIdSuccess(Object obj, int position, boolean is12);
 
     void onSyncpGetNoteByNoteIdFailed(String msg, Exception e);
 

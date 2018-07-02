@@ -5,7 +5,9 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
 import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
+import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -13,6 +15,8 @@ import java.util.List;
  */
 public interface IMainModule {
     void mUpgrade(OnMainListener onMainListener);
+
+    void mDownload(OnMainListener onMainListener,String url, FileProgressListener listener);
 
     void mProfile(OnMainListener listener);
 
