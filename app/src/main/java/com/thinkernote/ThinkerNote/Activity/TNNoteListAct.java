@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.TimeUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -1131,7 +1132,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
 
             //如果本地的更新时间晚就以本地的为准
-            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+            if (note.lastUpdate > (com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000)) {
                 return;
             }
 
@@ -1153,8 +1154,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", bean.getCreate_at() / 1000,
-                "lastUpdate", bean.getUpdate_at() / 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),
@@ -1405,7 +1406,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
 
             //如果本地的更新时间晚就以本地的为准
-            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+            if (note.lastUpdate > (com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000)) {
                 return;
             }
 
@@ -1427,8 +1428,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", bean.getCreate_at() / 1000,
-                "lastUpdate", bean.getUpdate_at() / 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),

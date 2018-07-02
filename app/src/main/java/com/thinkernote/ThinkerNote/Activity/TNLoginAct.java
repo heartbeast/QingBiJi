@@ -365,28 +365,16 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         MLog.d("登录返回结果处理" + requestCode + "--" + resultCode);
-        //wechat
-        if (resultCode == 11) {//微信登录 成功返回
-            MLog.d("wechat-->onActivityResult");
-            String access_token = data.getStringExtra("access_token");
-            String refresh_token = data.getStringExtra("refresh_token");
-            String uid = data.getStringExtra("unionid");
-            String nickName = data.getStringExtra("nickName");
-            //微信登录
-            pLoginThird(9, uid, System.currentTimeMillis(), access_token, refresh_token, nickName);
 
-        } else {
-            MLog.d("qq--sina-->onActivityResult");
-            //qq
-            if (mTencent != null) {
-                mTencent.onActivityResult(requestCode, resultCode, data);
-            }
+        //qq
+        if (mTencent != null) {
+            mTencent.onActivityResult(requestCode, resultCode, data);
+        }
 
-            // sina
-            // SSO 授权回调 重要：发起 SSO 登陆的Activity必须重写onActivityResult
-            if (mSsoHandler != null) {
-                mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
-            }
+        // sina
+        // SSO 授权回调 重要：发起 SSO 登陆的Activity必须重写onActivityResult
+        if (mSsoHandler != null) {
+            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
         }
 
 
@@ -542,26 +530,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         profileBean = null;
     }
 
-    /**
-     * 说明：WXEntryActivity是获取微信登录信息的界面，拿到信息后，返回该界面走轻笔记的登录接口
-     */
-    private void getWechatIntent() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle == null || bundle.getString("unionid") == null || bundle.getString("unionid").isEmpty()) {
-            MLog.d("微信登录--获取微信返回信息-->null");
-            return;
-        } else {
-            MLog.d("微信登录--获取微信返回信息-->登录");
-            //获取微信登录返回的信息
-            String unionid = bundle.getString("unionid");
-            String access_token = bundle.getString("access_token");
-            String refresh_token = bundle.getString("refresh_token");
-            String nickName = bundle.getString("nickName");
-            //
-            //TNAction.runActionAsync(TNActionType.LoginThird, 9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
-            pLoginThird(9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
-        }
-    }
     //
     /**
      * 使用RxBus 实现微信登录信息返回
@@ -582,8 +550,6 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
                         String nickName = SPUtil.getString("nickName", "");
                         MLog.d("TNLoginAct-->RxBus", unionid, access_token, refresh_token, nickName);
 
-                        //
-                        //TNAction.runActionAsync(TNActionType.LoginThird, 9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
                         pLoginThird(9, unionid, System.currentTimeMillis(), access_token, refresh_token, nickName);
                     }
                 });

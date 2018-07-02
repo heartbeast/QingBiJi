@@ -20,8 +20,8 @@ public class GetNoteByNoteIdBean implements Serializable {
     String trash;
     String address;
     String content;
-    int create_at;
-    int update_at;
+    String create_at;
+    String update_at;
     int longitude;
     int latitude;
     int radius;
@@ -144,19 +144,19 @@ public class GetNoteByNoteIdBean implements Serializable {
         this.content = content;
     }
 
-    public int getCreate_at() {
+    public String getCreate_at() {
         return create_at;
     }
 
-    public void setCreate_at(int create_at) {
+    public void setCreate_at(String create_at) {
         this.create_at = create_at;
     }
 
-    public int getUpdate_at() {
+    public String getUpdate_at() {
         return update_at;
     }
 
-    public void setUpdate_at(int update_at) {
+    public void setUpdate_at(String update_at) {
         this.update_at = update_at;
     }
 

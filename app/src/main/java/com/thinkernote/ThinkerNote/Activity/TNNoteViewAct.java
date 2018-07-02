@@ -1191,7 +1191,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             //如果本地的更新时间晚就以本地的为准
-            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+            if (note.lastUpdate > (com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000)) {
                 return;
             }
 
@@ -1213,8 +1213,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", bean.getCreate_at() / 1000,
-                "lastUpdate", bean.getUpdate_at() / 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),

@@ -692,7 +692,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
 
             //如果本地的更新时间晚就以本地的为准
-            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+            if (note.lastUpdate > (com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000)) {
                 return;
             }
 
@@ -714,8 +714,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", bean.getCreate_at() / 1000,
-                "lastUpdate", bean.getUpdate_at() / 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),
@@ -803,20 +803,19 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     }
 
-    //TODO
     private void downloadNewAPK(String url) {
-        presener.pDownload(url, progressListener);
+//        presener.pDownload(url, progressListener);
 
 //        //TODO
-//        TNAction.runActionAsync(TNActionType.UpdateSoftware, url, upgradeDialog);
+        TNAction.runActionAsync(TNActionType.UpdateSoftware, url, upgradeDialog);
     }
 
-    //监听下载文件进度
+    //监听下载文件进度,包括文件大小
     FileProgressListener progressListener = new FileProgressListener() {
 
         @Override
         public void onFileProgressing(int progress) {
-            MLog.e("实时progress=" + progress);
+            MLog.d("实时progress=" + progress);
             ProgressBar pb = (ProgressBar) upgradeDialog.findViewById(R.id.update_progressbar);
             TextView percent = (TextView) upgradeDialog.findViewById(R.id.update_percent);
 
@@ -859,6 +858,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void synchronizeData() {
+        MLog.d("1-1-synchronizeData");
         if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
             //需要同步的文件数据
             arrayFolderName = new String[]{TNConst.FOLDER_DEFAULT, TNConst.FOLDER_MEMO, TNConst.GROUP_FUN, TNConst.GROUP_WORK, TNConst.GROUP_LIFE};
@@ -877,6 +877,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
+        MLog.d("sync---1-1-synchronizeData-pFolderAdd");
         presener.folderAdd(position, arraySize, name);
     }
 
@@ -886,6 +887,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * （一.2）更新 tag
      */
     private void pTagAdd(int position, int arraySize, String name) {
+        MLog.d("sync---1-2-pTagAdd");
         presener.tagAdd(position, arraySize, name);
     }
 
@@ -895,6 +897,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
+        MLog.d("sync---1-3-pTagAdd");
         presener.pGetFolder();
     }
 
@@ -908,6 +911,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param isAdd 如果mapList.add之后立即执行该方法，为true
      */
     private void syncGetFoldersByFolderId(int startPos, boolean isAdd) {
+        MLog.d("sync---1-4-syncGetFoldersByFolderId");
         if (mapList.size() > 0 && mapList.size() <= 5) {
             //有1---5，for循环层层内嵌,从最内层（size最大处）开始执行
             List<AllFolderItemBean> allFolderItemBeans = mapList.get(mapList.size() - 1);
@@ -952,6 +956,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
+        MLog.d("sync---1-4-syncGetFoldersByFolderId--syncGetFoldersByFolderId");
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
@@ -965,6 +970,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * 接口个数 = 3*cats.size*groupXXX.size;
      */
     private void syncTNCat() {
+        MLog.d("sync---1-5-syncTNCat");
         //同步TNCat
         cats = TNDbUtils.getAllCatList(mSettings.userId);
         if (cats.size() > 0) {
@@ -981,7 +987,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      *
      * @param postion
      */
+
     private void syncTNCat(int postion, int catsSize) {
+        MLog.d("sync---1-5-syncTNCat--syncTNCat");
         if (postion < catsSize - 1) {
             //获取postion条数据
             TNCat tempCat = cats.get(postion);
@@ -1038,6 +1046,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        MLog.d("sync---1-5-syncTNCat--syncTNCat--pFirstFolderAdd");
+
         presener.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
@@ -1048,6 +1058,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
+        MLog.d("sync---2-1-syncProfile");
         presener.pProfile();
     }
 
@@ -1057,6 +1068,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
      */
     private void syncOldNote() {
+        MLog.d("sync---2-2-syncOldNote");
         if (!mSettings.syncOldDb) {
             //add老数据库的笔记
             addOldNotes = TNDbUtils.getOldDbNotesByUserId(TNSettings.getInstance().userId);
@@ -1085,6 +1097,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("sync---2-2-syncOldNote--pUploadOldNotePic");
         presener.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1094,6 +1107,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void pOldNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("sync---2-3-syncOldNote--pOldNote");
         presener.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -1104,6 +1118,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     private void pGetTagList() {
         presener.pGetTagList();
+        MLog.d("sync---2-4-pGetTagList");
     }
 
 
@@ -1114,6 +1129,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void pAddNewNote() {
+        MLog.d("sync---2-5-pAddNewNote");
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
 
         if (addNewNotes.size() > 0) {
@@ -1137,6 +1153,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("sync---2-5-pAddNewNote--pNewNotePic");
         presener.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1146,6 +1163,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
 
     private void pNewNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("sync---2-6-pAddNewNote--pNewNote");
 
         presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
@@ -1160,6 +1178,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
     private void recoveryNote(int position) {
+        MLog.d("sync---2-7-recoveryNote");
         if (position < recoveryNotes.size() && position >= 0) {
             if (recoveryNotes.get(position).noteId != -1) {
                 //循环执行
@@ -1185,6 +1204,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * (二.7)01
      */
     private void pRecoveryNote(long noteID, int position, int arrySize) {
+        MLog.d("sync---2-7-1-pRecoveryNote");
         presener.pRecoveryNote(noteID, position, arrySize);
     }
 
@@ -1192,6 +1212,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * (二.7)02
      */
     private void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("sync---2-7-2-pRecoveryNotePic");
         presener.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1199,6 +1220,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * (二.7)03
      */
     private void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("sync---2-7-3-pRecoveryNoteAdd");
         presener.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -1209,6 +1231,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param position
      */
     private void pDelete(int position) {
+        MLog.d("sync---2-8-pDelete");
 
         if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
             if (deleteNotes.get(position).noteId != -1) {
@@ -1229,13 +1252,14 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pNoteDelete(long noteId, int postion) {
         presener.pDeleteNote(noteId, postion);
+        MLog.d("sync---2-8-pDelete--pNoteDelete");
     }
 
     /**
      * (二.8)删除本地数据 （不调接口）
      */
     private void pNoteLocalDelete(final int position, final long noteLocalId) {
-
+        MLog.d("sync---2-8-pDelete--pNoteLocalDelete");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1274,7 +1298,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     private boolean isRealDelete2 = false;
 
     private void pRealDelete(int position) {
-
+        MLog.d("sync---2-9-pRealDelete");
         if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
@@ -1298,6 +1322,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param nonteLocalID
      */
     private void pDeleteReadNotesSql(final long nonteLocalID, final int position) {
+        MLog.d("sync---2-9-pRealDelete--pDeleteReadNotesSql");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1325,6 +1350,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * (二.9)
      */
     private void pDeleteRealNotes(long noteId, int postion) {
+        MLog.d("sync---2-9-pRealDelete--pDeleteRealNotes");
         //
         presener.pDeleteRealNotes(noteId, postion);
 
@@ -1334,6 +1360,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * (二.10)
      */
     private void pGetAllNoteIds() {
+        MLog.d("sync---2-10-pGetAllNoteIds");
         //
         presener.pGetAllNotesId();
     }
@@ -1346,23 +1373,29 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic(int position) {
+        MLog.d("sync---2-10-pEditNotePic");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
-
-            //找出该日记，比较时间
-            for (int j = 0; j < editNotes.size(); j++) {
-                if (id == editNotes.get(j).noteId) {
-                    if (editNotes.get(j).lastUpdate > lastUpdate) {
-                        //上传图片，之后上传文本
-                        pEditNotePic(position, 0, editNotes.get(j));
-                    } else {
-                        updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+            if (editNotes != null && editNotes.size() > 0) {
+                //找出该日记，比较时间
+                for (int j = 0; j < editNotes.size(); j++) {
+                    if (id == editNotes.get(j).noteId) {
+                        if (editNotes.get(j).lastUpdate > lastUpdate) {
+                            //上传图片，之后上传文本
+                            pEditNotePic(position, 0, editNotes.get(j));
+                        } else {
+                            updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                        }
                     }
                 }
+            } else {
+                //执行下一个循环
+                pEditNotePic(position + 1);
             }
 
         } else {
+            //执行下一个接口
             pUpdataNote(0, false);
         }
     }
@@ -1375,6 +1408,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.d("sync---2-10-1-pEditNotePic");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
@@ -1441,6 +1475,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param cloudsPos cloudIds数据的其实操作位置
      */
     private void pEditNotes(int cloudsPos, TNNote note) {
+        MLog.d("sync---2-11-1-pEditNotes");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             presener.pEditNote(cloudsPos, note);
         } else {
@@ -1456,6 +1491,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param is13     (二.11)-2和(二.13)调用同一个接口，用于区分
      */
     private void pUpdataNote(int position, boolean is13) {
+        MLog.d("sync---2-11-2-pUpdataNote");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             boolean isExit = false;
             long id = cloudIds.get(position).getId();
@@ -1488,6 +1524,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * p层
      */
     private void pUpdataNote(int position, long noteId, boolean is13) {
+        MLog.d("sync---2-11-3-pUpdataNote");
         presener.pGetNoteByNoteId(position, noteId, is13);
     }
 
@@ -1496,6 +1533,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pTrashNotes() {
         presener.pGetAllTrashNoteIds();
+        MLog.d("sync---2-12-pTrashNotes");
     }
 
     /**
@@ -1507,6 +1545,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param is13
      */
     private void pUpdataNote13(int position, boolean is13) {
+        MLog.d("sync---2-13-pUpdataNote13");
         if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
             AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
             long noteId = bean.getId();
@@ -1533,6 +1572,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //检查更新
     @Override
     public void onUpgradeSuccess(Object obj) {
+
         MainUpgradeBean bean = (MainUpgradeBean) obj;
 
         PackageInfo info = null;
@@ -1626,6 +1666,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-1
     @Override
     public void onSyncFolderAddSuccess(Object obj, int position, int arraySize) {
+        MLog.d("sync----1-1-->Success");
         if (position < arraySize - 1) {//同步该接口的列表数据，
             //（有数组，循环调用）
             pFolderAdd(position + 1, arraySize, arrayFolderName[position + 1]);
@@ -1637,6 +1678,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncFolderAddFailed(String msg, Exception e, int position, int arraySize) {
+        MLog.d("sync----1-1-->Failed");
         MLog.e(msg);
         //
 //        if (position < arraySize - 1) {//同步该接口的列表数据，
@@ -1651,6 +1693,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-2
     @Override
     public void onSyncTagAddSuccess(Object obj, int position, int arraySize) {
+        MLog.d("sync----1-2-->Success");
         if (position < arraySize - 1) {//同步该接口的列表数据，
             //（有数组，循环调用）
             pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
@@ -1680,7 +1723,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-3
     @Override
     public void onSyncGetFolderSuccess(Object obj) {
-
+        MLog.d("sync----1-3-->Success");
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
         mapList.add(allFolderItemBeans);
@@ -1699,7 +1742,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-4
     @Override
     public void onSyncGetFoldersByFolderIdSuccess(Object obj, long catID, int startPos, List<AllFolderItemBean> beans) {
-
+        MLog.d("sync----1-4-->Success");
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
         //判断是否有返回值
@@ -1724,6 +1767,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-5
     @Override
     public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        MLog.d("sync----1-5-->Success");
         if (catPos < cats.size() - 1) {
             if (flag == 1) {//groupWorks
                 if (workPos < workSize - 1) {
@@ -1760,6 +1804,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //2-1
     @Override
     public void onSyncProfileSuccess(Object obj) {
+        MLog.d("sync----2-1-->Success");
         ProfileBean profileBean = (ProfileBean) obj;
         //
         TNSettings settings = TNSettings.getInstance();
@@ -1799,11 +1844,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncProfileAddFailed(String msg, Exception e) {
         //
         MLog.e(msg);
+        MLog.e("sync----2-1-->Failed");
     }
 
     //2-2 OldNotePic
     @Override
     public void onSyncOldNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("sync----2-2-->Success");
         String content = addOldNotes.get(notePos).content;
         OldNotePicBean oldNotePicBean = (OldNotePicBean) obj;
         //更新图片 数据库
@@ -1843,11 +1890,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncOldNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
         MLog.e(msg);
+        MLog.e("sync----2-2-->Failed");
     }
 
     //2-3OldNoteAdd
     @Override
     public void onSyncOldNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
+        MLog.d("sync----2-3-->Success");
         OldNoteAddBean oldNoteAddBean = (OldNoteAddBean) obj;
 
         if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
@@ -1867,7 +1916,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncOldNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
-
+        MLog.e("sync----2-3-->Failed");
         //
 //        if (position < arraySize - 1) {
 //            pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
@@ -1881,7 +1930,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //2-4
     @Override
     public void onSyncTagListSuccess(Object obj) {
-
+        MLog.d("sync----2-4-->Success");
         TagListBean tagListBean = (TagListBean) obj;
         List<TagItemBean> beans = tagListBean.getTags();
         //
@@ -1913,12 +1962,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncTagListAddFailed(String msg, Exception e) {
         MLog.e(msg);
+        MLog.e("sync----2-4-->Failed");
     }
 
     //2-5
     @Override
     public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-
+        MLog.d("sync----2-5-->Success");
         String content = addNewNotes.get(notePos).content;
         OldNotePicBean newPicbean = (OldNotePicBean) obj;
         //更新图片 数据库
@@ -1958,12 +2008,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
         MLog.e(msg);
+        MLog.e("sync----2-5-->Failed");
     }
 
     //2-6
     @Override
     public void onSyncNewNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
-
+        MLog.d("sync----2-6-->Success");
         OldNoteAddBean newNoteBean = (OldNoteAddBean) obj;
         //更新数据库
         if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
@@ -1986,11 +2037,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncNewNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
+        MLog.e("sync----2-6-->Failed");
     }
 
     //2-7-1
     @Override
     public void onSyncRecoverySuccess(Object obj, long noteId, int position) {
+        MLog.d("sync----2-7-1-->Success");
         //更新数据库
         recoveryNoteSQL(noteId);
 
@@ -2000,12 +2053,15 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncRecoveryFailed(String msg, Exception e) {
+
+        MLog.e("sync----2-7-1-->Failed");
         MLog.e(msg);
     }
 
     //2-7-2
     @Override
     public void onSyncRecoveryNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("sync----2-7-2-->Success");
         String content = recoveryNotes.get(notePos).content;
         OldNotePicBean recoveryPicbean = (OldNotePicBean) obj;
 
@@ -2046,12 +2102,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncRecoveryNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
         MLog.e(msg);
+        MLog.e("sync----2-7-2-->Failed");
     }
 
     //2-7-3
     @Override
     public void onSyncRecoveryNoteAddSuccess(Object obj, int position, int arraySize, boolean isNewDb) {
-
+        MLog.d("sync----2-7-3-->Success");
         OldNoteAddBean recoveryNoteBean = (OldNoteAddBean) obj;
         //更新数据库
         if (isNewDb) {//false时表示老数据库的数据上传，不用在修改本地的数据
@@ -2066,12 +2123,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncRecoveryNoteAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
+        MLog.e("sync----2-7-3-->Failed");
     }
 
     //2-8
     @Override
     public void onSyncDeleteNoteSuccess(Object obj, long noteId, int position) {
-
+        MLog.d("sync----2-8-->Success");
         //更新数据
         updataDeleteNoteSQL(noteId);
 
@@ -2081,12 +2139,15 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncDeleteNoteFailed(String msg, Exception e) {
+
+        MLog.e("sync----2-8-->Failed");
         MLog.e(msg);
     }
 
     //2-9-1
     @Override
     public void onSyncpDeleteRealNotes1Success(Object obj, long noteId, int position) {
+        MLog.d("sync----2-9-->Success");
         isRealDelete1 = true;
         //更新数据
         updataDeleteNoteSQL(noteId);
@@ -2106,11 +2167,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncDeleteRealNotes1Failed(String msg, Exception e, int position) {
         isRealDelete1 = true;
         MLog.e(msg);
+        MLog.e("sync----2-9-1-->Failed");
     }
 
     //2-9-2
     @Override
     public void onSyncDeleteRealNotes2Success(Object obj, long noteId, int position) {
+        MLog.d("sync----2-9-2-->Success");
         isRealDelete2 = true;
         //更新数据库
         deleteRealSQL(noteId, position);
@@ -2120,11 +2183,13 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncDeleteRealNotes2Failed(String msg, Exception e, int position) {
         isRealDelete2 = true;
         MLog.e(msg);
+        MLog.e("sync----2-9-2-->Failed");
     }
 
     //2-10
     @Override
     public void onSyncAllNotesIdSuccess(Object obj) {
+        MLog.d("sync----2-10-->Success");
         cloudIds = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
 
         //与云端同步数据 sjy-0623
@@ -2169,12 +2234,14 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncAllNotesIdAddFailed(String msg, Exception e) {
+        MLog.e("sync----2-10-->Failed");
         MLog.e(msg);
     }
 
     //2-10-1
     @Override
     public void onSyncEditNotePicSuccess(Object obj, int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.d("sync----2-10-1-->Success");
         TNNote note = tnNote;
         OldNotePicBean editPicbean = (OldNotePicBean) obj;
         note.atts.get(attsPos).digest = editPicbean.getMd5();
@@ -2191,25 +2258,28 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncEditNotePicFailed(String msg, Exception e, int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.e(msg);
+        MLog.e("sync----2-10-1-->Failed");
     }
 
 
     //2-11-1
     @Override
     public void onSyncEditNoteSuccess(Object obj, int cloudsPos, TNNote note) {
-
+        MLog.d("sync----2-11-1--->Success");
         //更新下一个cloudsPos位置的数据
         updataEditNotes(cloudsPos, note);
     }
 
     @Override
     public void onSyncEditNoteAddFailed(String msg, Exception e) {
+        MLog.e("sync----2-11-1-->Failed");
         MLog.e(msg);
     }
 
     //2-11-2
     @Override
     public void onSyncpGetNoteByNoteIdSuccess(Object obj, int position, boolean is13) {
+        MLog.d("sync----2-11-2-->Success");
         updateNote((GetNoteByNoteIdBean) obj);
         if (is13) {
             pUpdataNote13(position + 1, is13);
@@ -2222,12 +2292,14 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncpGetNoteByNoteIdFailed(String msg, Exception e) {
+        MLog.e("sync----2-11-2-->Failed");
         MLog.e(msg);
     }
 
     //2-12
     @Override
     public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
+        MLog.d("sync----2-12-->Success");
         trashNoteArr = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
         ExecutorService executorService = Executors.newCachedThreadPool();//开启线程池
         for (final TNNote trashNote : trashNotes) {
@@ -2264,7 +2336,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     @Override
     public void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e) {
-
+        MLog.e("sync----2-12-->Failed");
     }
 
 

@@ -273,10 +273,12 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
                     if (type.equals("userName")) {
                         settings.username = nameOrEmail;
                         settings.loginname = nameOrEmail;
-                        TNDb.getInstance().updataSQL(TNSQLString.USER_UPDATE_NAME, new String[]{nameOrEmail, settings.userId + ""});
+                        String userId = settings.userId+"";
+                        TNDb.getInstance().updataSQL(TNSQLString.USER_UPDATE_NAME, new String[]{nameOrEmail, userId});
                     } else {
                         settings.email = nameOrEmail;
-                        TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_EMAIL, new String[]{nameOrEmail, settings.userId + ""});
+                        String userId = settings.userId+"";
+                        TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_EMAIL, new String[]{nameOrEmail, userId});
                     }
                     //
                     TNDb.setTransactionSuccessful();

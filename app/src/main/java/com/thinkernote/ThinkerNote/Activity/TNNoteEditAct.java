@@ -1511,7 +1511,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
 
             //如果本地的更新时间晚就以本地的为准
-            if (note.lastUpdate > (bean.getUpdate_at() / 1000)) {
+            if (note.lastUpdate > (com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000)) {
                 return;
             }
 
@@ -1533,8 +1533,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 "source", "android",
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
-                "createTime", bean.getCreate_at() / 1000,
-                "lastUpdate", bean.getUpdate_at() / 1000,
+                "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at() )/ 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),
@@ -1862,23 +1862,29 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic(int position) {
+        MLog.d("sync---2-10-pEditNotePic");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
-
-            //找出该日记，比较时间
-            for (int j = 0; j < editNotes.size(); j++) {
-                if (id == editNotes.get(j).noteId) {
-                    if (editNotes.get(j).lastUpdate > lastUpdate) {
-                        //上传图片，之后上传文本
-                        pEditNotePic(position, 0, editNotes.get(j));
-                    } else {
-                        updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+            if (editNotes != null && editNotes.size() > 0) {
+                //找出该日记，比较时间
+                for (int j = 0; j < editNotes.size(); j++) {
+                    if (id == editNotes.get(j).noteId) {
+                        if (editNotes.get(j).lastUpdate > lastUpdate) {
+                            //上传图片，之后上传文本
+                            pEditNotePic(position, 0, editNotes.get(j));
+                        } else {
+                            updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                        }
                     }
                 }
+            } else {
+                //执行下一个循环
+                pEditNotePic(position + 1);
             }
 
         } else {
+            //执行下一个接口
             pUpdataNote(0, false);
         }
     }
