@@ -1,6 +1,7 @@
 package com.thinkernote.ThinkerNote.http;
 
 
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
@@ -79,8 +80,9 @@ public interface MyHttpService {
      * （2）查看文件上传下载进度/结合progress使用
      */
     class DownloadBuilder {
-        public static MyHttpService getHttpServer(FileProgressListener listener) {
-            return HttpUtils.getInstance().getFileServer(MyHttpService.class,listener);
+        public static MyHttpService getFileServer(FileProgressListener listener) {
+            MLog.d("DownloadBuilder-->getFileServer");
+            return HttpUtils.getInstance().getFileServer(MyHttpService.class, listener);
         }
     }
 
@@ -88,7 +90,6 @@ public interface MyHttpService {
     /**
      ********************************************--接口相关--**************************************************
      */
-
 
 
 //-------------------------------------------------登录相关----------------------------------------------------
@@ -318,6 +319,7 @@ public interface MyHttpService {
     @Streaming
     @GET
     Observable<ResponseBody> download(@Url String url);
+
     /**
      * 14 同步数据
      *

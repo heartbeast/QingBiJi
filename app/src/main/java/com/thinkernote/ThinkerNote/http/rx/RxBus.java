@@ -1,10 +1,17 @@
 package com.thinkernote.ThinkerNote.http.rx;
 
+import java.util.HashMap;
+
 import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * 使用Rxbus跳转
@@ -86,6 +93,67 @@ public class RxBus {
             mDefaultInstance = null;
         }
         return true;
+    }
+
+    private HashMap<String, CompositeSubscription> mSubscriptionMap;
+
+    /**
+     * 发送一个新的事件
+     *
+     * @param o
+     */
+    public void post(Object o) {
+        _bus.onNext(o);
+    }
+
+    /**
+     * 根据传递的 eventType 类型返回特定类型(eventType)的 被观察者
+     *
+     * @param type
+     * @param <T>
+     * @return
+     */
+    public <T> Observable<T> tObservable(final Class<T> type) {
+        //ofType操作符只发射指定类型的数据，其内部就是filter+cast
+        return _bus.ofType(type);
+    }
+
+    public <T> Subscription doSubscribe(Class<T> type, Action1<T> next, Action1<Throwable> error) {
+        return tObservable(type)
+                .onBackpressureBuffer()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(next, error);
+    }
+
+    public void addSubscription(Object o, Subscription subscription) {
+        if (mSubscriptionMap == null) {
+            mSubscriptionMap = new HashMap<>();
+        }
+        String key = o.getClass().getName();
+        if (mSubscriptionMap.get(key) != null) {
+            mSubscriptionMap.get(key).add(subscription);
+        } else {
+            CompositeSubscription compositeSubscription = new CompositeSubscription();
+            compositeSubscription.add(subscription);
+            mSubscriptionMap.put(key, compositeSubscription);
+            // Log.e("air", "addSubscription:订阅成功 " );
+        }
+    }
+
+    public void unSubscribe(Object o) {
+        if (mSubscriptionMap == null) {
+            return;
+        }
+        String key = o.getClass().getName();
+        if (!mSubscriptionMap.containsKey(key)) {
+            return;
+        }
+        if (mSubscriptionMap.get(key) != null) {
+            mSubscriptionMap.get(key).unsubscribe();
+        }
+        mSubscriptionMap.remove(key);
+        //Log.e("air", "unSubscribe: 取消订阅" );
     }
 
 

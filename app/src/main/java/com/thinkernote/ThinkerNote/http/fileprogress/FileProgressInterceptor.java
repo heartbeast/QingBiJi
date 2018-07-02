@@ -1,5 +1,7 @@
 package com.thinkernote.ThinkerNote.http.fileprogress;
 
+import com.thinkernote.ThinkerNote.Utils.MLog;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -19,8 +21,10 @@ public class FileProgressInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
+        MLog.d("文件下载--okhttp--FileProgressInterceptor");
         Response response = chain.proceed(chain.request());
-        return response.newBuilder().body(
-                new FileProgressResponseBody(response.body(), listener)).build();
+        return response.newBuilder()
+                .body(new FileProgressResponseBody(response.body(), listener))
+                .build();
     }
 }

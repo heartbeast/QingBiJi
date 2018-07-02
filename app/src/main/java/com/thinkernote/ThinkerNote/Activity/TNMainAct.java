@@ -702,7 +702,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
+        // getFolder_id可以为负值么
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -804,10 +804,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     private void downloadNewAPK(String url) {
-//        presener.pDownload(url, progressListener);
-
-//        //TODO
-        TNAction.runActionAsync(TNActionType.UpdateSoftware, url, upgradeDialog);
+        presener.pDownload(url, progressListener);
     }
 
     //监听下载文件进度,包括文件大小
@@ -819,35 +816,11 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             ProgressBar pb = (ProgressBar) upgradeDialog.findViewById(R.id.update_progressbar);
             TextView percent = (TextView) upgradeDialog.findViewById(R.id.update_percent);
 
-            pb.setProgress(progress);
-            percent.setText(progress + "%");
+            pb.setProgress(progress);//进度
+            percent.setText(progress + "%");//显示
         }
 
     };
-
-    //下载
-    public void respondUpdateSoftware(TNAction aAction) {
-
-        if (aAction.result == TNActionResult.Working) {
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            ProgressBar pb = (ProgressBar) dialog.findViewById(R.id.update_progressbar);
-            pb.setProgress((Integer) aAction.progressInfo);
-            TextView percent = (TextView) dialog.findViewById(R.id.update_percent);
-            percent.setText(String.format("%.2fM / %.2fM (%.2f%%)",
-                    pb.getProgress() / 1024f / 1024f,
-                    pb.getMax() / 1024f / 1024f,
-                    100f * pb.getProgress() / pb.getMax()));
-        } else if (aAction.result == TNActionResult.Finished) {
-            MLog.d(TAG, "respondUpdateSoftware finished");
-            Dialog dialog = (Dialog) aAction.inputs.get(1);
-            dialog.dismiss();
-            String filePath = (String) aAction.outputs.get(0);
-            if (filePath != null)
-                //打开文件
-                TNUtilsUi.openFile(filePath);
-        }
-    }
-
 
     //-------第一次登录同步的p调用-------
 
@@ -1569,7 +1542,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //=============================================接口结果回调(成对的success+failed)======================================================
 
 
-    //检查更新
+    //TODO 检查更新
     @Override
     public void onUpgradeSuccess(Object obj) {
 
@@ -1603,8 +1576,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         //
         if (newVersionCode > info.versionCode) {
             LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            LinearLayout fl = (LinearLayout) layoutInflater.inflate(
-                    R.layout.update, null);
+            LinearLayout fl = (LinearLayout) layoutInflater.inflate(R.layout.update, null);
             TextView hint = (TextView) fl
                     .findViewById(R.id.update_hint);
             hint.setText(String.format(getString(R.string.update_hint),
@@ -1612,12 +1584,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             hint.setMovementMethod(ScrollingMovementMethod
                     .getInstance());
 
-            ProgressBar pb = (ProgressBar) fl
-                    .findViewById(R.id.update_progressbar);
-            pb.setMax(newSize);
+            ProgressBar pb = (ProgressBar) fl.findViewById(R.id.update_progressbar);
+            pb.setMax(100);//设置最大100 newSize
             pb.setProgress(0);
-            TextView percent = (TextView) fl
-                    .findViewById(R.id.update_percent);
+            TextView percent = (TextView) fl.findViewById(R.id.update_percent);
             percent.setText(String.format("%.2fM / %.2fM (%.2f%%)",
                     pb.getProgress() / 1024f / 1024f,
                     pb.getMax() / 1024f / 1024f,
@@ -1649,6 +1619,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onDownloadSuccess(File filePath) {
         upgradeDialog.dismiss();
+        MLog.d("下载完成--apk路径：" + filePath);
         if (filePath != null) {
             //打开文件
             TNUtilsUi.openFile(filePath.toString());

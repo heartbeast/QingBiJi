@@ -100,10 +100,11 @@ public class MainModuleImpl implements IMainModule {
     //下载文件 实时进度
     @Override
     public void mDownload(final OnMainListener listener, String url, final FileProgressListener progressListener) {
+        //自定义路径
         final File filePath = new File(Environment.getExternalStoragePublicDirectory
                 (Environment.DIRECTORY_DOWNLOADS), "qingbiji.apk");
 
-        MyHttpService.DownloadBuilder.getHttpServer(progressListener)//固定样式，可自定义其他网络
+        MyHttpService.DownloadBuilder.getFileServer(progressListener)//固定样式，可自定义其他网络
                 .download(url)//接口方法
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
@@ -118,9 +119,7 @@ public class MainModuleImpl implements IMainModule {
                 .doOnNext(new Action1<InputStream>() {
                     @Override
                     public void call(InputStream inputStream) {
-
                         writeFile(inputStream, filePath);//保存下载文件
-
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())//返回主线程

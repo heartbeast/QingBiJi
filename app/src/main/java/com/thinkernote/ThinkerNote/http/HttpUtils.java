@@ -52,7 +52,8 @@ public class HttpUtils {
     private static HttpUtils instance;
     private Gson gson;
     private Context context;
-    private Object https;
+    private Object defaultHttps;
+    private Object fileHttps;
     Cache cache = null;
     static File httpCacheDirectory;
 
@@ -95,13 +96,13 @@ public class HttpUtils {
      * header+token+无缓存
      */
     public <T> T getDefaultServer(Class<T> clz) {
-        if (https == null) {
+        if (defaultHttps == null) {
             synchronized (HttpUtils.class) {
-                https = getDefaultBuilder(URLUtils.API_BASE_URL).build().create(clz);
+                defaultHttps = getDefaultBuilder(URLUtils.API_BASE_URL).build().create(clz);
             }
         }
         initCache();//再设置一遍，可以注销
-        return (T) https;
+        return (T) defaultHttps;
     }
 
     /**
@@ -110,41 +111,12 @@ public class HttpUtils {
      */
 
     public <T> T getFileServer(Class<T> clz, FileProgressListener listener) {
-        if (https == null) {
+        if (fileHttps == null) {
             synchronized (HttpUtils.class) {
-                https = getFileBuilder(URLUtils.API_BASE_URL, listener).build().create(clz);
+                fileHttps = getFileBuilder(URLUtils.API_BASE_URL, listener).build().create(clz);
             }
         }
-        return (T) https;
-    }
-
-    /**
-     * 0 Retrofit构建:Retrofit+okhttp
-     */
-
-    public <T> T getNoCacheServer(Class<T> clz) {
-        if (https == null) {
-            synchronized (HttpUtils.class) {
-                https = getNoCacheBuilder(URLUtils.API_BASE_URL).build().create(clz);
-            }
-        }
-        initCache();//再设置一遍，可以注销
-        return (T) https;
-    }
-
-
-    /**
-     * 0 Retrofit构建:Retrofit+okhttp,header+token+无缓存
-     */
-
-    public <T> T getGETServer(Class<T> clz) {
-        if (https == null) {
-            synchronized (HttpUtils.class) {
-                https = getGETBuilder(URLUtils.API_BASE_URL).build().create(clz);
-            }
-        }
-        initCache();//再设置一遍，可以注销
-        return (T) https;
+        return (T) fileHttps;
     }
 
 
@@ -211,16 +183,17 @@ public class HttpUtils {
      * 查看文件上传下载进度/结合progress使用
      */
     private Retrofit.Builder getFileBuilder(String apiUrl, FileProgressListener listener) {
-
+        MLog.d("Retrofit-->getFileBuilder");
         //retrofit配置
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.client(getFileOkHttp(listener));//设置okhttp（重点），不设置走默认的
         builder.baseUrl(apiUrl);//设置远程地址
-        builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
-        builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
+        builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());//添加RxJavaCallAdapter
+
+        //builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
+        //builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
         //builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
         //builder.addConverterFactory(JsonResultConvertFactory.create());    //04:自定义的json解析器处理不规范json
-        builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());//添加RxJavaCallAdapter
 
         return builder;
     }
@@ -324,6 +297,7 @@ public class HttpUtils {
      * @return
      */
     private OkHttpClient getFileOkHttp(FileProgressListener listener) {
+        MLog.d("OkHttpClient-->getFileOkHttp");
         //log打印级别
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -331,28 +305,10 @@ public class HttpUtils {
         try {
             //具体配置，可用链式结构
             OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.readTimeout(20, TimeUnit.SECONDS);//读超时
             okBuilder.connectTimeout(10 * 1000, TimeUnit.MILLISECONDS);//链接超时
-            okBuilder.writeTimeout(20, TimeUnit.SECONDS);//写超时
+            okBuilder.retryOnConnectionFailure(true);
             okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
-            okBuilder.addInterceptor(new Interceptor() {//设置统一请求头，由后台要求，灵活设置
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request okhttpRequest = chain.request();
-
-                    Request.Builder okhttpRequst = okhttpRequest.newBuilder()
-                            .addHeader("user-agent", HttpHead.getHeader());
-                    return chain.proceed(okhttpRequst.build());
-                }
-            });
-            okBuilder.addInterceptor(new FileProgressInterceptor(listener));//文件进度
-            okBuilder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    MLog.d("HttpUtils", "hostname: " + hostname);
-                    return true;
-                }
-            });
+            okBuilder.addInterceptor(new FileProgressInterceptor(listener));//下载文件进度 拦截器
 
             return okBuilder.build();
         } catch (Exception e) {
