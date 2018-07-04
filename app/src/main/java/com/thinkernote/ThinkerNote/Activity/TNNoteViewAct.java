@@ -119,7 +119,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     private AlertDialog dialog;
     //p
-    private INoteViewPresenter presener;
+    private INoteViewPresenter presenter;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -184,7 +184,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
         TNAction.regResponder(TNActionType.Synchronize, this, "respondSynchronize");
 
-        presener = new NoteViewPresenterImpl(this, this);
+        presenter = new NoteViewPresenterImpl(this, this);
 
         mTencent = Tencent.createInstance(TNConst.QQ_APP_ID, this.getApplicationContext());
         mListener = new IUiListener() {
@@ -443,7 +443,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.openatt_menu_view: {
+            //==================openatt_menu相关=====================
+            case R.id.openatt_menu_view: {//产看
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.fromFile(new File(mCurAtt.path)),
@@ -453,12 +454,12 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.openatt_menu_save: {
+            case R.id.openatt_menu_save: {//保存
                 saveAttDialog();
                 break;
             }
 
-            case R.id.openatt_menu_send: {
+            case R.id.openatt_menu_send: {//发送
                 try {
                     String temp = TNUtilsAtt.getTempPath(mCurAtt.path);
                     TNUtilsAtt.copyFile(mCurAtt.path, temp);
@@ -475,8 +476,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 }
                 break;
             }
-
-            case R.id.read_menu_restart:
+            //==================read_menu朗读相关=====================
+            case R.id.read_menu_restart://
                 mStartPos = 0;
                 setReadBarVisible(true);
                 if (mSynthesizerPlayer != null)
@@ -489,7 +490,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                     mSynthesizerPlayer.playText(getNextReadStr(), null, this);
                 break;
 
-            case R.id.noteview_menu_shareto_WX: {
+            //==================noteview_share分享相关=====================
+            case R.id.noteview_menu_shareto_WX: {//分享微信好友
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -498,7 +500,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.noteview_menu_shareto_WXCycle: {
+            case R.id.noteview_menu_shareto_WXCycle: {//分享朋友圈
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -507,7 +509,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.noteview_menu_shareto_QQ: {
+            case R.id.noteview_menu_shareto_QQ: {//分享qq好友
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -516,7 +518,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.noteview_menu_shareto_SMS: {
+            case R.id.noteview_menu_shareto_SMS: {//分享到短信
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -524,14 +526,15 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 TNUtilsUi.sendToSMS(this, mNote);
                 break;
             }
+            //==================share_url_menu 链接相关=====================
 
-            case R.id.share_url_menu_copy: {
+            case R.id.share_url_menu_copy: {//复制链接
                 ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 c.setText("http://www.qingbiji.cn/note/" + TNUtils.Hash17(mNote.noteId));
                 break;
             }
 
-            case R.id.share_url_menu_send: {
+            case R.id.share_url_menu_send: {//邮件发送
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 String email = String.format("mailto:?subject=%s&body=%s", mNote.title, msg);
                 Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(email));
@@ -540,7 +543,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.share_url_menu_open: {
+            case R.id.share_url_menu_open: {//打开链接
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("http://www.qingbiji.cn/note/" + TNUtils.Hash17(mNote.noteId)));
                 TNUtilsDialog.startIntent(this, intent,
@@ -548,12 +551,12 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.share_url_menu_sms: {
+            case R.id.share_url_menu_sms: {//短信分享
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 TNUtilsUi.sendToSMS(this, msg);
                 break;
             }
-            case R.id.share_url_menu_other: {
+            case R.id.share_url_menu_other: {//其他分享
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 TNUtilsUi.shareContent(this, msg, "轻笔记分享");
                 break;
@@ -990,6 +993,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     }
 
     //=================================================弹窗===========================================================
+
     /**
      * retNote 弹窗
      *
@@ -1050,6 +1054,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         dialog = builder.create();
         dialog.show();
     }
+
     /**
      * realDeleteDialog 弹窗
      *
@@ -1474,7 +1479,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     //------------------------------p层调用------------------------------
     private void pGetNote(long mNoteLocalId) {
 
-        presener.pGetNote(mNoteLocalId);
+        presenter.pGetNote(mNoteLocalId);
 
         //TODO
 //        TNAction.runActionAsync(TNActionType.GetNoteByNoteId, mNote.noteId, this);

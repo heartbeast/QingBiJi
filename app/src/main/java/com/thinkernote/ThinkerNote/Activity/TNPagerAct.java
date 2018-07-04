@@ -14,9 +14,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageCats;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageNotes;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageTags;
@@ -29,13 +26,11 @@ import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
-import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
@@ -61,14 +56,14 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.thinkernote.ThinkerNote.Utils.MLog.e;
 import static com.thinkernote.ThinkerNote.Utils.MLog.i;
 
 /**
- * TODO
  * 主页--我的笔记
  * 样式：act+3个frag
  * 说明：syncCats的2-10和2-11-2，与main不同
+ * <p>
+ * sjy 0704
  */
 
 public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnClickListener,
@@ -81,6 +76,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     public static final int CAT = 105;//
     public static final int DIALOG_DELETE = 106;//
     public static final int CAT_DELETE = 107;//
+    public static final int CC_DELETE = 108;//清空回收站
     public static final int SYNC_DATA_BY_NOTEID = 110;//
 
     private HorizontalPager mPager;
@@ -115,11 +111,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.table_layout);
-
-        //TODO 未做 ??
-        TNAction.regResponder(TNActionType.FolderDelete, this, "respondFolderDelete");
-        TNAction.regResponder(TNActionType.ClearRecycle, this, "respondNoteHandle");
-
         //p
         presenter = new PagerPresenterImpl(this, this);
 
@@ -527,7 +518,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                                 TNDb.endTransaction();
                             }
 
-                            handler.sendEmptyMessage(DIALOG_DELETE);
+                            handler.sendEmptyMessage(CC_DELETE);
                         }
                     });
 
@@ -902,14 +893,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         finish();
     }
 
-    public void respondFolderDelete(TNAction aAction) {
-        mProgressDialog.hide();
-        TNHandleError.handleResult(this, aAction);
-        if (isInFront) {
-            configView();
-        }
-    }
-
     /**
      * GetAllDataByNoteId调用结束
      *
@@ -960,13 +943,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         configView();
     }
 
-    public void respondNoteHandle(TNAction aAction) {
-        mProgressDialog.hide();
-        if (!TNHandleError.handleResult(this, aAction)) {
-            TNUtilsUi.showToast("回收站已清空");
-            configView();
-        }
-    }
 
     @Override
     protected void handleMessage(Message msg) {
@@ -1008,6 +984,11 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 break;
             case CAT_DELETE:
                 mProgressDialog.hide();
+                configView();
+                break;
+            case CC_DELETE:
+                mProgressDialog.hide();
+                TNUtilsUi.showToast("回收站已清空");
                 configView();
                 break;
             case SYNC_DATA_BY_NOTEID:
@@ -1370,10 +1351,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
 
     private void pCatDelete(TNCat cat) {
         presenter.pDeleteCat(cat.catId);
-//        //TODO
-//        TNAction.runActionAsync(TNActionType.FolderDelete, cat.catId);
-//        TNUtilsDialog.deleteCatDialog(this, new TNRunner(this,
-//                "dialogCB"), mCurrCat);
     }
 
 
@@ -1397,8 +1374,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
             }
         });
 
-        //TODO
-//        TNAction.runAction(TNActionType.NoteLocalDelete, noteLocalId);
     }
 
     /**
@@ -1414,9 +1389,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     private void pSynceDataByNoteId(long noteId, int catPos, boolean isCats) {
         MLog.d("GetDataByNoteId-->pSynceDataByNoteId");
         presenter.pGetDataByNoteId(noteId, catPos, isCats);
-
-        //TODO
-//        TNUtilsDialog.synchronize(this, null, null, TNActionType.GetAllDataByNoteId, mCurrNote.noteId, "noteItem");//增加noteItem是为了防止完全同步文件夹时也会走到这个的响应函数导致的报错
 
     }
 
@@ -1445,10 +1417,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     private void pSynceCat(long catId) {
         this.catId = catId;
         pAddNewNote();
-
-        //TODO
-//        TNUtilsDialog.synchronize(this, null, null, TNActionType.SynchronizeCat, mCurrCat.catId);
-
     }
 
 
