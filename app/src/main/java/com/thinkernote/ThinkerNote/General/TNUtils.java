@@ -1,5 +1,6 @@
 package com.thinkernote.ThinkerNote.General;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.thinkernote.ThinkerNote.Data.TNNote;
+import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import org.apache.http.util.EncodingUtils;
@@ -379,6 +381,15 @@ public class TNUtils {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean checkNetwork(Activity act) {
+
+		boolean network = isNetWork();
+		if (!network) {
+			TNUtilsUi.alert(act, R.string.alert_Net_NotWork);
+		}
+		return network;
 	}
 	
 	public static boolean isNetWorkWifiAnd4G() {

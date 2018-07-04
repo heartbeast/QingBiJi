@@ -119,6 +119,7 @@ public class TNNoteLocalService {
         aAction.finished(note);
     }
 
+    //TODO
     public void NoteLocalRecovery(TNAction aAction) {
         long noteLocalId = (Long) aAction.inputs.get(0);
         TNDb.beginTransaction();
@@ -162,6 +163,7 @@ public class TNNoteLocalService {
         aAction.finished();
     }
 
+    //TODO
     public void NoteLocalRealDelete(TNAction aAction) {
         long noteLocalId = (Long) aAction.inputs.get(0);
         TNDb.beginTransaction();
@@ -261,6 +263,7 @@ public class TNNoteLocalService {
         aAction.finished();
     }
 
+    //TODO
     public void ClearLocalRecycle(TNAction aAction) {
         Vector<TNNote> notes = TNDbUtils.getNoteListByTrash(TNSettings.getInstance().userId, TNConst.CREATETIME);
         TNDb.beginTransaction();

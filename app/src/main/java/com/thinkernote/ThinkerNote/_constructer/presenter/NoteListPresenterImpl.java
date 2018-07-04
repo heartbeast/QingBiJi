@@ -14,6 +14,7 @@ import com.thinkernote.ThinkerNote._interface.v.OnSynchronizeEditListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * p层 具体实现
@@ -49,6 +50,17 @@ public class NoteListPresenterImpl implements INoteListPresenter, OnNoteListList
         module.mGetNotelistByTagId(this, mListDetail, mPageNum, size, sort);
     }
 
+    //
+    @Override
+    public void pGetDataByNoteId(long noteId) {
+        module.mGetDataByNoteId(this, noteId);
+    }
+
+    @Override
+    public void pSynceNoteAttr(int pos, TNNoteAtt attr, Vector<TNNoteAtt> attrs,long noteId) {
+        module.mSynceNoteAttr(this, pos, attr,attrs,noteId);
+    }
+
 
     //=========================================syncData===========================================
 
@@ -80,8 +92,8 @@ public class NoteListPresenterImpl implements INoteListPresenter, OnNoteListList
 
     //5
     @Override
-    public void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        module.mFirstFolderAdd(dataListener, workPos, workSize, catID,name, catPos, flag);
+    public void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        module.mFirstFolderAdd(dataListener, workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -299,6 +311,27 @@ public class NoteListPresenterImpl implements INoteListPresenter, OnNoteListList
         onView.onNoteListByTagIdFailed(msg, e);
     }
 
+    //==========================getDataByNoteId==============================
+    @Override
+    public void onGetDataByNoteIdSuccess(Object obj, long noteId) {
+        onView.onGetDataByNoteIdSuccess(obj, noteId);
+    }
+
+    @Override
+    public void onGetDataByNoteIdFailed(String msg, Exception e) {
+        onView.onGetDataByNoteIdFailed(msg, e);
+    }
+
+    @Override
+    public void onSyncNoteAttrSuccess(Object obj, int position,Vector<TNNoteAtt> atts,long noteId) {
+        onView.onSyncNoteAttrSuccess(obj, position,atts,noteId);
+    }
+
+    @Override
+    public void onSyncNoteAttrFailed(String msg, Exception e) {
+        onView.onSyncNoteAttrFailed(msg, e);
+    }
+
     //==========================syncData==============================
     DataListener dataListener = new DataListener();
 
@@ -350,8 +383,8 @@ public class NoteListPresenterImpl implements INoteListPresenter, OnNoteListList
 
         //5 TNCat
         @Override
-        public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
-            onDataView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID,name, catPos, flag);
+        public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+            onDataView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, name, catPos, flag);
         }
 
         @Override

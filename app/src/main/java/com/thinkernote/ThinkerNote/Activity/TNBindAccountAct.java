@@ -87,7 +87,7 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_verify_code: {//获取验证码
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 mPhone = mAccountView.getText().toString().trim();
@@ -104,7 +104,7 @@ public class TNBindAccountAct extends TNActBase implements OnClickListener, OnBi
             }
             break;
             case R.id.bind_account_confirm: {//绑定
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 if (check()) {

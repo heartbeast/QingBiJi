@@ -8,6 +8,7 @@ import com.thinkernote.ThinkerNote._interface.v.OnSynchronizeDataListener;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * m层interface
@@ -16,6 +17,11 @@ public interface INoteListModule {
     void mGetNotelistByFolderId(OnNoteListListener listener, long mListDetail, int mPageNum, int size, String sort);
 
     void mGetNotelistByTagId(OnNoteListListener listener, long mListDetail, int mPageNum, int size, String sort);
+
+    //syncDataByNoteId
+
+    void mGetDataByNoteId(OnNoteListListener listListener, long noteId);
+    void mSynceNoteAttr(OnNoteListListener listListener, int pos, TNNoteAtt tnNoteAtt, Vector<TNNoteAtt> attrs,long noteId);
 
     //syncData
     void mProfile(OnSynchronizeDataListener listener);
@@ -26,7 +32,7 @@ public interface INoteListModule {
 
     void mGetFoldersByFolderId(OnSynchronizeDataListener OnSynchronizeDataListenerl, long id, int position, List<AllFolderItemBean> beans);
 
-    void mFirstFolderAdd(OnSynchronizeDataListener listener, int workPos, int workSize, long catID,String name, int catPos, int flag);
+    void mFirstFolderAdd(OnSynchronizeDataListener listener, int workPos, int workSize, long catID, String name, int catPos, int flag);
 
     void mfolderAdd(OnSynchronizeDataListener listener, int position, int arraySize, String name);
 

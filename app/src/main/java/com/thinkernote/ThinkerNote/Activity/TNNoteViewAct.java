@@ -1,6 +1,7 @@
 package com.thinkernote.ThinkerNote.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,6 +31,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iflytek.speech.SpeechError;
@@ -44,7 +47,9 @@ import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
@@ -75,6 +80,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * TODO
@@ -87,6 +94,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         OnPoPuMenuItemClickListener,
         OnNoteViewListener {
     public static final long ATT_MAX_DOWNLOAD_SIZE = 50 * 1024;
+    public static final int DIALOG_DELETE = 101;//
 
     // Class members
     // -------------------------------------------------------------------------------
@@ -109,34 +117,45 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     private WebView mWebView;
 
+    private AlertDialog dialog;
     //p
     private INoteViewPresenter presener;
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 1) {
-                if (!isFinishing())
-                    openContextMenu(findViewById(R.id.noteview_openatt_menu));
-            } else if (msg.what == 2) {
-                TNNoteAtt att = (TNNoteAtt) msg.getData()
-                        .getSerializable("att");
+            switch (msg.what) {
+                case 1:
+                    if (!isFinishing())
+                        openContextMenu(findViewById(R.id.noteview_openatt_menu));
+                    break;
+                case 2:
+                    TNNoteAtt att = (TNNoteAtt) msg.getData()
+                            .getSerializable("att");
 
-                String s = "<img name=\\\"loading\\\" src=\\\"file:///android_asset/download.png\\\" /><span name=\\\"abcd\\\"><br />%s(%s)</span>";
-                s = String.format(s, att.attName, att.size / 1024 + "K");
-                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
-                        att.attId, s));
-                MLog.d(TAG, "start javascript:loading");
-                mWebView.loadUrl("javascript:loading()");
-            } else if (msg.what == 3) {
-                DisplayMetrics dm = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(dm);
-                mWebView.loadDataWithBaseURL("", mNote
-                        .makeHtml((int) (dm.widthPixels / dm.scaledDensity)), "text/html", "utf-8", null);
-            } else if (msg.what == 4) {
-                Bundle b = msg.getData();
-                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
-                        b.getLong("attLocalId"), b.getString("s")));
+                    String s = "<img name=\\\"loading\\\" src=\\\"file:///android_asset/download.png\\\" /><span name=\\\"abcd\\\"><br />%s(%s)</span>";
+                    s = String.format(s, att.attName, att.size / 1024 + "K");
+                    mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
+                            att.attId, s));
+                    MLog.d(TAG, "start javascript:loading");
+                    mWebView.loadUrl("javascript:loading()");
+                    break;
+                case 3:
+                    DisplayMetrics dm = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(dm);
+                    mWebView.loadDataWithBaseURL("", mNote
+                            .makeHtml((int) (dm.widthPixels / dm.scaledDensity)), "text/html", "utf-8", null);
+                    break;
+                case 4:
+                    Bundle b = msg.getData();
+                    mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
+                            b.getLong("attLocalId"), b.getString("s")));
+                    break;
+                case DIALOG_DELETE:
+                    mProgressDialog.hide();
+                    finish();
+
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -587,7 +606,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
             case R.id.noteview_more: {
                 if (mNote.trash == 1) {
-                    TNUtilsDialog.realDeleteNote(this, new TNRunner(this, "dialogCB"), mNote.noteLocalId);
+                    showRealDeleteDialog(mNote.noteLocalId);
                 } else {
                     if (!isFinishing()) {
                         setPopuMenu();
@@ -855,15 +874,17 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     private void deleteNote() {
         if (mNote.trash == 1) {
-            TNUtilsDialog.realDeleteNote(this, new TNRunner(this, "dialogCB"), mNote.noteLocalId);
+            showRealDeleteDialog(mNote.noteLocalId);
         } else {
-            TNUtilsDialog.deleteNote(this, new TNRunner(this, "dialogCB"), mNote.noteLocalId);
+            showDeleteDialog(mNote.noteLocalId);
+            //TODO
+//            TNUtilsDialog.deleteNote(this, new TNRunner(this, "dialogCB"), mNote.noteLocalId);
         }
     }
 
     private void editNote() {
         if (mNote.trash == 1) {
-            TNUtilsDialog.restoreNote(this, new TNRunner(this, "dialogCB"), mNote.noteLocalId);
+            resetNoteDialog(mNote.noteLocalId);
         } else {
             if (mNote.syncState != 1) {
                 Bundle b = new Bundle();
@@ -968,6 +989,128 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         return result;
     }
 
+    //=================================================弹窗===========================================================
+    /**
+     * retNote 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void resetNoteDialog(final long noteLocalId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_NoteView_RestoreHint);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteViewAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //具体执行
+                    mProgressDialog.show();
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new String[]{"0", "7", System.currentTimeMillis() / 1000 + "", noteLocalId + ""});
+
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+    /**
+     * realDeleteDialog 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void showRealDeleteDialog(final long noteLocalId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_NoteView_RealDeleteNoteMsg);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteViewAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    mProgressDialog.show();
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new String[]{"5", noteLocalId + ""});
+
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+
     private void saveAttDialog() {
         if (!TNUtilsAtt.hasExternalStorage()) {
             TNUtilsUi.alert(this, R.string.alert_NoSDCard);
@@ -998,6 +1141,76 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 R.string.alert_Cancel);
         TNUtilsUi.alertDialogBuilder(jsonData).show();
 
+    }
+
+    /**
+     * 删除 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void showDeleteDialog(final long noteLocalId) {
+
+        //
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+        //content
+        int msg = R.string.alert_NoteView_DeleteNoteMsg;
+        if (TNSettings.getInstance().isInProject()) {
+            msg = R.string.alert_NoteView_DeleteNoteMsg_InGroup;
+        }
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) msg);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteViewAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    mProgressDialog.show();
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new String[]{"2", "6", System.currentTimeMillis() / 1000 + "", noteLocalId + ""});
+
+                                TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+                                TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new String[]{System.currentTimeMillis() / 1000 + "", note.catId + ""});
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
     }
 
     // Implement SynthesizerPlayerListener
@@ -1262,8 +1475,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     private void pGetNote(long mNoteLocalId) {
 
         presener.pGetNote(mNoteLocalId);
+
         //TODO
-        TNAction.runActionAsync(TNActionType.GetNoteByNoteId, mNote.noteId, this);
+//        TNAction.runActionAsync(TNActionType.GetNoteByNoteId, mNote.noteId, this);
     }
 
     //-----------------------------接口结果回调-------------------------------

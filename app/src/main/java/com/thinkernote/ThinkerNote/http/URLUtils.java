@@ -159,6 +159,16 @@ public class URLUtils {
          */
         public static final String FOLDER_TRASH = "api/note/trash";
 
+        /**
+         * GetFolderNoteIds
+         */
+        public static final String FOLDER_NOTEIDS = "api/folders/note/ids";
+
+        /**
+         * GetFolderNoteIds
+         */
+        public static final String FOLDER = "api/folders";
+
     }
 
     public static class Note {

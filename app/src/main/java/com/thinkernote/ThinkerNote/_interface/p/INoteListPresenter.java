@@ -5,6 +5,7 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * p层interface
@@ -13,6 +14,11 @@ public interface INoteListPresenter {
     void pGetNoteListByFolderID(long mListDetail, int mPageNum, int size, String sort);
 
     void pGetNoteListByTagID(long mListDetail, int mPageNum, int size, String sort);
+
+    //syncDataByNoteId
+    void pGetDataByNoteId(long noteId);
+
+    void pSynceNoteAttr(int pos, TNNoteAtt attr, Vector<TNNoteAtt> atts,long noteId);
 
     //syncData
     void folderAdd(int position, int arraySize, String folderName);

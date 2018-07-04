@@ -717,7 +717,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     private void showIatDialog() {
-        if (TNUtilsDialog.checkNetwork(this)) {
+        if (TNUtils.checkNetwork(this)) {
             if (mIatDialog == null) {
                 mIatDialog = new RecognizerDialog(this, "appid=4ea04eee");
                 mIatDialog.setEngine("sms", null, null);

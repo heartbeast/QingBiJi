@@ -289,7 +289,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
     //------------------------------------------------触发功能-----------------------------------------
     //修改用户信息
     public void changeUserName() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
         Bundle bundle = new Bundle();
         bundle.putString("type", "username");
@@ -298,7 +298,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     //更换手机号
     public void changePhone() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
         Bundle bundle = new Bundle();
         bundle.putString("type", "change");
@@ -308,7 +308,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     //修改密码
     public void changePassword() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
 
         Bundle bundle = new Bundle();
@@ -318,7 +318,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     //修改邮箱
     public void changeEmail() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
 
         Bundle bundle = new Bundle();
@@ -328,7 +328,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     //邮箱验证
     public void verifyemail() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
 
         TNUser user = TNDbUtils.getUser(mSettings.userId);
@@ -624,7 +624,7 @@ public class TNSettingsAct extends TNActBase implements OnClickListener, OnChild
 
     //邀请码
     public void setInviteCode() {
-        if (!TNUtilsDialog.checkNetwork(this))
+        if (!TNUtils.checkNetwork(this))
             return;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -1,21 +1,29 @@
 package com.thinkernote.ThinkerNote.Activity;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.Adapter.TNPreferenceAdapter;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceChild;
 import com.thinkernote.ThinkerNote.Data.TNPreferenceGroup;
+import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
+import com.thinkernote.ThinkerNote.Database.TNSQLString;
+import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsDialog;
@@ -25,18 +33,22 @@ import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.CatInfoPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.ICatInfoPresenter;
+import com.thinkernote.ThinkerNote._interface.v.OnCatInfoListener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 
 import org.json.JSONObject;
 
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * sjy 0625
  */
 public class TNCatInfoAct extends TNActBase
-        implements OnClickListener, OnChildClickListener, OnGroupClickListener, OnCommonListener {
+        implements OnClickListener, OnChildClickListener, OnGroupClickListener, OnCatInfoListener {
+    public static final int CAT_DELETE = 107;//
 
     /* Bundle:
      * CatLocalId
@@ -47,9 +59,10 @@ public class TNCatInfoAct extends TNActBase
     private TNPreferenceChild mCurrChild;
     private long mCatId;
     private TNCat mCurrentCat;
+    private AlertDialog dialog;//GetDataByNoteId的弹窗；
 
     //p
-    ICatInfoPresenter presener;
+    ICatInfoPresenter presenter;
 
     // Activity methods
     //-------------------------------------------------------------------------------
@@ -58,7 +71,7 @@ public class TNCatInfoAct extends TNActBase
         super.onCreate(savedInstanceState);
         setContentView(R.layout.catinfo);
         setViews();
-        presener = new CatInfoPresenterImpl(this, this);
+        presenter = new CatInfoPresenterImpl(this, this);
         mCatId = getIntent().getLongExtra("CatId", -1);
 
         mGroups = new Vector<TNPreferenceGroup>();
@@ -154,7 +167,7 @@ public class TNCatInfoAct extends TNActBase
     }
 
     public void deleteFolder() {
-        TNUtilsDialog.deleteCatDialog(this, null, mCurrentCat);
+        showCatDeleteDialog(mCurrentCat);
     }
 
     public void setdefault() {
@@ -204,8 +217,60 @@ public class TNCatInfoAct extends TNActBase
         }
     }
 
-    // private methods
-    //-------------------------------------------------------------------------------
+    @Override
+    protected void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        switch (msg.what) {
+            case CAT_DELETE:
+                configView();
+                break;
+        }
+    }
+
+    /**
+     * 文件删除 弹窗
+     *
+     * @param cat
+     */
+    private void showCatDeleteDialog(final TNCat cat) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_CatInfo_Delete_HasChild);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNCatInfoAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //具体执行
+                    pCatDelete(cat);
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
 
     private void setDefaultCatDialog() {
         DialogInterface.OnClickListener pbtn_Click =
@@ -229,9 +294,12 @@ public class TNCatInfoAct extends TNActBase
 
     //--------------------------------------p层调用-----------------------------------------
     private void setDefaultFoldler() {
-        presener.pSetDefaultFolder(mCurrentCat.catId);
+        presenter.pSetDefaultFolder(mCurrentCat.catId);
     }
 
+    private void pCatDelete(TNCat cat) {
+        presenter.pDeleteCat(cat.catId);
+    }
 
     //--------------------------------------接口回调-----------------------------------------
     @Override
@@ -241,6 +309,30 @@ public class TNCatInfoAct extends TNActBase
 
     @Override
     public void onFailed(String msg, Exception e) {
+        MLog.e(msg);
+    }
 
+    @Override
+    public void onDeleteFolderSuccess(Object obj, final long catId) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNDb.beginTransaction();
+                try {
+                    TNDb.getInstance().deleteSQL(TNSQLString.CAT_DELETE_CAT, new String[]{catId + ""});
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_TRASH_CATID, new String[]{"2", System.currentTimeMillis() / 1000 + "", TNSettings.getInstance().defaultCatId + "", catId + ""});
+                    TNDb.setTransactionSuccessful();
+                } finally {
+                    TNDb.endTransaction();
+                }
+                handler.sendEmptyMessage(CAT_DELETE);
+            }
+        });
+    }
+
+    @Override
+    public void onDeleteFolderFailed(String msg, Exception e) {
+        MLog.e(msg);
     }
 }

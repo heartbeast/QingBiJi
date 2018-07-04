@@ -35,8 +35,10 @@ public interface IMainPresenter {
 
     void pGetTagList();
 
+    //2-6
     void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
+    //2-5
     void pNewNote(int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
     void pRecoveryNote(long noteID, int position, int arrySize);
@@ -47,15 +49,20 @@ public interface IMainPresenter {
 
     void pDeleteNote(long noteId, int position);
 
+    //2-9-2
     void pDeleteRealNotes(long noteId, int position);
 
+    //2-10
     void pGetAllNotesId();
 
+    //2-10-1
     void pEditNotePic(int cloudsPos, int attrPos, TNNote note);
 
+    //2-11-1
     void pEditNote(int position, TNNote note);
 
-    void pGetNoteByNoteId(int position, long noteId, boolean is12);
+    //2-11-2
+    void pGetNoteByNoteId(int position, long noteId, boolean is13);
 
     void pGetAllTrashNoteIds();
 }

@@ -321,6 +321,16 @@ public interface MyHttpService {
     Observable<ResponseBody> download(@Url String url);
 
     /**
+     * 下载文件
+     *
+     * @param url 完整路径
+     * @return
+     */
+    @Streaming
+    @GET
+    Observable<ResponseBody> downloadFile(@Url String url);
+
+    /**
      * 14 同步数据
      *
      * @return
@@ -583,6 +593,15 @@ public interface MyHttpService {
     @GET(URLUtils.Note.ALLNOTESID)
     Observable<AllNotesIdsBean> syncAllNotsId(@Query("session_token") String session_token);
 
+    /**
+     * 同步 GetFolderNoteIds
+     *
+     * @return
+     */
+    @GET(URLUtils.Cat.FOLDER_NOTEIDS)
+    Observable<AllNotesIdsBean> GetFolderNoteIds(@Query("folder_id") long folder_id
+            , @Query("session_token") String session_token);
+
 
     /**
      * 同步 EditNote
@@ -795,6 +814,20 @@ public interface MyHttpService {
             , @Query("sortord") String sortord
             , @Query("session_token") String session_token);
 
+    /**
+     * deleteFodler
+     *
+     * @return
+     */
+    @GET(URLUtils.Cat.FOLDER)
+    Observable<CommonBean> folderDelete(
+            @Query("folder_id") long folder_id
+            , @Query("session_token") String session_token);
+
+
+    //-------------------------------------------------NoteList----------------------------------------------------
+
+
     //-------------------------------------------------设置相关----------------------------------------------------
 
     /**
@@ -807,7 +840,7 @@ public interface MyHttpService {
     @POST(URLUtils.Settings.UPLOAD_PIC)
     Observable<FeedBackBean> upLoadFeedBackPic(
             @Part List<MultipartBody.Part> parts
-    ,@Part("session_token") String session_token);
+            , @Part("session_token") String session_token);
 
     /**
      * feedBack

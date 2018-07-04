@@ -1,11 +1,13 @@
 package com.thinkernote.ThinkerNote._interface.m;
 
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
+import com.thinkernote.ThinkerNote._interface.v.OnCatInfoListener;
 
 /**
  * m层
  */
 public interface ICatInfoModule {
-    void mSetDefaultFolder(OnCommonListener listener, long catId);
+    void mSetDefaultFolder(OnCatInfoListener listener, long catId);
+
+    void mCatDelete(OnCatInfoListener listener, long catId);
 
 }

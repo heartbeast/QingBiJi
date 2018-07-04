@@ -25,7 +25,8 @@ public class TNAttDownloadService {
 		}
 		return singleton;
 	}
-	
+
+	//TODO 下载文件
 	public void TNHttpDownloadAtt(TNAction aAction){
 		String cmd = (String) aAction.inputs.get(0);
 		String outPath = (String) aAction.inputs.get(2);

@@ -100,7 +100,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.get_verify_code:{//验证码
-			if( !TNUtilsDialog.checkNetwork(this))
+			if( !TNUtils.checkNetwork(this))
 				break;
 			
 			mPhone = mPhoneView.getText().toString().trim();
@@ -124,7 +124,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 			}
 			break;
 		case R.id.bind_confirm:{
-			if( !TNUtilsDialog.checkNetwork(this))
+			if( !TNUtils.checkNetwork(this))
 				break;
 			
 			if (check()) {

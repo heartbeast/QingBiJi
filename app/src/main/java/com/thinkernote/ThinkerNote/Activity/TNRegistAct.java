@@ -119,7 +119,7 @@ public class TNRegistAct extends TNActBase implements OnClickListener, OnRegistL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_verify_code://验证码
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 mPhone = mPhoneView.getText().toString().trim();
@@ -143,7 +143,7 @@ public class TNRegistAct extends TNActBase implements OnClickListener, OnRegistL
                 }
                 break;
             case R.id.regist_confirm://提交
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 if (check()) {

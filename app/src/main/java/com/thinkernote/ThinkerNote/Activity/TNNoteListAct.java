@@ -1,12 +1,14 @@
 package com.thinkernote.ThinkerNote.Activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.TimeUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -95,6 +97,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     public static final int DELETE_REALNOTE_2 = 107;//
     public static final int DELETE_REALNOTE2_2 = 108;//
     public static final int UPDATA_EDITNOTES_2 = 109;//
+    public static final int SYNC_DATA_BY_NOTEID = 110;//
+    public static final int DIALOG_DELETE = 111;//
 
     /*
      * Bundle: ListType ListDetail
@@ -121,6 +125,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     private TNNotesAdapter mNotesAdapter = null;
     private int mCount;
     private int mPageNum = 1;
+
+    private AlertDialog dialog;//GetDataByNoteId的弹窗；
     /**
      * 如下数据，当最后一个接口调用完成后，一定好清空数据
      */
@@ -152,7 +158,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     private List<AllNotesIdsBean.NoteIdItemBean> cloudIds;//2-10接口返回
     List<AllNotesIdsBean.NoteIdItemBean> trashNoteArr;//(2-12)接口返回，，第13个调用数据
     //p
-    private INoteListPresenter presener;
+    private INoteListPresenter presenter;
 
     // Activity methods
     // -------------------------------------------------------------------------------
@@ -168,12 +174,11 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
 
-        // TODO register action
+        // TODO 未发现调用
         TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
-        TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
 
         //
-        presener = new NoteListPresenterImpl(this, this, dataListener, editListener);
+        presenter = new NoteListPresenterImpl(this, this, dataListener, editListener);
         // initialize
         Bundle b = getIntent().getExtras();
         mListType = b.getInt("ListType", 0);
@@ -248,40 +253,12 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     }
 
-    public void clearRecycleCB() {
-        configView();
-        if (TNUtils.isNetWork()) {
-            if (TNActionUtils.isSynchronizing()) {
-                return;
-            }
-            TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-            syncEdit();
-
-        }
-    }
-
-    public void dialogCB() {
-        configView();
-        if (TNUtils.isNetWork()) {
-            if (TNActionUtils.isSynchronizing()) {
-                return;
-            }
-            TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-            syncEdit();
-        }
-    }
-
     // Implement OnClickListener
     // -------------------------------------------------------------------------------
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.maincats_menu_clearrecycler: {
-                TNUtilsDialog.RunActionDialog(this, new TNRunner(this, "clearRecycleCB"),
-                        TNActionType.ClearLocalRecycle, false, false,
-                        R.string.alert_NoteList_ClearRecycle);
-                break;
-            }
+            //=======================布局控件=======================
             case R.id.notelist_search: {
                 Bundle b = new Bundle();
                 b.putInt("SearchType", 1);
@@ -343,32 +320,25 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.recycler_menu_restore: {
+            case R.id.maincats_menu_clearrecycler: {
+                clearrecyclerDialog();
+
+                break;
+            }
+            //=======================menu_recycler=======================
+            case R.id.recycler_menu_restore: {//还原
                 mMenuBuilder.destroy();
-                TNUtilsDialog.restoreNote(this, new TNRunner(this, "dialogCB"), mCurNoteId);
+                resetNoteDialog(mCurNoteId);
                 break;
             }
 
-            case R.id.recycler_menu_delete: {
+            case R.id.recycler_menu_delete: {//删除
                 mMenuBuilder.destroy();
-                TNUtilsDialog.realDeleteNote(this, new TNRunner(this, "dialogCB"), mCurNoteId);
+                showRealDeleteDialog(mCurNoteId);
                 break;
             }
 
-            case R.id.recycler_menu_view: {
-                mMenuBuilder.destroy();
-                Bundle b = new Bundle();
-                b.putLong("NoteLocalId", mCurNoteId);
-                startActivity(TNNoteViewAct.class, b);
-                break;
-            }
-
-            case R.id.recycler_menu_cancel: {
-                mMenuBuilder.destroy();
-                break;
-            }
-
-            case R.id.notelistitem_menu_view: {
+            case R.id.recycler_menu_view: {//查看
                 mMenuBuilder.destroy();
                 Bundle b = new Bundle();
                 b.putLong("NoteLocalId", mCurNoteId);
@@ -376,11 +346,25 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.notelistitem_menu_edit: {
+            case R.id.recycler_menu_cancel: {//取消
+                mMenuBuilder.destroy();
+                break;
+            }
+
+            //=======================notelistitem_menu=======================
+            case R.id.notelistitem_menu_view: {//查看
+                mMenuBuilder.destroy();
+                Bundle b = new Bundle();
+                b.putLong("NoteLocalId", mCurNoteId);
+                startActivity(TNNoteViewAct.class, b);
+                break;
+            }
+
+            case R.id.notelistitem_menu_edit: {//编辑
                 mMenuBuilder.destroy();
                 TNNote note = TNDbUtils.getNoteByNoteLocalId(mCurNoteId);
                 if (note.trash == 1) {
-                    TNUtilsDialog.restoreNote(this, new TNRunner(this, "dialogCB"), note.noteLocalId);
+                    resetNoteDialog(note.noteLocalId);
                 } else {
                     if (note.syncState == 2) {
                         Bundle b = new Bundle();
@@ -395,7 +379,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.notelistitem_menu_changetag: {
+            case R.id.notelistitem_menu_changetag: {//更换标签
                 mMenuBuilder.destroy();
                 TNNote note = TNDbUtils.getNoteByNoteLocalId(mCurNoteId);
                 if (note.syncState != 2) {
@@ -410,7 +394,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.notelistitem_menu_moveto: {
+            case R.id.notelistitem_menu_moveto: {//移动到文件夹
                 mMenuBuilder.destroy();
                 TNNote note = TNDbUtils.getNoteByNoteLocalId(mCurNoteId);
                 if (note.syncState != 2) {
@@ -425,17 +409,19 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.notelistitem_menu_sync: {
+            case R.id.notelistitem_menu_sync: {//完全同步
+                MLog.d("TNNotelsitAct--notelistitem_menu--完全同步");
                 mMenuBuilder.destroy();
                 TNNote note = TNDbUtils.getNoteByNoteLocalId(mCurNoteId);
                 if (note.noteId == -1) {
                     break;
                 }
-                TNUtilsDialog.synchronize(this, null, null, TNActionType.GetAllDataByNoteId, note.noteId);
+                showSyncDialog(note.noteId);
+
                 break;
             }
 
-            case R.id.notelistitem_menu_info: {
+            case R.id.notelistitem_menu_info: {//属性
                 mMenuBuilder.destroy();
                 Bundle b = new Bundle();
                 b.putLong("NoteLocalId", mCurNoteId);
@@ -443,13 +429,15 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.notelistitem_menu_delete: {
+            case R.id.notelistitem_menu_delete: {//删除
                 mMenuBuilder.destroy();
-                TNUtilsDialog.deleteNote(this, new TNRunner(this, "dialogCB"), mCurNoteId);
+                //
+                showDeleteDialog(mCurNoteId);
+
                 break;
             }
 
-            case R.id.notelist_menu_cancel:
+            case R.id.notelist_menu_cancel://取消
                 mMenuBuilder.destroy();
                 break;
         }
@@ -630,13 +618,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         setButtonsAndNoteList();
     }
 
-//	public void respondNoteHandle(TNAction aAction){
-//		mProgressDialog.hide();
-//		if (!TNHandleError.handleResult(this, aAction)) {
-//			configView();
-//		}
-//	}
-
 
     public void respondGetAllData(TNAction aAction) {
         if (aAction.result == TNActionResult.Cancelled) {
@@ -653,18 +634,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                     R.string.alert_Synchronize_Stoped, true);
         }
     }
-
-    public void respondGetAllDataByNoteId(TNAction aAction) {
-        if (aAction.result == TNActionResult.Cancelled) {
-            TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
-        } else if (!TNHandleError.handleResult(this, aAction, false)) {
-            TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
-        } else {
-            TNUtilsUi.showNotification(this,
-                    R.string.alert_Synchronize_Stoped, true);
-        }
-    }
-
 
     /**
      * 同步Data结束后的操作
@@ -702,6 +671,297 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         } else {
             TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
         }
+    }
+    // ---------------------------------------弹窗----------------------------------------
+
+    /**
+     * clearrecycler 弹窗
+     *
+     */
+    private void clearrecyclerDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_NoteList_ClearRecycle);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Vector<TNNote> notes = TNDbUtils.getNoteListByTrash(TNSettings.getInstance().userId, TNConst.CREATETIME);
+                            TNDb.beginTransaction();
+                            try {
+                                for (int i = 0; i < notes.size(); i++) {
+                                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new String[]{"5", notes.get(i).noteLocalId + ""});
+                                }
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * retNote 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void resetNoteDialog(final long noteLocalId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_NoteView_RestoreHint);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteListAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new String[]{"0", "7", System.currentTimeMillis() / 1000 + "", noteLocalId + ""});
+
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * realDeleteDialog 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void showRealDeleteDialog(final long noteLocalId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_NoteView_RealDeleteNoteMsg);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteListAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new String[]{"5", noteLocalId + ""});
+
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * 删除 弹窗
+     *
+     * @param noteLocalId
+     */
+    private void showDeleteDialog(final long noteLocalId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+        //content
+        int msg = R.string.alert_NoteView_DeleteNoteMsg;
+        if (TNSettings.getInstance().isInProject()) {
+            msg = R.string.alert_NoteView_DeleteNoteMsg_InGroup;
+        }
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) msg);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteListAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //具体执行
+                    ExecutorService service = Executors.newSingleThreadExecutor();
+                    service.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            TNDb.beginTransaction();
+                            try {
+                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new String[]{"2", "6", System.currentTimeMillis() / 1000 + "", noteLocalId + ""});
+
+                                TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+                                TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new String[]{System.currentTimeMillis() / 1000 + "", note.catId + ""});
+                                TNDb.setTransactionSuccessful();
+                            } finally {
+                                TNDb.endTransaction();
+                            }
+                            handler.sendEmptyMessage(DIALOG_DELETE);
+                        }
+                    });
+
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.alert_OK, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * 完全同步
+     */
+    private void showSyncDialog(final long noteId) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //title
+        LayoutInflater lf1 = LayoutInflater.from(this);
+        View title = lf1.inflate(R.layout.dialog, null);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_layout, R.drawable.page_color);
+        TNUtilsSkin.setViewBackground(this, title, R.id.dialog_top_bar, R.drawable.dialog_top_bg);
+        TNUtilsSkin.setImageViewDrawable(this, title, R.id.dialog_icon, R.drawable.dialog_icon);
+        builder.setCustomTitle(title);
+        ((TextView) title.findViewById(R.id.dialog_title)).setText(R.string.alert_Title);//title
+        ((TextView) title.findViewById(R.id.dialog_msg)).setText((Integer) R.string.alert_MainCats_SynchronizeNoteAll);//content
+
+        //
+        final DialogInterface.OnClickListener posListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TNActionUtils.isSynchronizing()) {
+                    TNUtilsUi.showNotification(TNNoteListAct.this, R.string.alert_NoteView_Synchronizing, false);
+                    //监听
+                    MLog.d("同步GetDataByNoteId");
+                    pSynceDataByNoteId(noteId);
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.maincats_menu_syncall, posListener);
+
+        //
+        DialogInterface.OnClickListener negListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.alert_Cancel, negListener);
+        dialog = builder.create();
+        dialog.show();
     }
 
     // ---------------------------------------handler----------------------------------------
@@ -768,6 +1028,29 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             case UPDATA_EDITNOTES_2://2-11 更新日记时间返回
                 //执行下一个position/执行下一个接口
                 pEditNotePic2((int) msg.obj + 1);
+                break;
+            case DIALOG_DELETE:
+
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+                configView();
+                if (TNUtils.isNetWork()) {
+                    if (TNActionUtils.isSynchronizing()) {
+                        return;
+                    }
+                    TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
+                    syncEdit();
+                }
+                break;
+            case SYNC_DATA_BY_NOTEID:
+                //关闭弹窗
+                MLog.d("同步完成-->GetDataByNoteId");
+                TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);
+                dialog.dismiss();
+                dialog = null;
+                TNUtilsUi.showToast("同步完成");
                 break;
 
         }
@@ -1474,16 +1757,72 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
 
+    //-------------------------------------GetDataByNoteId数据库操作----------------------------------------
+
+    private void syncGetDataByNoteIdSQL(final long noteId) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNNote note = TNDbUtils.getNoteByNoteId(noteId);
+                note.syncState = 2;
+                if (note.attCounts > 0) {
+                    for (int i = 0; i < note.atts.size(); i++) {
+                        TNNoteAtt tempAtt = note.atts.get(i);
+                        if (i == 0 && tempAtt.type > 10000 && tempAtt.type < 20000) {
+                            TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new String[]{tempAtt.path, note.noteLocalId + ""});
+                        }
+                        if (TextUtils.isEmpty(tempAtt.path) || "null".equals(tempAtt.path)) {
+                            note.syncState = 1;
+                        }
+                    }
+                }
+                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new String[]{note.syncState + "", note.noteLocalId + ""});
+
+                handler.sendEmptyMessage(SYNC_DATA_BY_NOTEID);
+            }
+        });
+
+    }
+
     //-------------------------------------p层调用----------------------------------------
     //1-1
     private void getNoteListByFolderId(long mListDetail, int mPageNum, int size, String sort) {
-        presener.pGetNoteListByFolderID(mListDetail, mPageNum, size, sort);
+        presenter.pGetNoteListByFolderID(mListDetail, mPageNum, size, sort);
     }
 
     //1-2
     private void getNoteListByTagId(long mListDetail, int mPageNum, int size, String sort) {
 
-        presener.pGetNoteListByTagID(mListDetail, mPageNum, size, sort);
+        presenter.pGetNoteListByTagID(mListDetail, mPageNum, size, sort);
+    }
+
+
+    /**
+     * TNActionType.GetAllDataByNoteId的顺序是：
+     * GetNoteById-->SyncNoteAtt的循环下载--->数据库
+     *
+     * @param noteId
+     */
+
+    private void pSynceDataByNoteId(long noteId) {
+        MLog.d("GetDataByNoteId-->pSynceDataByNoteId");
+        presenter.pGetDataByNoteId(noteId);
+
+        //TODO
+//        TNUtilsDialog.synchronize(this, null, null, TNActionType.GetAllDataByNoteId, note.noteId);
+
+    }
+
+    private void pSynceNoteAttr(int position, Vector<TNNoteAtt> atts, long noteId) {
+        if (position < atts.size()) {
+            MLog.d("GetDataByNoteId-->pSynceNoteAttr");
+            presenter.pSynceNoteAttr(position, atts.get(position), atts, noteId);
+        } else {
+            //下一个接口
+            syncGetDataByNoteIdSQL(noteId);
+        }
+
     }
 
     //-------------------------------------p层调用 同步Edit数据----------------------------------------
@@ -1522,7 +1861,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic2(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presener.pNewNotePic2(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pNewNotePic2(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
@@ -1532,7 +1871,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void pNewNote2(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
 
-        presener.pNewNote2(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pNewNote2(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -1570,21 +1909,21 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.7)01
      */
     private void pRecoveryNote2(long noteID, int position, int arrySize) {
-        presener.pRecoveryNote2(noteID, position, arrySize);
+        presenter.pRecoveryNote2(noteID, position, arrySize);
     }
 
     /**
      * (二.7)02
      */
     private void pRecoveryNotePic2(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presener.pRecoveryNotePic2(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pRecoveryNotePic2(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
      * (二.7)03
      */
     private void pRecoveryNoteAdd2(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-        presener.pRecoveryNoteAdd2(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pRecoveryNoteAdd2(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -1613,7 +1952,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.8)
      */
     private void pNoteDelete2(long noteId, int postion) {
-        presener.pDeleteNote2(noteId, postion);
+        presenter.pDeleteNote2(noteId, postion);
     }
 
     /**
@@ -1711,7 +2050,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pDeleteRealNotes2(long noteId, int postion) {
         //
-        presener.pDeleteRealNotes2(noteId, postion);
+        presenter.pDeleteRealNotes2(noteId, postion);
 
     }
 
@@ -1720,7 +2059,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pGetAllNoteIds2() {
         //
-        presener.pGetAllNotesId2();
+        presenter.pGetAllNotesId2();
     }
 
     /**
@@ -1804,7 +2143,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
                 } else {
                     //接口，上传图片
-                    presener.pEditNotePic2(cloudsPos, attsPos, note);
+                    presenter.pEditNotePic2(cloudsPos, attsPos, note);
                 }
             } else {
                 //图片上传完，再上传文本
@@ -1827,7 +2166,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotes2(int cloudsPos, TNNote note) {
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
-            presener.pEditNote2(cloudsPos, note);
+            presenter.pEditNote2(cloudsPos, note);
         } else {
             //执行下一个接口
             pUpdataNote2(0, false);
@@ -1873,14 +2212,14 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * p层
      */
     private void pUpdataNote2(int position, long noteId, boolean is13) {
-        presener.pGetNoteByNoteId2(position, noteId, is13);
+        presenter.pGetNoteByNoteId2(position, noteId, is13);
     }
 
     /**
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes2() {
-        presener.pGetAllTrashNoteIds2();
+        presenter.pGetAllTrashNoteIds2();
     }
 
     /**
@@ -1942,7 +2281,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
-        presener.folderAdd(position, arraySize, name);
+        presenter.folderAdd(position, arraySize, name);
     }
 
     /**
@@ -1951,7 +2290,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.2）更新 tag
      */
     private void pTagAdd(int position, int arraySize, String name) {
-        presener.tagAdd(position, arraySize, name);
+        presenter.tagAdd(position, arraySize, name);
     }
 
     /**
@@ -1960,7 +2299,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        presener.pGetFolder();
+        presenter.pGetFolder();
     }
 
     /**
@@ -2021,7 +2360,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
-            presener.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
+            presenter.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
         }
     }
 
@@ -2104,7 +2443,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
-        presener.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
+        presenter.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -2114,7 +2453,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
-        presener.pProfile();
+        presenter.pProfile();
     }
 
     /**
@@ -2151,7 +2490,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presener.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
@@ -2160,7 +2499,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pOldNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-        presener.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -2169,7 +2508,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pGetTagList1() {
-        presener.pGetTagList();
+        presenter.pGetTagList();
     }
 
 
@@ -2203,7 +2542,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presener.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
@@ -2213,7 +2552,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void pNewNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
 
-        presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -2251,21 +2590,21 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.7)01
      */
     private void pRecoveryNote1(long noteID, int position, int arrySize) {
-        presener.pRecoveryNote(noteID, position, arrySize);
+        presenter.pRecoveryNote(noteID, position, arrySize);
     }
 
     /**
      * (二.7)02
      */
     private void pRecoveryNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
-        presener.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
+        presenter.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
     /**
      * (二.7)03
      */
     private void pRecoveryNoteAdd1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-        presener.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
+        presenter.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
 
@@ -2294,7 +2633,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.8)
      */
     private void pNoteDelete1(long noteId, int postion) {
-        presener.pDeleteNote(noteId, postion);
+        presenter.pDeleteNote(noteId, postion);
     }
 
     /**
@@ -2392,7 +2731,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pDeleteRealNotes1(long noteId, int postion) {
         //
-        presener.pDeleteRealNotes(noteId, postion);
+        presenter.pDeleteRealNotes(noteId, postion);
 
     }
 
@@ -2401,7 +2740,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pGetAllNoteIds1() {
         //
-        presener.pGetAllNotesId();
+        presenter.pGetAllNotesId();
     }
 
     /**
@@ -2486,7 +2825,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
                 } else {
                     //接口，上传图片
-                    presener.pEditNotePic(cloudsPos, attsPos, note);
+                    presenter.pEditNotePic(cloudsPos, attsPos, note);
                 }
             } else {
                 //图片上传完，再上传文本
@@ -2509,7 +2848,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotes1(int cloudsPos, TNNote note) {
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
-            presener.pEditNote(cloudsPos, note);
+            presenter.pEditNote(cloudsPos, note);
         } else {
             //执行下一个接口
             pUpdataNote1(0, false);
@@ -2555,14 +2894,14 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * p层
      */
     private void pUpdataNote1(int position, long noteId, boolean is13) {
-        presener.pGetNoteByNoteId(position, noteId, is13);
+        presenter.pGetNoteByNoteId(position, noteId, is13);
     }
 
     /**
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes1() {
-        presener.pGetAllTrashNoteIds();
+        presenter.pGetAllTrashNoteIds();
     }
 
     /**
@@ -2594,8 +2933,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
 
-    //-------------------------------------接口结果回调----------------------------------------
-
+    //==================================接口结果返回=======================================
 
     //1-1/同1-2
     @Override
@@ -2654,8 +2992,42 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         mLoadingView.setVisibility(View.GONE);
         mPullListview.onRefreshComplete();
     }
-    //==================================p层调用=======================================
 
+
+    //==================================GetDataByNoteId接口返回=======================================
+
+    //GetDataByNoteId
+    @Override
+    public void onGetDataByNoteIdSuccess(Object obj, long noteId) {
+        //更新数据库
+        updateNote1((GetNoteByNoteIdBean) obj);
+        //GetDataByNoteId的下一个接口
+        TNNote note = TNDbUtils.getNoteByNoteId(noteId);
+        Vector<TNNoteAtt> atts = note.atts;
+        if (atts.size() > 0) {
+            pSynceNoteAttr(0, atts, noteId);
+        } else {
+            //下一个接口/
+            syncGetDataByNoteIdSQL(noteId);
+        }
+    }
+
+    @Override
+    public void onGetDataByNoteIdFailed(String msg, Exception e) {
+        MLog.d(msg);
+    }
+
+    @Override
+    public void onSyncNoteAttrSuccess(Object obj, int position, Vector<TNNoteAtt> atts, long noteId) {
+        //执行一个循环
+        pSynceNoteAttr(position + 1, atts, noteId);
+    }
+
+    @Override
+    public void onSyncNoteAttrFailed(String msg, Exception e) {
+        MLog.d(msg);
+        TNUtilsUi.showToast(msg);
+    }
 
     //==================================接口结果返回=======================================
     DataListener dataListener = new DataListener();

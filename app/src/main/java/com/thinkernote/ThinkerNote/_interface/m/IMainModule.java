@@ -36,26 +36,36 @@ public interface IMainModule {
 
     void mUploadOldNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
-    void mNewNote(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
-
+    //2-5
     void mNewNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
+    //2-6
+    void mNewNote(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
+
+    //2-7-1
     void mRecoveryNote(OnMainListener listener, long noteID, int position, int arrySize);
 
+    //2-7-2
     void mRecoveryNotePic(OnMainListener listener, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt);
 
+    //2-7-3
     void mRecoveryNoteAdd(OnMainListener listener, int position, int arraySize, TNNote tnNote, boolean isNewDb, String content);
 
+    //2-8
     void mDeleteNote(OnMainListener listener, long noteId, int poistion);
 
+    //2-9
     void mDeleteRealNotes(OnMainListener listener, long noteId, int poistion);
 
     void mGetAllNotesId(OnMainListener listener);
 
+    //2-10-2
     void mEditNotePic(OnMainListener listener,int cloudsPos, int attrPos, TNNote note);
 
+    //2-11-1
     void mEditNote(OnMainListener listener, int position, TNNote tnNote);
 
+    //2-11-2
     void mGetNoteByNoteId(OnMainListener listener, int position, long id, boolean is12);
 
     void mGetAllTrashNoteIds(OnMainListener listener);

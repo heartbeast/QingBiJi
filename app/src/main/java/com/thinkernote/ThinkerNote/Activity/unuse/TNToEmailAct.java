@@ -98,7 +98,7 @@ public class TNToEmailAct extends TNActBase
 	// Private methods
 	//-------------------------------------------------------------------------------
 	private void send(){
-		if( !TNUtilsDialog.checkNetwork(this))
+		if( !TNUtils.checkNetwork(this))
 			return;
 		
 		String emailStr = ((EditText)findViewById(R.id.toemail_to))

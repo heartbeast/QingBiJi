@@ -6,4 +6,5 @@ package com.thinkernote.ThinkerNote._interface.p;
 public interface ICatInfoPresenter {
     void pSetDefaultFolder(long catId);
 
+    void pDeleteCat(long catId);
 }

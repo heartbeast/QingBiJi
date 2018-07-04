@@ -5,18 +5,19 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote._constructer.module.CatInfoModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ICatInfoModule;
 import com.thinkernote.ThinkerNote._interface.p.ICatInfoPresenter;
+import com.thinkernote.ThinkerNote._interface.v.OnCatInfoListener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 
 /**
  * 登录 p层 具体实现
  */
-public class CatInfoPresenterImpl implements ICatInfoPresenter, OnCommonListener {
+public class CatInfoPresenterImpl implements ICatInfoPresenter, OnCatInfoListener {
     private Context context;
-    private OnCommonListener onView;
+    private OnCatInfoListener onView;
     //p层调用M层方法
     private ICatInfoModule module;
 
-    public CatInfoPresenterImpl(Context context, OnCommonListener logListener) {
+    public CatInfoPresenterImpl(Context context, OnCatInfoListener logListener) {
         this.context = context;
         this.onView = logListener;
         module = new CatInfoModuleImpl(context);
@@ -29,6 +30,11 @@ public class CatInfoPresenterImpl implements ICatInfoPresenter, OnCommonListener
         module.mSetDefaultFolder(this, catId);
     }
 
+    @Override
+    public void pDeleteCat(long catId) {
+        module.mCatDelete(this, catId);
+    }
+
     //==========================结果回调==============================
     @Override
     public void onSuccess(Object obj) {
@@ -38,5 +44,15 @@ public class CatInfoPresenterImpl implements ICatInfoPresenter, OnCommonListener
     @Override
     public void onFailed(String msg, Exception e) {
         onView.onFailed(msg, e);
+    }
+
+    @Override
+    public void onDeleteFolderSuccess(Object obj, long catId) {
+        onView.onDeleteFolderSuccess(obj, catId);
+    }
+
+    @Override
+    public void onDeleteFolderFailed(String msg, Exception e) {
+        onView.onDeleteFolderFailed(msg, e);
     }
 }

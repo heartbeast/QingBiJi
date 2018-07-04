@@ -5,6 +5,7 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ICatInfoModule;
+import com.thinkernote.ThinkerNote._interface.v.OnCatInfoListener;
 import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
@@ -14,7 +15,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- *  m层 具体实现
+ * m层 具体实现
  */
 public class CatInfoModuleImpl implements ICatInfoModule {
 
@@ -27,7 +28,7 @@ public class CatInfoModuleImpl implements ICatInfoModule {
 
 
     @Override
-    public void mSetDefaultFolder(final OnCommonListener listener, final long catId) {
+    public void mSetDefaultFolder(final OnCatInfoListener listener, final long catId) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .setDefaultFolder(catId, settings.token)//接口方法
@@ -61,6 +62,43 @@ public class CatInfoModuleImpl implements ICatInfoModule {
                             listener.onFailed(bean.getMessage(), null);
                         }
                     }
+
+                });
+    }
+
+
+    @Override
+    public void mCatDelete(final OnCatInfoListener listener, final long catId) {
+        TNSettings settings = TNSettings.getInstance();
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .folderDelete(catId, settings.token)
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                    @Override
+                    public void onCompleted() {
+                        MLog.d(TAG, "mGetNoteByNoteId--onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        MLog.e("mGetNoteByNoteId 异常onError:" + e.toString());
+                        listener.onDeleteFolderFailed("异常", new Exception("接口异常！"));
+                    }
+
+                    @Override
+                    public void onNext(CommonBean bean) {
+                        MLog.d(TAG, "mGetNoteByNoteId-onNext");
+
+                        //处理返回结果
+                        if (bean.getCode() == 0) {
+                            listener.onDeleteFolderSuccess(bean, catId);
+                        } else {
+                            listener.onDeleteFolderFailed(bean.getMessage(), null);
+                        }
+                    }
+
 
                 });
     }

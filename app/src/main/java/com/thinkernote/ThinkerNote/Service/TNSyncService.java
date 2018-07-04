@@ -363,6 +363,7 @@ public class TNSyncService {
         }
     }
 
+    //TODO
     public void SynchronizeCat(TNAction aAction) {
         long catId = (Long) aAction.inputs.get(0);
         //add
@@ -404,6 +405,7 @@ public class TNSyncService {
             }
         }
 
+        // sjy
         TNAction actionPage = TNAction.runAction(TNActionType.GetFolderNoteIds, catId);//這塊需要獲取某個文件夾下的所有筆記id
         JSONArray cloudIds = new JSONArray();
         if (!(actionPage.outputs.get(0) instanceof String)) {
@@ -432,10 +434,10 @@ public class TNSyncService {
                 }
 
                 //edit  通过最后更新时间来与云端比较是否该上传本地编辑的笔记
+                Vector<TNNote> editNotes = TNDbUtils.getNoteListBySyncStateByCatId(TNSettings.getInstance().userId, 4, catId);
                 for (int i = 0; i < cloudIds.length(); i++) {
                     long id = Long.valueOf(TNUtils.getFromJSON((JSONObject) cloudIds.get(i), "id").toString());
                     int lastUpdate = Integer.valueOf(TNUtils.getFromJSON((JSONObject) cloudIds.get(i), "update_at").toString());
-                    Vector<TNNote> editNotes = TNDbUtils.getNoteListBySyncStateByCatId(TNSettings.getInstance().userId, 4, catId);
                     for (int j = 0; j < editNotes.size(); j++) {
                         if (id == editNotes.get(j).noteId) {
                             if (editNotes.get(j).lastUpdate > lastUpdate) {
@@ -449,11 +451,13 @@ public class TNSyncService {
                         }
                     }
                 }
+
             } catch (Exception e) {
                 // TODO: handle exception
                 MLog.e("SynchronizeCat", "==================================================SynchronizeCat");
             }
 
+            //更新云端的笔记
             Vector<TNNote> allLocalNotes = TNDbUtils.getNoteListByCatId(TNSettings.getInstance().userId, catId, TNSettings.getInstance().sort, TNConst.MAX_PAGE_SIZE);
             try {
                 //这块不严谨
@@ -481,10 +485,10 @@ public class TNSyncService {
                     }
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
+            //sjy
             Vector<TNNote> catNotes = TNDbUtils.getNoteListByCatId(TNSettings.getInstance().userId, catId, TNSettings.getInstance().sort, TNConst.MAX_PAGE_SIZE);
             for (TNNote catNote : catNotes) {
                 if (catNote.syncState == 1) {

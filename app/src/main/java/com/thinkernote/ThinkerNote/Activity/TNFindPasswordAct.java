@@ -148,11 +148,11 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_verify_code: {//验证码
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 if (mType == 2) {
-                    if (!TNUtilsDialog.checkNetwork(this))
+                    if (!TNUtils.checkNetwork(this))
                         break;
 
                     mEmail = mEmailView.getText().toString().trim();
@@ -191,7 +191,7 @@ public class TNFindPasswordAct extends TNActBase implements OnClickListener, OnC
             break;
 
             case R.id.find_phone_confirm: {//确定
-                if (!TNUtilsDialog.checkNetwork(this))
+                if (!TNUtils.checkNetwork(this))
                     break;
 
                 if (check()) {

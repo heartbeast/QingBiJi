@@ -324,7 +324,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
     }
 
     private void upgrade() {
-        if (TNUtilsDialog.checkNetwork(this)) {
+        if (TNUtils.checkNetwork(this)) {
             presener.pUpgrade();
 
         }

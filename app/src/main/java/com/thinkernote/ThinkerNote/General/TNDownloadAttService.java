@@ -111,7 +111,7 @@ public class TNDownloadAttService {
 		if(act == null || act.isFinishing()){
 			return;
 		}
-		if( TNUtilsDialog.checkNetwork(act) ){
+		if( TNUtils.checkNetwork(act) ){
 			TNNoteAtt att = mNote.getAttDataById(attId);
 			MLog.d(TAG,"downloadAtt:" + att.attId );
 			if(!TNActionUtils.isDownloadingAtt(att.attId)){
