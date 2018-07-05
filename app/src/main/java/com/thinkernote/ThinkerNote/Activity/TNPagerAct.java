@@ -900,7 +900,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      * @param type
      */
     private void endGetAllDataByNoteId(int type) {
-        MLog.d("同步完成-->GetDataByNoteId");
+        MLog.d("GetDataByNoteId--同步-->完成");
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
@@ -1063,6 +1063,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                     msg.obj = catPos;
                     handler.sendMessage(msg);
                 } else {
+
                     //下一个接口
                     handler.sendEmptyMessage(SYNC_DATA_BY_NOTEID);
 

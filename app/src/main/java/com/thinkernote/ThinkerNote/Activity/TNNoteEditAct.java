@@ -1064,7 +1064,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNUtilsUi.showShortToast(R.string.alert_NoteEdit_Record_Error);
                 break;
             case SAVE_OVER://只保存，不同步
-
+                MLog.d("saveNote", "保存但不同步");
                 if (msg.obj == null) {
                     TNUtilsUi.showToast("存储空间不足");
                 } else {
@@ -1075,10 +1075,11 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     if (!mTitleView.hasFocus()) {
                         mTitleView.setText(mNote.title);
                     }
-
                 }
                 break;
             case START_SYNC://保存并同步
+                MLog.d("saveNote", "保存并同步");
+
                 handleProgressDialog("hide");
                 TNUtilsUi.showShortToast(R.string.alert_NoteSave_SaveOK);
                 if (msg.obj == null) {
@@ -1127,6 +1128,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     private void endSynchronize() {
+        MLog.d("同步edit--同步结束");
         finish();
     }
 
@@ -1157,9 +1159,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     if (note.noteLocalId < 0) {
+                        MLog.e("saveNote:", "note.noteLocalId < 0", "note.contentDigest" + note.contentDigest);
+
                         // insert
                         note.createTime = (int) (System.currentTimeMillis() / 1000);
-                        MLog.e("note内容:" + "note.contentDigest" + note.contentDigest);
                         long id = TNDb.getInstance().insertSQL(TNSQLString.NOTE_INSERT//19个参数
                                 , new String[]{note.title,//1
                                         TNSettings.getInstance().userId + "",//2
@@ -1184,6 +1187,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         note.noteLocalId = id;
 
                     } else {
+                        MLog.e("saveNote:", "note.noteLocalId >=0", "note.contentDigest" + note.contentDigest);
                         // update
                         note.syncState = note.noteId != -1 ? 4 : 3;
                         TNDb.getInstance().updataSQL(TNSQLString.NOTE_LOCAL_UPDATE, new String[]{note.title,
@@ -1529,7 +1533,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -1634,6 +1637,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
 
     private void pAddNewNote() {
+        MLog.d("同步edit--pAddNewNote");
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
 
         if (addNewNotes.size() > 0) {
@@ -1658,6 +1662,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pNewNotePic(int picPos, int picArrySize, int notePos,
                              int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("同步edit--pNewNotePic 2-5");
         presener.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1668,7 +1673,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     private void pNewNote(int position, int arraySize, TNNote tnNoteAtt,
                           boolean isNewDb, String content) {
-
+        MLog.d("同步edit--pNewNote 2-6");
         presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -1682,6 +1687,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
     private void recoveryNote(int position) {
+        MLog.d("同步edit--recoveryNote 2-7");
         if (position < recoveryNotes.size() && position >= 0) {
             if (recoveryNotes.get(position).noteId != -1) {
                 //循环执行
@@ -1707,6 +1713,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.7)01
      */
     private void pRecoveryNote(long noteID, int position, int arrySize) {
+        MLog.d("同步edit--pRecoveryNote 2-7-1");
+
         presener.pRecoveryNote(noteID, position, arrySize);
     }
 
@@ -1715,6 +1723,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pRecoveryNotePic(int picPos, int picArrySize, int notePos,
                                   int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("同步edit--pRecoveryNotePic 2-7-2");
         presener.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1723,6 +1732,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNoteAtt,
                                   boolean isNewDb, String content) {
+        MLog.d("同步edit--pRecoveryNoteAdd 2-7-3");
         presener.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -1733,7 +1743,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position
      */
     private void pDelete(int position) {
-
+        MLog.d("同步edit--pDelete 2-8");
         if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
@@ -1752,6 +1762,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.8)
      */
     private void pNoteDelete(long noteId, int postion) {
+        MLog.d("同步edit--pNoteDelete 2-8");
         presener.pDeleteNote(noteId, postion);
     }
 
@@ -1759,7 +1770,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.8)删除本地数据 （不调接口）
      */
     private void pNoteLocalDelete(final int position, final long noteLocalId) {
-
+        MLog.d("同步edit--pNoteLocalDelete 2-8");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1798,7 +1809,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     private boolean isRealDelete2 = false;
 
     private void pRealDelete(int position) {
-
+        MLog.d("同步edit--pRealDelete 2-9");
         if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
@@ -1822,6 +1833,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param nonteLocalID
      */
     private void pDeleteReadNotesSql(final long nonteLocalID, final int position) {
+        MLog.d("同步edit--pDeleteReadNotesSql 2-9");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1849,6 +1861,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.9)
      */
     private void pDeleteRealNotes(long noteId, int postion) {
+        MLog.d("同步edit--pDeleteRealNotes 2-9");
         //
         presener.pDeleteRealNotes(noteId, postion);
 
@@ -1859,6 +1872,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pGetAllNoteIds() {
         //
+        MLog.d("同步edit--pGetAllNoteIds 2-10");
         presener.pGetAllNotesId();
     }
 
@@ -1870,7 +1884,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic(int position) {
-        MLog.d("sync---2-10-pEditNotePic");
+        MLog.d("同步edit--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
@@ -1905,6 +1919,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.d("同步edit--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
@@ -1971,6 +1986,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param cloudsPos cloudIds数据的其实操作位置
      */
     private void pEditNotes(int cloudsPos, TNNote note) {
+        MLog.d("同步edit--pEditNotes 2-11-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             presener.pEditNote(cloudsPos, note);
         } else {
@@ -1986,6 +2002,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param is13     (二.11)-2和(二.13)调用同一个接口，用于区分
      */
     private void pUpdataNote(int position, boolean is13) {
+        MLog.d("同步edit--pUpdataNote 2-11-2");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             boolean isExit = false;
             long id = cloudIds.get(position).getId();
@@ -2018,6 +2035,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * p层
      */
     private void pUpdataNote(int position, long noteId, boolean is13) {
+        MLog.d("同步edit--pUpdataNote ");
         presener.pGetNoteByNoteId(position, noteId, is13);
     }
 
@@ -2025,6 +2043,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes() {
+
+        MLog.d("同步edit--pTrashNotes 2-12");
         presener.pGetAllTrashNoteIds();
     }
 
@@ -2037,6 +2057,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param is13
      */
     private void pUpdataNote13(int position, boolean is13) {
+        MLog.d("同步edit--pUpdataNote13 2-13");
         if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
             AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
             long noteId = bean.getId();

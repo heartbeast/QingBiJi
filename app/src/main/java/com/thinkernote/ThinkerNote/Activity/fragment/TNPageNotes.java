@@ -275,6 +275,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
      */
     private void endSynchronize(int state) {
+        MLog.d("frag同步--全部笔记--同步结束");
         mPullListview.onRefreshComplete();
         if (state == 0) {
             //正常结束
@@ -635,6 +636,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
     private void pSynchronizeData() {
         //TODO
 //		TNAction.runActionAsync(TNActionType.Synchronize, "pageNote");
+        MLog.d("frag同步--全部笔记--pSynchronizeData");
         if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
             //需要同步的文件数据
             arrayFolderName = new String[]{TNConst.FOLDER_DEFAULT, TNConst.FOLDER_MEMO, TNConst.GROUP_FUN, TNConst.GROUP_WORK, TNConst.GROUP_LIFE};
@@ -653,6 +655,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
+        MLog.d("frag同步--全部笔记--pFolderAdd 1-1");
         presenter.folderAdd(position, arraySize, name);
     }
 
@@ -662,6 +665,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * （一.2）更新 tag
      */
     private void pTagAdd(int position, int arraySize, String name) {
+        MLog.d("frag同步--全部笔记--pTagAdd 1-2");
         presenter.tagAdd(position, arraySize, name);
     }
 
@@ -671,7 +675,9 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
+        MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
         presenter.pGetFolder();
+
     }
 
     /**
@@ -684,6 +690,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param isAdd 如果mapList.add之后立即执行该方法，为true
      */
     private void syncGetFoldersByFolderId(int startPos, boolean isAdd) {
+        MLog.d("frag同步--全部笔记--syncGetFoldersByFolderId 1-4");
         if (mapList.size() > 0 && mapList.size() <= 5) {
             //有1---5，for循环层层内嵌,从最内层（size最大处）开始执行
             List<AllFolderItemBean> allFolderItemBeans = mapList.get(mapList.size() - 1);
@@ -728,6 +735,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
+        MLog.d("frag同步--全部笔记--syncGetFoldersByFolderId 1-4");
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
@@ -741,6 +749,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * 接口个数 = 3*cats.size*groupXXX.size;
      */
     private void syncTNCat() {
+        MLog.d("frag同步--全部笔记--syncTNCat 1-5");
         //同步TNCat
         cats = TNDbUtils.getAllCatList(mSettings.userId);
         if (cats.size() > 0) {
@@ -758,6 +767,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param postion
      */
     private void syncTNCat(int postion, int catsSize) {
+        MLog.d("frag同步--全部笔记--syncTNCat 1-5");
         if (postion < catsSize - 1) {
             //获取postion条数据
             TNCat tempCat = cats.get(postion);
@@ -814,6 +824,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        MLog.d("frag同步--全部笔记--pFirstFolderAdd 1-5");
         presenter.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
@@ -824,6 +835,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
+        MLog.d("frag同步--全部笔记--syncProfile 2-1");
         presenter.pProfile();
     }
 
@@ -833,6 +845,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
      */
     private void syncOldNote() {
+        MLog.d("frag同步--全部笔记--syncOldNote ");
         if (!mSettings.syncOldDb) {
             //add老数据库的笔记
             addOldNotes = TNDbUtils.getOldDbNotesByUserId(TNSettings.getInstance().userId);
@@ -861,6 +874,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("frag同步--全部笔记--pUploadOldNotePic 2-2");
         presenter.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -870,6 +884,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void pOldNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("frag同步--全部笔记--pOldNote 2-3");
         presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -879,6 +894,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void pGetTagList() {
+        MLog.d("frag同步--全部笔记--pGetTagList 2-4");
         presenter.pGetTagList();
     }
 
@@ -890,6 +906,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void pAddNewNote() {
+        MLog.d("frag同步--全部笔记--pAddNewNote");
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
 
         if (addNewNotes.size() > 0) {
@@ -913,6 +930,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("frag同步--全部笔记--pNewNotePic 2-5");
         presenter.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -922,7 +940,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void pNewNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-
+        MLog.d("frag同步--全部笔记--pNewNote 2-6");
         presenter.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -936,6 +954,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
     private void recoveryNote(int position) {
+        MLog.d("frag同步--全部笔记--recoveryNote 2-7");
         if (position < recoveryNotes.size() && position >= 0) {
             if (recoveryNotes.get(position).noteId != -1) {
                 //循环执行
@@ -961,6 +980,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.7)01
      */
     private void pRecoveryNote(long noteID, int position, int arrySize) {
+        MLog.d("frag同步--全部笔记--pRecoveryNote 2-7-1");
         presenter.pRecoveryNote(noteID, position, arrySize);
     }
 
@@ -968,6 +988,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.7)02
      */
     private void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("frag同步--全部笔记--pRecoveryNotePic 2-7-2");
         presenter.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -975,6 +996,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.7)03
      */
     private void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("frag同步--全部笔记--pRecoveryNoteAdd 2-7-3");
         presenter.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -985,7 +1007,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param position
      */
     private void pDelete(int position) {
-
+        MLog.d("frag同步--全部笔记--pDelete 2-8");
         if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
@@ -1004,6 +1026,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.8)
      */
     private void pNoteDelete(long noteId, int postion) {
+        MLog.d("frag同步--全部笔记--pNoteDelete 2-8");
         presenter.pDeleteNote(noteId, postion);
     }
 
@@ -1011,7 +1034,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.8)删除本地数据 （不调接口）
      */
     private void pNoteLocalDelete(final int position, final long noteLocalId) {
-
+        MLog.d("frag同步--全部笔记--pNoteLocalDelete 2-8");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1050,7 +1073,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
     private boolean isRealDelete2 = false;
 
     private void pRealDelete(int position) {
-
+        MLog.d("frag同步--全部笔记--pRealDelete 2-9");
         if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
@@ -1074,6 +1097,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param nonteLocalID
      */
     private void pDeleteReadNotesSql(final long nonteLocalID, final int position) {
+        MLog.d("frag同步--全部笔记--pDeleteReadNotesSql 2-9");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -1101,6 +1125,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.9)
      */
     private void pDeleteRealNotes(long noteId, int postion) {
+        MLog.d("frag同步--全部笔记--pDeleteRealNotes 2-9");
         //
         presenter.pDeleteRealNotes(noteId, postion);
 
@@ -1110,6 +1135,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.10)
      */
     private void pGetAllNoteIds() {
+        MLog.d("frag同步--全部笔记--pGetAllNoteIds 2-10");
         //
         presenter.pGetAllNotesId();
     }
@@ -1122,7 +1148,8 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic(int position) {
-        MLog.d("sync---2-10-pEditNotePic");
+
+        MLog.d("frag同步--全部笔记--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
@@ -1150,6 +1177,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
     }
 
     /**
+     * TODO bug
      * (二.10)-1
      * 图片上传
      *
@@ -1157,6 +1185,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.d("frag同步--全部笔记--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
@@ -1223,6 +1252,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param cloudsPos cloudIds数据的其实操作位置
      */
     private void pEditNotes(int cloudsPos, TNNote note) {
+        MLog.d("frag同步--全部笔记--pEditNotes 2-11-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             presenter.pEditNote(cloudsPos, note);
         } else {
@@ -1238,6 +1268,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param is13     (二.11)-2和(二.13)调用同一个接口，用于区分
      */
     private void pUpdataNote(int position, boolean is13) {
+        MLog.d("frag同步--全部笔记--pUpdataNote 2-11-2");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             boolean isExit = false;
             long id = cloudIds.get(position).getId();
@@ -1270,6 +1301,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * p层
      */
     private void pUpdataNote(int position, long noteId, boolean is13) {
+        MLog.d("frag同步--全部笔记--pUpdataNote 2-11-2");
         presenter.pGetNoteByNoteId(position, noteId, is13);
     }
 
@@ -1277,6 +1309,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes() {
+        MLog.d("frag同步--全部笔记--pTrashNotes 2-12");
         presenter.pGetAllTrashNoteIds();
     }
 
@@ -1289,6 +1322,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * @param is13
      */
     private void pUpdataNote13(int position, boolean is13) {
+        MLog.d("frag同步--全部笔记--pUpdataNote13 2-13");
         if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
             AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
             long noteId = bean.getId();

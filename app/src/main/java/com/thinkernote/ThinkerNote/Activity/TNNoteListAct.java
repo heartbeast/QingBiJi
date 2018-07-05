@@ -641,6 +641,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
      */
     private void endSynchronize1(int state) {
+        MLog.d("NoteList同步---结束");
         mLoadingView.setVisibility(View.GONE);
         mPullListview.onRefreshComplete();
         mNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, mSettings.sort);
@@ -676,7 +677,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     /**
      * clearrecycler 弹窗
-     *
      */
     private void clearrecyclerDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1082,6 +1082,9 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             @Override
             public void run() {
                 List<NoteListBean.NoteItemBean> notesObj = bean.getNotes();
+                if (notesObj==null||notesObj.size()<=0) {
+                    return;
+                }
                 int trash = isTrash ? 2 : 0;
                 for (int i = 0; i < notesObj.size(); i++) {
                     NoteListBean.NoteItemBean obj = notesObj.get(i);
@@ -2261,6 +2264,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void syncData() {
+        MLog.d("NoteList同步---syncData");
         //TODO
         //        TNAction.runActionAsync(TNActionType.Synchronize, "Trash");
         if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
@@ -2281,6 +2285,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.1）更新 文件
      */
     private void pFolderAdd(int position, int arraySize, String name) {
+        MLog.d("NoteList同步---pFolderAdd 1-1");
         presenter.folderAdd(position, arraySize, name);
     }
 
@@ -2290,6 +2295,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.2）更新 tag
      */
     private void pTagAdd(int position, int arraySize, String name) {
+        MLog.d("NoteList同步---pTagAdd 1-2");
         presenter.tagAdd(position, arraySize, name);
     }
 
@@ -2299,6 +2305,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
+        MLog.d("NoteList同步---syncGetFolder 1-3");
         presenter.pGetFolder();
     }
 
@@ -2313,6 +2320,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void syncGetFoldersByFolderId(int startPos, boolean isAdd) {
+        MLog.d("NoteList同步---syncGetFoldersByFolderId 1-4");
         if (mapList.size() > 0 && mapList.size() <= 5) {
             //有1---5，for循环层层内嵌,从最内层（size最大处）开始执行
             List<AllFolderItemBean> allFolderItemBeans = mapList.get(mapList.size() - 1);
@@ -2357,6 +2365,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
+        MLog.d("NoteList同步---syncGetFoldersByFolderId 1-4");
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
@@ -2370,6 +2379,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 接口个数 = 3*cats.size*groupXXX.size;
      */
     private void syncTNCat() {
+        MLog.d("NoteList同步---syncTNCat 1-5");
         //同步TNCat
         cats = TNDbUtils.getAllCatList(mSettings.userId);
         if (cats.size() > 0) {
@@ -2387,6 +2397,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param postion
      */
     private void syncTNCat(int postion, int catsSize) {
+        MLog.d("NoteList同步---syncTNCat 1-5");
         if (postion < catsSize - 1) {
             //获取postion条数据
             TNCat tempCat = cats.get(postion);
@@ -2443,6 +2454,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param flag     TNCat下有三条数据数组，flag决定执行哪一条数据的标记
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        MLog.d("NoteList同步---pFirstFolderAdd 1-5");
         presenter.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
@@ -2453,6 +2465,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
+        MLog.d("NoteList同步---syncProfile 2-1");
         presenter.pProfile();
     }
 
@@ -2462,6 +2475,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
      */
     private void syncOldNote1() {
+        MLog.d("NoteList同步---syncOldNote1 2-2");
         if (!mSettings.syncOldDb) {
             //add老数据库的笔记
             addOldNotes = TNDbUtils.getOldDbNotesByUserId(TNSettings.getInstance().userId);
@@ -2490,6 +2504,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 和（二.3组成双层for循环，该处是最内层for执行）
      */
     private void pUploadOldNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("NoteList同步---pUploadOldNotePic1 2-2");
         presenter.pUploadOldNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -2499,6 +2514,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pOldNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("NoteList同步---pOldNote1 2-3");
         presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -2508,6 +2524,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pGetTagList1() {
+        MLog.d("NoteList同步---pGetTagList1 2-4");
         presenter.pGetTagList();
     }
 
@@ -2519,6 +2536,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pAddNewNote1() {
+        MLog.d("NoteList同步---pAddNewNote1 2-5");
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
 
         if (addNewNotes.size() > 0) {
@@ -2542,6 +2560,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
     private void pNewNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("NoteList同步---pNewNotePic1 2-5");
         presenter.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -2551,7 +2570,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void pNewNote1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
-
+        MLog.d("NoteList同步---pNewNote1 2-6");
         presenter.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -2565,6 +2584,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
     private void recoveryNote1(int position) {
+        MLog.d("NoteList同步---recoveryNote1 2-7");
         if (position < recoveryNotes.size() && position >= 0) {
             if (recoveryNotes.get(position).noteId != -1) {
                 //循环执行
@@ -2590,6 +2610,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.7)01
      */
     private void pRecoveryNote1(long noteID, int position, int arrySize) {
+        MLog.d("NoteList同步---pRecoveryNote1 2-7-1");
         presenter.pRecoveryNote(noteID, position, arrySize);
     }
 
@@ -2597,6 +2618,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.7)02
      */
     private void pRecoveryNotePic1(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
+        MLog.d("NoteList同步---pRecoveryNotePic1 2-7-2");
         presenter.pRecoveryNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -2604,6 +2626,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.7)03
      */
     private void pRecoveryNoteAdd1(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("NoteList同步---pRecoveryNoteAdd1 2-7-3");
         presenter.pRecoveryNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -2614,7 +2637,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param position
      */
     private void pDelete1(int position) {
-
+        MLog.d("NoteList同步---pDelete1 2-8");
         if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete1(deleteNotes.get(position).noteId, position);
@@ -2633,6 +2656,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.8)
      */
     private void pNoteDelete1(long noteId, int postion) {
+        MLog.d("NoteList同步---pNoteDelete1 2-8");
         presenter.pDeleteNote(noteId, postion);
     }
 
@@ -2641,6 +2665,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pNoteLocalDelete1(final int position, final long noteLocalId) {
 
+        MLog.d("NoteList同步---pNoteLocalDelete1 2-8");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -2680,6 +2705,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void pRealDelete1(int position) {
 
+        MLog.d("NoteList同步---pRealDelete1 2-9");
         if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
@@ -2703,6 +2729,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param nonteLocalID
      */
     private void pDeleteReadNotesSql1(final long nonteLocalID, final int position) {
+        MLog.d("NoteList同步---pDeleteReadNotesSql1 2-9");
         //使用异步操作，完成后，执行下一个 position或接口
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -2731,6 +2758,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pDeleteRealNotes1(long noteId, int postion) {
         //
+        MLog.d("NoteList同步---pDeleteRealNotes1 2-9");
         presenter.pDeleteRealNotes(noteId, postion);
 
     }
@@ -2739,6 +2767,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.10)
      */
     private void pGetAllNoteIds1() {
+        MLog.d("NoteList同步---pGetAllNoteIds1 2-10");
         //
         presenter.pGetAllNotesId();
     }
@@ -2751,6 +2780,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic1(int position) {
+        MLog.d("NoteList同步---pEditNotePic1 2-10-1");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
@@ -2781,6 +2811,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param tnNote
      */
     private void pEditNotePic1(int cloudsPos, int attsPos, TNNote tnNote) {
+        MLog.d("NoteList同步---pEditNotePic1 2-10-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
@@ -2847,6 +2878,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param cloudsPos cloudIds数据的其实操作位置
      */
     private void pEditNotes1(int cloudsPos, TNNote note) {
+        MLog.d("NoteList同步---pEditNotes1 2-11-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
             presenter.pEditNote(cloudsPos, note);
         } else {
@@ -2862,6 +2894,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param is13     (二.11)-2和(二.13)调用同一个接口，用于区分
      */
     private void pUpdataNote1(int position, boolean is13) {
+        MLog.d("NoteList同步---pUpdataNote1 2-11-2");
         if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
             boolean isExit = false;
             long id = cloudIds.get(position).getId();
@@ -2894,6 +2927,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * p层
      */
     private void pUpdataNote1(int position, long noteId, boolean is13) {
+        MLog.d("NoteList同步---pUpdataNote1 2-11-2");
         presenter.pGetNoteByNoteId(position, noteId, is13);
     }
 
@@ -2901,6 +2935,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes1() {
+        MLog.d("NoteList同步---pTrashNotes1 2-12");
         presenter.pGetAllTrashNoteIds();
     }
 
@@ -2913,6 +2948,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param is13
      */
     private void pUpdataNote131(int position, boolean is13) {
+        MLog.d("NoteList同步---pUpdataNote131 2-13");
         if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
             AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
             long noteId = bean.getId();

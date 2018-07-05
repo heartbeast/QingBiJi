@@ -452,6 +452,8 @@ public class TNPageTags extends TNChildViewBase implements
      * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
      */
     private void endSynchronize(int state) {
+
+        mListview.onRefreshComplete();
         if (state == 0) {
             //正常结束
             TNUtilsUi.showNotification(mActivity, R.string.alert_MainCats_Synchronized, true);
@@ -754,7 +756,7 @@ public class TNPageTags extends TNChildViewBase implements
                 "catId", catId,
                 "content", TNUtilsHtml.codeHtmlContent(bean.getContent(), true),
                 "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getCreate_at()) / 1000,
-                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at() )/ 1000,
+                "lastUpdate", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(bean.getUpdate_at()) / 1000,
                 "syncState", syncState,
                 "noteId", noteId,
                 "shortContent", TNUtils.getBriefContent(bean.getContent()),
