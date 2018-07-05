@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
+import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.General.TNHandleError;

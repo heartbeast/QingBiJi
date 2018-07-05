@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -56,6 +57,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
     private Vector<TNPreferenceChild> mChilds;
     private TNPreferenceChild mCurrentChild;
     private String mDownLoadAPKPath = "";
+    private TNSettings mSettings = TNSettings.getInstance();
 
     //
     private IUserInfoPresenter presener;
@@ -279,6 +281,7 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
 
     class CustomListener implements View.OnClickListener {
 
+
         public CustomListener(AlertDialog dialog) {
             upgradeDialog = dialog;
         }
@@ -291,27 +294,26 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
                 @Override
                 public boolean onKey(DialogInterface dialog, int keyCode,
                                      KeyEvent event) {
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH)// Search键
-                    {
+                    // Search键
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH) {
                         return true;
                     }
                     return false;
                 }
             });
 
-            Button theButton = upgradeDialog
-                    .getButton(DialogInterface.BUTTON_POSITIVE);
+            Button theButton = upgradeDialog.getButton(DialogInterface.BUTTON_POSITIVE);//开始下载按钮
             theButton.setText(getString(R.string.update_downloading));
             theButton.setEnabled(false);
 
-            Button negButton = upgradeDialog
-                    .getButton(DialogInterface.BUTTON_NEGATIVE);
+            Button negButton = upgradeDialog.getButton(DialogInterface.BUTTON_NEGATIVE);//取消下载按钮
             negButton.setEnabled(false);
+
+            //下载接口
             download(mDownLoadAPKPath);
-
-
         }
     }
+
     //-----------------------------------------p层调用--------------------------------------------
 
     //检查更新
@@ -349,7 +351,6 @@ public class TNUserInfoAct extends TNActBase implements OnClickListener,
         }
 
     };
-
     //-----------------------------------------接口回调--------------------------------------------
     @Override
     public void onLogoutSuccess(Object obj) {

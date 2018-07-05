@@ -117,7 +117,6 @@ public class UserInfoModuleImpl implements IUserInfoModule {
 
     @Override
     public void mDownload(final OnUserinfoListener listener, String url, final FileProgressListener progressListener) {
-        //下载文件 实时进度
         //自定义路径
         final File filePath = new File(Environment.getExternalStoragePublicDirectory
                 (Environment.DIRECTORY_DOWNLOADS), "qingbiji.apk");
