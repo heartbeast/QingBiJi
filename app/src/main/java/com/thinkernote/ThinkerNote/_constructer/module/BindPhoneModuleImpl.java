@@ -9,6 +9,8 @@ import com.thinkernote.ThinkerNote._interface.m.IBindPhoneModule;
 import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.CommonBean2;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
@@ -141,36 +143,35 @@ public class BindPhoneModuleImpl implements IBindPhoneModule{
     public void mGetUserInfo(final OnBindPhoneListener listener) {
         TNSettings settings = TNSettings.getInstance();
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .getUserInfo(settings.token)//接口方法
+                .LogNormalProfile(settings.token)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
+                .subscribe(new Observer<CommonBean2<ProfileBean>>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "phone--onCompleted");
+                        MLog.d(TAG, "mProFile--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("phone 异常onError:" + e.toString());
-                        listener.onProfileFailed("异常"  ,new Exception("接口异常！"));
+                        MLog.e("mProFile 异常onError:" + e.toString());
+                        listener.onProfileFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
-                    public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "phone-onNext");
+                    public void onNext(CommonBean2<ProfileBean> bean) {
+                        MLog.d(TAG, "mProFile-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            MLog.d(TAG, "phone-成功");
-                            listener.onProfileSuccess(bean);
-                        } else{
-                            listener.onProfileFailed(bean.getMessage(),null);
+                            listener.onProfileSuccess(bean.getProfile());
+                        } else {
+                            listener.onProfileFailed(bean.getMsg(), null);
                         }
                     }
-
                 });
+
     }
 
 }

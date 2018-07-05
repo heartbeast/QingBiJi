@@ -13,7 +13,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Database.TNDb;
+import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
@@ -26,7 +28,10 @@ import com.thinkernote.ThinkerNote._interface.p.IBindPhonePresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
+import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
+
+import org.json.JSONObject;
 
 /**
  * 主界面-绑定新手机号/设置-修改手机号
@@ -256,7 +261,9 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 		settings.phone = phone;
 		settings.savePref(false);
 		TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_PHONE, phone, settings.userId);
+		TNUtilsUi.showToast("修改成功！");
 		//
+		mProgressDialog.show();
 		pProfile();
 	}
 
@@ -268,6 +275,37 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	@Override
 	public void onProfileSuccess(Object obj) {
 		mProgressDialog.hide();
+		ProfileBean profileBean = (ProfileBean) obj;
+		//
+		TNSettings settings = TNSettings.getInstance();
+		long userId = TNDbUtils.getUserId(settings.username);
+
+		settings.phone = profileBean.getPhone();
+		settings.email = profileBean.getEmail();
+		settings.defaultCatId = profileBean.getDefault_folder();
+
+		if (userId != settings.userId) {
+			//清空user表
+			UserDbHelper.clearUsers();
+		}
+
+		JSONObject user = TNUtils.makeJSON(
+				"username", settings.username,
+				"password", settings.password,
+				"userEmail", settings.email,
+				"phone", settings.phone,
+				"userId", settings.userId,
+				"emailVerify", profileBean.getEmailverify(),
+				"totalSpace", profileBean.getTotal_space(),
+				"usedSpace", profileBean.getUsed_space());
+
+		//更新user表
+		UserDbHelper.addOrUpdateUser(user);
+
+		//
+		settings.isLogout = false;
+		settings.firstLaunch = false;//在此处设置 false
+		settings.savePref(false);
 		if (!"change".equals(mType)) {
 			Bundle b = new Bundle();
 			b.putInt("FLAG", 1);
@@ -279,6 +317,7 @@ public class TNBindPhoneAct extends TNActBase implements OnClickListener,OnBindP
 	@Override
 	public void onProfileFailed(String msg, Exception e) {
 		mProgressDialog.hide();
+
 		TNUtilsUi.showToast(msg);
 	}
 
