@@ -366,10 +366,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     public void onFolderRenameSuccess(Object obj,String name,long pid) {
         TNDb.beginTransaction();
         try{
-            TNAction.runAction(TNActionType.Db_Execute,
-                    TNSQLString.CAT_RENAME,
-                    name,
-                    pid);
+            TNDb.getInstance().updataSQL(TNSQLString.CAT_RENAME,new Object[]{name,pid});
 
             TNDb.setTransactionSuccessful();
         } finally {

@@ -496,7 +496,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     @Override
     public void onPoPuMenuItemClick(int id) {
         switch (id) {
-            case R.id.noteedit_picture: {
+            case R.id.noteedit_picture: {//拍照
                 String action;
                 action = Intent.ACTION_PICK;
                 Intent intent = new Intent(action);
@@ -506,7 +506,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         R.string.alert_NoteEdit_NoImage, R.id.noteedit_picture);
                 break;
             }
-            case R.id.noteedit_tag: {
+            case R.id.noteedit_tag: {//输入标签
                 saveInput();
                 Bundle b = new Bundle();
                 b.putString("TagStrForEdit", mNote.tagStr);
@@ -519,7 +519,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 startActForResult(TNFileListAct.class, null, R.id.noteedit_addatt);// TODO
                 break;
 
-            case R.id.noteedit_insertcurrenttime: {
+            case R.id.noteedit_insertcurrenttime: {//插入当前时间
                 if (mTitleView.isFocused()) {
                     if (mTitleView.getText().toString().length() > 75) {
                         TNUtilsUi.showToast("标题太长了，无法继续插入");
@@ -544,7 +544,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 break;
             }
 
-            case R.id.noteedit_att_look:
+            case R.id.noteedit_att_look://查看
                 if (mCurrentAtt != null) {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
@@ -555,7 +555,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 }
                 break;
 
-            case R.id.noteedit_att_delete:
+            case R.id.noteedit_att_delete://删除
                 mNote.atts.remove(mCurrentAtt);
                 String temp = String.format("<tn-media hash=\"%s\"></tn-media>", mCurrentAtt.digest);
                 mNote.content = mNote.content.replaceAll(temp, "");
@@ -566,6 +566,11 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         }
     }
 
+    /**
+     * 插入当前时间
+     *
+     * @param et
+     */
     private void insertCurrentTime(EditText et) {
         int index = et.getSelectionStart();
         String date = "【"
@@ -577,6 +582,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         Selection.setSelection(et.getText(), index + date.length());
     }
 
+    /**
+     * 其他
+     */
     private void setOtherBtnPopuMenu() {
         if (mPopuMenu != null) {
             mPopuMenu.dismiss();
@@ -1076,6 +1084,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         mTitleView.setText(mNote.title);
                     }
                 }
+                finish();
                 break;
             case START_SYNC://保存并同步
                 MLog.d("saveNote", "保存并同步");
@@ -1159,7 +1168,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     if (note.noteLocalId < 0) {
-                        MLog.e("saveNote:", "note.noteLocalId < 0", "note.contentDigest" + note.contentDigest);
+                        MLog.d("saveNote:", "note.noteLocalId < 0", "note.contentDigest" + note.contentDigest);
 
                         // insert
                         note.createTime = (int) (System.currentTimeMillis() / 1000);
@@ -1169,49 +1178,49 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                                         note.catId + "",//3
                                         note.trash + "",//4
                                         note.content + "",//5
-                                        note.source,//6
+                                        note.source + "",//6
                                         note.createTime + "",//7
                                         note.lastUpdate + "",//8
                                         3 + "",//9
                                         -1 + "",//10
-                                        note.shortContent,//11
-                                        note.tagStr,//12
+                                        note.shortContent + "",//11
+                                        note.tagStr + "",//12
                                         note.lbsLongitude + "",//13
                                         note.lbsLatitude + "",//14
                                         note.lbsRadius + "",//15
-                                        note.lbsAddress,//16
-                                        TNSettings.getInstance().username,//17
-                                        note.thumbnail,//18
-                                        note.contentDigest});//19
-                        MLog.d("");
+                                        note.lbsAddress + "",//16
+                                        TNSettings.getInstance().username + "",//17
+                                        note.thumbnail + "",//18
+                                        note.contentDigest + ""});//19
                         note.noteLocalId = id;
 
                     } else {
-                        MLog.e("saveNote:", "note.noteLocalId >=0", "note.contentDigest" + note.contentDigest);
+                        MLog.d("saveNote:", "note.noteLocalId >=0", "note.contentDigest" + note.contentDigest);
                         // update
                         note.syncState = note.noteId != -1 ? 4 : 3;
-                        TNDb.getInstance().updataSQL(TNSQLString.NOTE_LOCAL_UPDATE, new String[]{note.title,
-                                note.catId + "",
+                        TNDb.getInstance().updataSQL(TNSQLString.NOTE_LOCAL_UPDATE, new Object[]{note.title,
+                                note.catId,
                                 note.content,
-                                note.createTime + "",
-                                note.lastUpdate + "",
+                                note.createTime,
+                                note.lastUpdate,
                                 note.shortContent,
                                 note.tagStr,
                                 note.contentDigest,
-                                note.syncState + "",
-                                note.noteLocalId + ""});
+                                note.syncState,
+                                note.noteLocalId});
                     }
+
+                    // save att
                     TNNote note2 = attLocalSave(note);
                     if (note2 == null) {
                         //如果null,则存储空间不足
                         msg.obj = note2;
                     } else {
                         msg.obj = note2;
-                        TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new String[]{System.currentTimeMillis() / 1000 + "", note2.catId + ""});
-                        TNDb.setTransactionSuccessful();
+                        TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note2.catId});
+
                     }
-
-
+                    TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
                 }
@@ -1234,6 +1243,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     /**
      * 子线程的方法
+     * save attr
      *
      * @param tnNote
      * @return
@@ -1244,6 +1254,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         Vector<TNNoteAtt> exsitAtts = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
         try {
             if (exsitAtts.size() != 0) {
+                MLog.d("saveNote", "save attr", "exsitAtts.size()=" + exsitAtts.size());
+
                 //循环判断是否与本地同步，新增没有就删除本地
                 for (int k = 0; k < exsitAtts.size(); k++) {
                     boolean exsit = false;
@@ -1263,9 +1275,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 for (int k = 0; k < newAtts.size(); k++) {
                     TNNoteAtt att = newAtts.get(k);
                     if (att.attLocalId == -1) {
-                        long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new String[]{att.attName,
+                        long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new String[]{att.attName + "",
                                 att.type + "",
-                                att.path,
+                                att.path + "",
                                 note.noteLocalId + "",
                                 att.size + "",
                                 0 + "",
@@ -1276,6 +1288,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
                         // copy file to path
                         String tPath = TNUtilsAtt.getAttPath(attLocalId, att.type);
+                        //结束 save attr 直接返回
                         if (tPath == null) {
                             return null;//"存储空间不足"
                         }
@@ -1283,26 +1296,29 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         //tPath = tPath + TNUtilsAtt.getAttSuffix(att.type);
                         TNUtilsAtt.copyFile(att.path, tPath);
                         TNUtilsAtt.recursionDeleteDir(new File(att.path));
-                        MLog.d(TAG, att.path + " >> " + tPath + "(" + att.digest + ")");
+                        MLog.d("saveNote", "save attr", att.path + " >> " + tPath + "(" + att.digest + ")");
                         //
-                        TNDb.getInstance().updataSQL(TNSQLString.ATT_PATH, new String[]{tPath, attLocalId + ""});
+                        TNDb.getInstance().updataSQL(TNSQLString.ATT_PATH, new Object[]{tPath, attLocalId});
                         note.atts.get(k).attLocalId = attLocalId;
                     }
                 }
             } else {
+
+                MLog.d("saveNote", "save attr", "exsitAtts.size()=0");
                 for (int i = 0; i < note.atts.size(); i++) {
                     TNNoteAtt att = note.atts.get(i);
                     // insert
-                    long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new String[]{att.attName,
-                            att.type + "",
-                            att.path,
-                            note.noteLocalId + "",
-                            att.size + "",
-                            3 + "",
-                            TNUtilsAtt.fileToMd5(att.path),
-                            att.attId + "",
-                            att.width + "",
-                            att.height + ""});
+                    long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT
+                            , new String[]{att.attName,
+                                    att.type + "",
+                                    att.path,
+                                    note.noteLocalId + "",
+                                    att.size + "",
+                                    3 + "",
+                                    TNUtilsAtt.fileToMd5(att.path),
+                                    att.attId + "",
+                                    att.width + "",
+                                    att.height + ""});
 
                     note.atts.get(i).attLocalId = attLocalId;
                 }
@@ -1311,10 +1327,12 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             //如果笔记的第一个附件是图片，则设置笔记的缩略图
             Vector<TNNoteAtt> noteAttrs = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
             if (noteAttrs.size() > 0) {
+                MLog.d("saveNote", "save attr 第一个附件是图片");
                 TNNoteAtt temp = noteAttrs.get(0);
                 if (temp.type > 10000 && temp.type < 20000) {
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new String[]{temp.path,
-                            note.noteLocalId + ""});
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL
+                            , new Object[]{temp.path,
+                                    note.noteLocalId});
                 }
             }
         } catch (Exception e) {
@@ -1331,8 +1349,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().upDataRecoverySQL(TNSQLString.NOTE_SET_TRASH, 0, 2, System.currentTimeMillis() / 1000, note.noteLocalId);
-            TNDb.getInstance().upDataRecoveryLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+            TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{0, 2, System.currentTimeMillis() / 1000, note.noteLocalId});
+            TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -1345,8 +1363,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().upDataDeleteNoteSQL(TNSQLString.NOTE_SET_TRASH, 2, 1, System.currentTimeMillis() / 1000, note.noteLocalId);
-            TNDb.getInstance().upDatadeleteLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+            TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{2, 1, System.currentTimeMillis() / 1000, note.noteLocalId});
+            TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -1366,8 +1384,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 try {
                     TNNote note = TNDbUtils.getNoteByNoteId(nonteLocalID);
                     //
-                    TNDb.getInstance().deleteReadNotesSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, nonteLocalID);
-                    TNDb.getInstance().updataReadNotesLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{nonteLocalID});
+
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1396,8 +1415,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     //
-                    String[] args = new String[]{noteId + ""};
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, args);
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new Object[]{noteId});
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1424,12 +1442,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     //
-                    String[] args = new String[]{shortContent, note.noteId + ""};
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SHORT_CONTENT, args);
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SHORT_CONTENT,  new Object[]{shortContent, note.noteId });
 
                     //
-                    String[] args2 = new String[]{System.currentTimeMillis() / 1000 + "", note.catId + ""};
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, args2);
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000 , note.catId });
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1601,7 +1617,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             public void run() {
                 TNDb.beginTransaction();
                 try {
-                    TNDb.getInstance().upDataAttIdSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, (int) tnNoteAtt.noteLocalId);
+                    TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, new Object[]{2, attrId, (int) tnNoteAtt.noteLocalId});
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1617,7 +1633,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         long id = oldNoteAddBean.getId();
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().upDataNoteLocalIdSQL(TNSQLString.NOTE_UPDATE_NOTEID_BY_NOTELOCALID, id, note.noteLocalId);
+            TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_NOTEID_BY_NOTELOCALID, new Object[]{id, note.noteLocalId});
             TNDb.setTransactionSuccessful();
         } finally {
             TNDb.endTransaction();
@@ -1779,10 +1795,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().upDataDeleteLocalNoteSQL(TNSQLString.NOTE_SET_TRASH, 2, 6, System.currentTimeMillis() / 1000, noteLocalId);
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{2, 6, System.currentTimeMillis() / 1000, noteLocalId});
                     //
                     TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
-                    TNDb.getInstance().upDatadeleteLocalLastTimeSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1842,7 +1858,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().deleteReadNotesSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, nonteLocalID);
+                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, new Object[]{nonteLocalID});
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -2022,9 +2038,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
         } else {
             //下一个接口
-            //同步回收站的笔记
-            trashNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, TNConst.CREATETIME);
-            pTrashNotes();
+            //说明：main中要执行pTrashNotes,但是 TNNoteEditAct不执行该步骤
+            pUpdataNote13(0, true);
 
         }
     }
@@ -2320,7 +2335,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteNotesByNoteIdSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, note.noteId);
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
 
                             TNDb.setTransactionSuccessful();
                         } finally {
@@ -2396,7 +2411,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         MLog.e(msg);
     }
 
-    //2-12
+    //2-12 说明：不执行该步骤
     @Override
     public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
         trashNoteArr = (List<AllNotesIdsBean.NoteIdItemBean>) obj;

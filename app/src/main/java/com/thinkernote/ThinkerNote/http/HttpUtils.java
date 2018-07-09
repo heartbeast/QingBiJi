@@ -256,9 +256,9 @@ public class HttpUtils {
         try {
             //具体配置，可用链式结构
             OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.readTimeout(20, TimeUnit.SECONDS);//读超时
-            okBuilder.connectTimeout(10 * 1000, TimeUnit.MILLISECONDS);//链接超时
-            okBuilder.writeTimeout(20, TimeUnit.SECONDS);//写超时
+            okBuilder.readTimeout(60, TimeUnit.SECONDS);//读超时
+            okBuilder.connectTimeout(60 * 1000, TimeUnit.MILLISECONDS);//链接超时
+            okBuilder.writeTimeout(60, TimeUnit.SECONDS);//写超时
             okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
             okBuilder.addInterceptor(new Interceptor() {//设置统一请求头，由后台要求，灵活设置
                 @Override
@@ -305,7 +305,7 @@ public class HttpUtils {
         try {
             //具体配置，可用链式结构
             OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.connectTimeout(10 * 1000, TimeUnit.MILLISECONDS);//链接超时
+            okBuilder.connectTimeout(60 * 1000, TimeUnit.MILLISECONDS);//链接超时
             okBuilder.retryOnConnectionFailure(true);
             okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
             okBuilder.addInterceptor(new FileProgressInterceptor(listener));//下载文件进度 拦截器
@@ -365,9 +365,9 @@ public class HttpUtils {
         try {
             //具体配置，可用链式结构
             OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.readTimeout(20, TimeUnit.SECONDS);
-            okBuilder.connectTimeout(10, TimeUnit.SECONDS);
-            okBuilder.writeTimeout(20, TimeUnit.SECONDS);
+            okBuilder.readTimeout(60, TimeUnit.SECONDS);
+            okBuilder.connectTimeout(60, TimeUnit.SECONDS);
+            okBuilder.writeTimeout(60, TimeUnit.SECONDS);
             okBuilder.addInterceptor(getInterceptor());//设置拦截器,打印
 
             return okBuilder.build();
@@ -391,9 +391,9 @@ public class HttpUtils {
         try {
             //具体配置，可用链式结构
             OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-            okBuilder.readTimeout(20, TimeUnit.SECONDS);
-            okBuilder.connectTimeout(10, TimeUnit.SECONDS);
-            okBuilder.writeTimeout(20, TimeUnit.SECONDS);
+            okBuilder.readTimeout(60, TimeUnit.SECONDS);
+            okBuilder.connectTimeout(60, TimeUnit.SECONDS);
+            okBuilder.writeTimeout(60, TimeUnit.SECONDS);
             okBuilder.addInterceptor(new HttpCacheInterceptor());//公共缓存拦截器
             okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印body
             okBuilder.addInterceptor(new Interceptor() {//设置统一请求头，由后台要求，灵活设置
