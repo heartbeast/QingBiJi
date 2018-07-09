@@ -33,8 +33,11 @@ public class TNDb extends SQLiteOpenHelper {
         super(TNUtils.getAppContext(), DB_NAME, null, DB_VER);
 
         db = getWritableDatabase();
-        //TODO
-        resetDb();
+
+        //TODO 需要修改 优化
+        TNAction.regRunner(TNActionType.Db_Execute, this, "executeSQL");
+        TNAction.regRunner(TNActionType.DBReset, this, "DBReset");
+//        resetDb();
 
     }
 
@@ -124,7 +127,7 @@ public class TNDb extends SQLiteOpenHelper {
             allData.add(rowData);
         }
         cursor.close();
-        MLog.d(TAG, allData.toString());
+        MLog.d("TNDB--select打印：" + allData.size() + "个笔记。", allData.toString());
 
         return allData;
     }
@@ -151,7 +154,7 @@ public class TNDb extends SQLiteOpenHelper {
     }
 
     public void executeSQL(TNAction aAction) {
-        MLog.d(TAG, aAction.inputs.toString());
+        MLog.d("TNDB--executeSQL", aAction.inputs.toString());
         try {
             String sql = (String) aAction.inputs.get(0);
             if (sql.startsWith("SELECT")) {
@@ -183,14 +186,12 @@ public class TNDb extends SQLiteOpenHelper {
                 start = sql.indexOf("`");
                 end = sql.indexOf("`", start + 1);
                 tableName = sql.substring(start, end + 1);
-                //Log.i(TAG, "tableName:" + tableName + start + end);
 
                 for (int i = 1; i < aAction.inputs.size(); i++) {
                     start = sql.indexOf("`", end + 1);
                     end = sql.indexOf("`", start + 1);
                     values.put(sql.substring(start, end + 1), aAction.inputs.get(i).toString());
                 }
-                //Log.i(TAG, "values:" + values);
                 long id = db.insertOrThrow(tableName, null, values);
                 aAction.outputs.add(id);
             } else {
@@ -235,29 +236,43 @@ public class TNDb extends SQLiteOpenHelper {
      * @return
      */
     public long insertSQL(String sql, Object[] args) {
-        db = getWritableDatabase();
-        int start = 0, end = 0;
-        String tableName = "";
-        ContentValues values = new ContentValues();
+        long id = -1;
+        try {
 
-        start = sql.indexOf("`");
-        end = sql.indexOf("`", start + 1);
-        tableName = sql.substring(start, end + 1);
-        MLog.d("saveNote", "tableName:" + tableName + start + end);
+            db = getWritableDatabase();
+            int start = 0, end = 0;
+            String tableName = "";
+            ContentValues values = new ContentValues();
 
-        for (int i = 1; i < args.length; i++) {
-            start = sql.indexOf("`", end + 1);
+            //取tablename
+            start = sql.indexOf("`");
             end = sql.indexOf("`", start + 1);
-            values.put(sql.substring(start, end + 1), args[i].toString());
+            tableName = sql.substring(start, end + 1);
+            StringBuffer str = new StringBuffer();
+            //打印要拼接的数据信息
+            for (Object obj : args) {
+                str.append(obj.toString() + " ");
+            }
+            MLog.d("saveNote--insertSQL", "tableName:" + tableName, "start=" + start, "end=" + end, "sql=" + sql + "\nargs=" + str.toString());
 
-            //打印
-            int s = start;
-            int e = end;
-            MLog.e("saveNote", "values-->key:" + sql.substring(s, e + 1) + "-----values:" + args[i].toString());
+            //取内容
+            for (int i = 0; i < args.length; i++) {
+                start = sql.indexOf("`", end + 1);
+                end = sql.indexOf("`", start + 1);
+                //sql中
+                values.put(sql.substring(start, end + 1), args[i].toString());
+
+                //打印
+                int s = start;
+                int e = end;
+                MLog.e("saveNote--insertSQL", "start=" + start + "--end=" + (end + 1) + "--key--values:" + sql.substring(s, e + 1) + "<----->" + args[i].toString());
+            }
+
+            id = db.insertOrThrow(tableName, null, values);
+            MLog.d("saveNote", "TNDb--insertSQL-->noteLocalId=" + id);
+        } catch (Exception e) {
+            MLog.e("TNDb--insertSQL", "插入数据库失败");
         }
-
-        long id = db.insertOrThrow(tableName, null, values);
-        MLog.d("saveNote", "TNDb--insertSQL-->noteLocalId=" + id);
         return id;
     }
 
@@ -296,6 +311,6 @@ public class TNDb extends SQLiteOpenHelper {
             arg = "`" + arg + "` ";
             values = values + arg;
         }
-        MLog.d(TAG, sql + "\r\n" + values);
+        MLog.w("TNDb--execSQL--printSql:", sql + "\r\n" + values);
     }
 }

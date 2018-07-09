@@ -66,7 +66,43 @@ public class TNNote implements Serializable{
 	
 	public String richText;
 	public Vector<Integer> mapping;
-	
+//
+
+	@Override
+	public String toString() {
+		return "TNNote{" +
+				"noteLocalId=" + noteLocalId +
+				", title='" + title + '\'' +
+				", syncState=" + syncState +
+				", creatorUserId=" + creatorUserId +
+				", creatorNick='" + creatorNick + '\'' +
+				", catId=" + catId +
+				", content='" + content + '\'' +
+				", shortContent='" + shortContent + '\'' +
+				", contentDigest='" + contentDigest + '\'' +
+				", trash=" + trash +
+				", source='" + source + '\'' +
+				", createTime=" + createTime +
+				", lastUpdate=" + lastUpdate +
+				", thumbnail='" + thumbnail + '\'' +
+				", thmDrawable=" + thmDrawable +
+				", lbsLongitude=" + lbsLongitude +
+				", lbsLatitude=" + lbsLatitude +
+				", lbsRadius=" + lbsRadius +
+				", lbsAddress='" + lbsAddress + '\'' +
+				", tags=" + tags +
+				", tagStr='" + tagStr + '\'' +
+				", attCounts=" + attCounts +
+				", atts=" + atts +
+				", currentAtt=" + currentAtt +
+				", noteId=" + noteId +
+				", revision=" + revision +
+				", originalNote=" + originalNote +
+				", richText='" + richText + '\'' +
+				", mapping=" + mapping +
+				'}';
+	}
+
 	public static TNNote newNote(){
 		MLog.d(TAG, "newNote");
 		TNNote note = new TNNote();

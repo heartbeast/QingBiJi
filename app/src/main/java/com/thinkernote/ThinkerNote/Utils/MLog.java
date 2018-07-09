@@ -66,66 +66,189 @@ public class MLog {
         }
 
         sb.append("<<---");
+
         return sb.toString();
     }
 
     public static void d(Object... message) {
         if (isCanLog()) {
-            Log.d(TAG, getLogcat(message));
+            String str = getLogcat(message);
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.d(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.d(TAG, logContent);
+                }
+                Log.d(TAG, str);// 打印剩余日志 }
+
+            }
         }
     }
 
     public static void d(int message) {
         if (isCanLog()) {
-            Log.d(TAG, getLogMessage(String.valueOf(message)));
+            String str = getLogMessage(String.valueOf(message));
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.d(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.d(TAG, logContent);
+                }
+                Log.d(TAG, str);// 打印剩余日志 }
+
+            }
         }
     }
 
     public static void i(Object... message) {
         if (isCanLog()) {
-            Log.i(TAG, getLogcat(message));
+            String str = getLogcat(message);
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void i(int message) {
         if (isCanLog()) {
-            Log.i(TAG, getLogMessage(String.valueOf(message)));
+            String str = getLogMessage(String.valueOf(message));
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void w(Object... message) {
         if (isCanLog()) {
-            Log.w(TAG, getLogcat(message));
+            String str = getLogcat(message);
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void w(int message) {
         if (isCanLog()) {
-            Log.w(TAG, getLogMessage(String.valueOf(message)));
+            String str = getLogMessage(String.valueOf(message));
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void e(Object... message) {
         if (isCanLog()) {
-            Log.e(TAG, getLogcat(message));
+            String str = getLogcat(message);
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.e(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.e(TAG, logContent);
+                }
+                Log.e(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void e(int message) {
         if (isCanLog()) {
-            Log.e(TAG, getLogMessage(String.valueOf(message)));
+            String str = getLogMessage(String.valueOf(message));
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.e(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.e(TAG, logContent);
+                }
+                Log.e(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void v(Object... message) {
         if (isCanLog()) {
-            Log.v(TAG, getLogcat(message));
+            String str = getLogcat(message);
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 
     public static void v(int message) {
         if (isCanLog()) {
-            Log.v(TAG, getLogMessage(String.valueOf(message)));
+            String str = getLogMessage(String.valueOf(message));
+            int segmentSize = 3 * 1024;
+            long length = str.length();
+            if (length <= segmentSize) {// 长度小于等于限制直接打印
+                Log.w(TAG, str);
+            } else {
+                while (str.length() > segmentSize) {// 循环分段打印日志
+                    String logContent = str.substring(0, segmentSize);
+                    str = str.replace(logContent, "");
+                    Log.w(TAG, logContent);
+                }
+                Log.w(TAG, str);// 打印剩余日志 }
+            }
         }
     }
 

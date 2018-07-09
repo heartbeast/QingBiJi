@@ -265,7 +265,7 @@ public class NoteEditModuleImpl implements INoteEditModule {
 
                     @Override
                     public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+                        MLog.d(TAG, "mDeleteNote-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
@@ -291,18 +291,18 @@ public class NoteEditModuleImpl implements INoteEditModule {
                 .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                        MLog.d(TAG, "mDeleteRealNotes--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        MLog.e("mDeleteRealNotes 异常onError:" + e.toString());
                         listener.onSyncDeleteRealNotes1Failed("异常", new Exception("接口异常！"), poistion);
                     }
 
                     @Override
                     public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+                        MLog.d(TAG, "mDeleteRealNotes-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
@@ -323,18 +323,18 @@ public class NoteEditModuleImpl implements INoteEditModule {
                 .subscribe(new Observer<CommonBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                        MLog.d(TAG, "mDeleteRealNotes--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        MLog.e("mDeleteRealNotes 异常onError:" + e.toString());
                         listener.onSyncDeleteRealNotes2Failed("异常", new Exception("接口异常！"), poistion);
                     }
 
                     @Override
                     public void onNext(CommonBean bean) {
-                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+                        MLog.d(TAG, "mDeleteRealNotes-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
@@ -360,18 +360,18 @@ public class NoteEditModuleImpl implements INoteEditModule {
                 .subscribe(new Observer<AllNotesIdsBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mRecoveryNoteAdd--onCompleted");
+                        MLog.d(TAG, "mGetAllNotesId--onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        MLog.e("mRecoveryNoteAdd 异常onError:" + e.toString());
+                        MLog.e("mGetAllNotesId 异常onError:" + e.toString());
                         listener.onSyncAllNotesIdAddFailed("异常", new Exception("接口异常！"));
                     }
 
                     @Override
                     public void onNext(AllNotesIdsBean bean) {
-                        MLog.d(TAG, "mRecoveryNoteAdd-onNext");
+                        MLog.d(TAG, "mGetAllNotesId-onNext");
 
                         //处理返回结果
                         if (bean.getCode() == 0) {

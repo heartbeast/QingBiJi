@@ -20,4 +20,9 @@
 不用包3:OAuth2 网络框架太老，不可用
 
 
+4上传图片文件的网络框架 的异常说明：
+
+retrofit2.adapter.rxjava.HttpException: HTTP 500 Internal Server Error
+
+
 
