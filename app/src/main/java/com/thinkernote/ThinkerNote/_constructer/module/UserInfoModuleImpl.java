@@ -5,14 +5,10 @@ import android.os.Environment;
 
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
-import com.thinkernote.ThinkerNote._interface.m.IRegistModule;
 import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
-import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
-import com.thinkernote.ThinkerNote._interface.v.OnRegistListener;
 import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean1;
-import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;

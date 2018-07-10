@@ -5,14 +5,10 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IChangeUserInfoModule;
-import com.thinkernote.ThinkerNote._interface.m.IFindPsModule;
 import com.thinkernote.ThinkerNote._interface.v.OnChangeUserInfoListener;
-import com.thinkernote.ThinkerNote._interface.v.OnFindPsListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
-import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
-import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;

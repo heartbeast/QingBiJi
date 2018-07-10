@@ -6,7 +6,6 @@ import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ICatInfoModule;
 import com.thinkernote.ThinkerNote._interface.v.OnCatInfoListener;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 

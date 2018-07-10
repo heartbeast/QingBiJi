@@ -4,13 +4,8 @@ import android.content.Context;
 
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
-import com.thinkernote.ThinkerNote._interface.m.ILogModule;
 import com.thinkernote.ThinkerNote._interface.m.ITagFragModule;
-import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTagsFragListener;
-import com.thinkernote.ThinkerNote.bean.CommonBean2;
-import com.thinkernote.ThinkerNote.bean.login.LoginBean;
-import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 

@@ -5,13 +5,7 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
-import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTagListListener;
-import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
-import com.thinkernote.ThinkerNote.bean.CommonBean;
-import com.thinkernote.ThinkerNote.bean.CommonBean1;
-import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 

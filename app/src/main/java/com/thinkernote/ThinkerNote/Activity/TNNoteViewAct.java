@@ -1,5 +1,6 @@
 package com.thinkernote.ThinkerNote.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -41,8 +42,6 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.thinkernote.ThinkerNote.Action.TNAction;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNActionResult;
-import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -54,8 +53,6 @@ import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNDownloadAttService;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadEndListener;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService.OnDownloadStartListener;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
@@ -65,7 +62,6 @@ import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
 import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
-import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewPresenterImpl;
@@ -89,9 +85,9 @@ import java.util.concurrent.Executors;
  */
 public class TNNoteViewAct extends TNActBase implements OnClickListener,
         SynthesizerPlayerListener,
-        OnDownloadEndListener,
-        OnDownloadStartListener,
-        OnPoPuMenuItemClickListener,
+        TNDownloadAttService.OnDownloadEndListener,
+        TNDownloadAttService.OnDownloadStartListener,
+        PoPuMenuView.OnPoPuMenuItemClickListener,
         OnNoteViewListener {
     public static final long ATT_MAX_DOWNLOAD_SIZE = 50 * 1024;
     public static final int DIALOG_DELETE = 101;//
@@ -163,6 +159,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     // Activity methods
     // -------------------------------------------------------------------------------
+    @SuppressLint("JavascriptInterface")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,6 +222,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mWebView.getSettings().setBuiltInZoomControls(true);
         mJSInterface = new JSInterface();
         mWebView.addJavascriptInterface(mJSInterface, "demo");
+
+        //TODO
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -709,7 +708,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     // Action respond methods
     // -------------------------------------------------------------------------------
     public void respondSynchronize(TNAction aAction) {
-        if (aAction.result == TNActionResult.Cancelled) {
+        if (aAction.result == TNAction.TNActionResult.Cancelled) {
             TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell,
                     true);
         } else if (!TNHandleError.handleResult(this, aAction, false)) {
@@ -729,7 +728,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     public void respondGetAllDataByNoteId(TNAction aAction) {
         if (aAction.inputs.size() == 1) //消除编辑页的注册响应事件带来的影响
             return;
-        if (aAction.result == TNActionResult.Cancelled) {
+        if (aAction.result == TNAction.TNActionResult.Cancelled) {
             TNUtilsUi.showNotification(this, R.string.alert_SynchronizeCancell, true);
         } else if (!TNHandleError.handleResult(this, aAction, false)) {
             TNUtilsUi.showNotification(this, R.string.alert_MainCats_Synchronized, true);

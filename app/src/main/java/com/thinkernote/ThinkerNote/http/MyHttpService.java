@@ -26,8 +26,6 @@ import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 import java.util.List;
 
 import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
@@ -98,7 +96,7 @@ public interface MyHttpService {
      * 3.内容:file
      */
     class UpLoadBuilder {
-        public static MyHttpService getHttpServer() {
+        public static MyHttpService UploadServer() {
             return HttpUtils.getInstance().upLoadServer(MyHttpService.class);
         }
     }
@@ -415,49 +413,7 @@ public interface MyHttpService {
      */
     @Multipart
     @POST
-    Observable<OldNotePicBean> syncOldNotePic(
-            @Url String url
-            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
-    );
-
-    /**
-     * 同步 上传图片
-     *
-     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
-     * @param part
-     * @return
-     */
-    @Multipart
-    @POST
-    Observable<OldNotePicBean> syncNewNotePic(
-            @Url String url
-            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
-    );
-
-    /**
-     * 同步 上传图片
-     *
-     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
-     * @param part
-     * @return
-     */
-    @Multipart
-    @POST
-    Observable<OldNotePicBean> syncEditNotePic(
-            @Url String url
-            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
-    );
-
-    /**
-     * 同步 上传图片
-     *
-     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
-     * @param part
-     * @return
-     */
-    @Multipart
-    @POST
-    Observable<OldNotePicBean> syncRecoveryNotePic(
+    Observable<OldNotePicBean> uploadPic(
             @Url String url
             , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
     );

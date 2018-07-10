@@ -4,9 +4,7 @@ import android.content.Context;
 
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
-import com.thinkernote.ThinkerNote._interface.m.IBindAccountModule;
 import com.thinkernote.ThinkerNote._interface.m.IBindPhoneModule;
-import com.thinkernote.ThinkerNote._interface.v.OnBindAccountListener;
 import com.thinkernote.ThinkerNote._interface.v.OnBindPhoneListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
@@ -23,9 +21,9 @@ import static android.content.ContentValues.TAG;
 /**
  * 绑定手机号
  */
-public class BindPhoneModuleImpl implements IBindPhoneModule{
+public class BindPhoneModuleImpl implements IBindPhoneModule {
 
-    private  Context context;
+    private Context context;
     public BindPhoneModuleImpl(Context context) {
         this.context = context;
     }

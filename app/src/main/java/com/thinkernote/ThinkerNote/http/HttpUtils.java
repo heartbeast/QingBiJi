@@ -17,7 +17,6 @@ import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -26,10 +25,8 @@ import javax.net.ssl.SSLSession;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -47,8 +44,10 @@ public class HttpUtils {
     private static HttpUtils instance;
     private Gson gson;
     private Context context;
-    private Object defaultHttps;
-    private Object fileHttps;
+
+    private Object defaultHttps;//默认
+    private Object fileHttps;//进度条
+    private Object uploadHttps;//上传
     Cache cache = null;
     static File httpCacheDirectory;
 
@@ -97,6 +96,7 @@ public class HttpUtils {
             }
         }
         initCache();//再设置一遍，可以注销
+        MLog.i("defaulthttp");
         return (T) defaultHttps;
     }
 
@@ -111,6 +111,7 @@ public class HttpUtils {
                 fileHttps = getFileBuilder(URLUtils.API_BASE_URL, listener).build().create(clz);
             }
         }
+        MLog.i("FileDownloadhttp");
         return (T) fileHttps;
     }
 
@@ -120,12 +121,13 @@ public class HttpUtils {
      */
 
     public <T> T upLoadServer(Class<T> clz) {
-        if (fileHttps == null) {
+        if (uploadHttps == null) {
             synchronized (HttpUtils.class) {
-                fileHttps = uploadBuilder(URLUtils.API_BASE_URL).build().create(clz);
+                uploadHttps = uploadBuilder(URLUtils.API_BASE_URL).build().create(clz);
             }
         }
-        return (T) fileHttps;
+        MLog.i("uploadhttp");
+        return (T) uploadHttps;
     }
 
 
@@ -215,7 +217,7 @@ public class HttpUtils {
      * <p>
      */
     private Retrofit.Builder uploadBuilder(String apiUrl) {
-        MLog.d("Retrofit-->getFileBuilder");
+        MLog.d("Retrofit-->uploadBuilder");
         //retrofit配置
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.client(uploadOkHttp());//设置okhttp（重点），不设置走默认的

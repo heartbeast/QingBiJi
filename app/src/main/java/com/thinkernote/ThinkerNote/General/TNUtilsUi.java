@@ -503,28 +503,19 @@ public class TNUtilsUi {
         String service = Context.NOTIFICATION_SERVICE;
         final NotificationManager nm = (NotificationManager) act
                 .getSystemService(service); // 获得系统级服务，用于管理消息
-        if (Integer.valueOf(android.os.Build.VERSION.SDK) > 16) {
-            Builder builder = new Notification.Builder(act);
-            PendingIntent pi = PendingIntent.getActivity(act, 0, new Intent(), 0); // 消息触发后调用
-            builder.setContentIntent(pi);
-            Notification n = builder.setContentTitle("轻笔记")
-                    .setContentText(act.getString(msgId))
-                    .setSmallIcon(R.drawable.icon)
-                    .build();
-            n.icon = R.drawable.icon; // 设置图标
-            n.tickerText = act.getString(msgId); // 设置消息
-            n.when = System.currentTimeMillis(); // 设置时间
+        Builder builder = new Notification.Builder(act);
+        PendingIntent pi = PendingIntent.getActivity(act, 0, new Intent(), 0); // 消息触发后调用
+        builder.setContentIntent(pi);
+        Notification n = builder.setContentTitle("轻笔记")
+                .setContentText(act.getString(msgId))
+                .setSmallIcon(R.drawable.icon)
+                .build();
+        n.icon = R.drawable.icon; // 设置图标
+        n.tickerText = act.getString(msgId); // 设置消息
+        n.when = System.currentTimeMillis(); // 设置时间
 
-            nm.notify(1, n); // 发送通知
-        } else {
-            Notification n = new Notification(); // 定义一个消息类
-            n.icon = R.drawable.icon; // 设置图标
-            n.tickerText = act.getString(msgId); // 设置消息
-            n.when = System.currentTimeMillis(); // 设置时间
-            PendingIntent pi = PendingIntent.getActivity(act, 0, new Intent(), 0); // 消息触发后调用
-            n.setLatestEventInfo(act, "轻笔记", act.getString(msgId), pi); // 设置事件信息就是拉下标题后显示的内容
-            nm.notify(1, n); // 发送通知
-        }
+        nm.notify(1, n); // 发送通知
+
         if (isCancel) {
             new Handler().postDelayed(new Runnable() {
 

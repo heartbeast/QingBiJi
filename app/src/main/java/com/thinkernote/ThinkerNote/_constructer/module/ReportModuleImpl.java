@@ -5,22 +5,17 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IReportModule;
-import com.thinkernote.ThinkerNote._interface.m.ITextEditModule;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
-import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 import com.thinkernote.ThinkerNote.http.URLUtils;
 
 import java.io.File;
-import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okio.Utf8;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -50,13 +45,13 @@ public class ReportModuleImpl implements IReportModule {
 //                .setType(MultipartBody.FORM)//表单类型
 //                .addFormDataPart("token", settings.token);
 //        for(File file:files){
-//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/*"), file);//TODO multipart/form-data /image/*
 //            builder.addFormDataPart("file", file.getName(), photoRequestBody);
 //            List<MultipartBody.Part> parts = builder.build().parts();
 //        }
 
         //单个文件上传
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file); //TODO multipart/form-data /image/*
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -64,8 +59,9 @@ public class ReportModuleImpl implements IReportModule {
         MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
         url = url.replace(" ", "%20");//文件名有空格
 
+
         //http调用
-        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+        MyHttpService.UpLoadBuilder.UploadServer()//固定样式，可自定义其他网络
                 .upLoadFeedBackPic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式

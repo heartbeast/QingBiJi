@@ -5,12 +5,8 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITextEditModule;
-import com.thinkernote.ThinkerNote._interface.m.IUserInfoModule;
 import com.thinkernote.ThinkerNote._interface.v.OnTextEditListener;
-import com.thinkernote.ThinkerNote._interface.v.OnUserinfoListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
-import com.thinkernote.ThinkerNote.bean.CommonBean1;
-import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
 import rx.Observer;
@@ -30,7 +26,7 @@ public class TextEditModuleImpl implements ITextEditModule {
     }
 
     @Override
-    public void pFolderAdd(final OnTextEditListener listener,long pid, String text) {
+    public void pFolderAdd(final OnTextEditListener listener, long pid, String text) {
         TNSettings settings = TNSettings.getInstance();
         if (pid==-1){
             MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络

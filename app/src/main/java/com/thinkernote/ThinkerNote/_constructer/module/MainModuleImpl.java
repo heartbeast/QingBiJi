@@ -3,11 +3,9 @@ package com.thinkernote.ThinkerNote._constructer.module;
 import android.content.Context;
 import android.os.Environment;
 
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.General.TNSettings;
-import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.IMainModule;
 import com.thinkernote.ThinkerNote._interface.v.OnMainListener;
@@ -24,13 +22,10 @@ import com.thinkernote.ThinkerNote.bean.main.MainUpgradeBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
-import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
-import com.thinkernote.ThinkerNote.http.MyRxUtils;
+import com.thinkernote.ThinkerNote.http.RequestBodyUtil;
 import com.thinkernote.ThinkerNote.http.URLUtils;
 import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -442,24 +436,24 @@ public class MainModuleImpl implements IMainModule {
 //                .setType(MultipartBody.FORM)//表单类型
 //                .addFormDataPart("token", settings.token);
 //        for(File file:files){
-//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/*"), file);//TODO multipart/form-data /image/*
 //            builder.addFormDataPart("file", file.getName(), photoRequestBody);
 //            List<MultipartBody.Part> parts = builder.build().parts();
 //        }
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
-        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + file.getName() + "&session_token=" + settings.token;
         MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
         url = url.replace(" ", "%20");//文件名有空格
 
         //http调用
-        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .syncOldNotePic(url, part)//接口方法
+        MyHttpService.UpLoadBuilder.UploadServer()//固定样式，可自定义其他网络
+                .uploadPic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -569,9 +563,7 @@ public class MainModuleImpl implements IMainModule {
     //2-5
     @Override
     public void mNewNotePic(final OnMainListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, final TNNoteAtt tnNoteAtt) {
-        String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
-        long fileId = tnNoteAtt.attId;
 
         TNSettings settings = TNSettings.getInstance();
 
@@ -581,29 +573,24 @@ public class MainModuleImpl implements IMainModule {
 //                .setType(MultipartBody.FORM)//表单类型
 //                .addFormDataPart("token", settings.token);
 //        for(File file:files){
-//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/*"), file);//TODO multipart/form-data /image/*
 //            builder.addFormDataPart("file", file.getName(), photoRequestBody);
 //            List<MultipartBody.Part> parts = builder.build().parts();
 //        }
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = null;
-        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
-            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
-        } else {
-            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
-        }
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
-        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + file.getName() + "&session_token=" + settings.token;
         MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
         url = url.replace(" ", "%20");//文件名有空格
 
         //http调用
-        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .syncNewNotePic(url, part)//接口方法
+        MyHttpService.UpLoadBuilder.UploadServer()//固定样式，可自定义其他网络
+                .uploadPic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -719,29 +706,24 @@ public class MainModuleImpl implements IMainModule {
 //                .setType(MultipartBody.FORM)//表单类型
 //                .addFormDataPart("token", settings.token);
 //        for(File file:files){
-//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/*"), file);//TODO multipart/form-data /image/*
 //            builder.addFormDataPart("file", file.getName(), photoRequestBody);
 //            List<MultipartBody.Part> parts = builder.build().parts();
 //        }
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = null;
-        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
-            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
-        } else {
-            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
-        }
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
-        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + file.getName() + "&session_token=" + settings.token;
         MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
         url = url.replace(" ", "%20");//文件名有空格
 
         //http调用
-        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .syncRecoveryNotePic(url, part)//接口方法
+        MyHttpService.UpLoadBuilder.UploadServer()//固定样式，可自定义其他网络
+                .uploadPic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -951,9 +933,7 @@ public class MainModuleImpl implements IMainModule {
     //2-10-1
     @Override
     public void mEditNotePic(final OnMainListener listener, final int cloudsPos, final int attrPos, final TNNote note) {
-        String filename = note.atts.get(attrPos).attName;
         String filePath = note.atts.get(attrPos).path;
-        long fileId = note.atts.get(attrPos).attId;
         TNSettings settings = TNSettings.getInstance();
 
         //多个文件上传
@@ -962,29 +942,24 @@ public class MainModuleImpl implements IMainModule {
 //                .setType(MultipartBody.FORM)//表单类型
 //                .addFormDataPart("token", settings.token);
 //        for(File file:files){
-//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/*"), file);//TODO multipart/form-data /image/*
 //            builder.addFormDataPart("file", file.getName(), photoRequestBody);
 //            List<MultipartBody.Part> parts = builder.build().parts();
 //        }
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = null;
-        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
-            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
-        } else {
-            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
-        }
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
-        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + file.getName() + "&session_token=" + settings.token;
         MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
         url = url.replace(" ", "%20");//文件名有空格
 
         //http调用
-        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
-                .syncEditNotePic(url, part)//接口方法
+        MyHttpService.UpLoadBuilder.UploadServer()//固定样式，可自定义其他网络
+                .uploadPic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式

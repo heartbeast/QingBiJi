@@ -5,8 +5,6 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ITagInfoModule;
-import com.thinkernote.ThinkerNote._interface.m.ITagListModule;
-import com.thinkernote.ThinkerNote._interface.v.OnCommonListener;
 import com.thinkernote.ThinkerNote._interface.v.OnTagInfoListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;

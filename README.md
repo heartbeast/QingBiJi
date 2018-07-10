@@ -18,6 +18,8 @@
 不用包1：Action
 不用包2：NetWork
 不用包3:OAuth2 网络框架太老，不可用
+4.若完全放弃就框架，要删除的jar包：
+org.apache.http.legacy.jar
 
 
 4上传图片文件的网络框架 的异常说明：
@@ -26,3 +28,5 @@ retrofit2.adapter.rxjava.HttpException: HTTP 500 Internal Server Error
 
 
 
+https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132849.jpg&session_token=UWtHMAmnPVVUQhLfxS76Wfs4MegYF5DkTE9u3AG7
+https://s.qingbiji.cn/api/attachment?filename=1531208537961.jpg&session_token=UWtHMAmnPVVUQhLfxS76Wfs4MegYF5DkTE9u3AG7

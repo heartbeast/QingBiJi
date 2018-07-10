@@ -37,7 +37,6 @@ import com.iflytek.speech.SpeechConfig.RATE;
 import com.iflytek.speech.SpeechError;
 import com.iflytek.ui.RecognizerDialog;
 import com.iflytek.ui.RecognizerDialogListener;
-import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -45,7 +44,6 @@ import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
-import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNRecord;
@@ -1140,6 +1138,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     private void endSynchronize() {
+        mProgressDialog.hide();
         MLog.d("同步edit--同步结束");
         finish();
     }
@@ -1646,6 +1645,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     //========================================p层调用========================================
 
     private void syncEdit() {
+        mProgressDialog.show();
         pAddNewNote();
     }
 
