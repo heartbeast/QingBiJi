@@ -214,16 +214,18 @@ public class TNOAuth2 {
             List<NameValuePair> pairs = TNHttpUtils
                     .convertToNameValuePair(jsonData);
             entity = httpHelper.doPost(host, pairs);
-        } else if (method.equals("MULTIPART")) {
-            Object imageData = jsonData.get("imageData");
-            String key = jsonData.getString("imageKey");
-            jsonData.remove("imageData");
-            jsonData.remove("imageKey");
-
-            List<NameValuePair> pairs = TNHttpUtils
-                    .convertToNameValuePair(jsonData);
-            entity = httpHelper.doPostMultipart(host, pairs, imageData, key);
-        } else if (method.equals("PUT")) {
+        }
+//        else if (method.equals("MULTIPART")) {//TODO 老版本没使用
+//            Object imageData = jsonData.get("imageData");
+//            String key = jsonData.getString("imageKey");
+//            jsonData.remove("imageData");
+//            jsonData.remove("imageKey");
+//
+//            List<NameValuePair> pairs = TNHttpUtils
+//                    .convertToNameValuePair(jsonData);
+//            entity = httpHelper.doPostMultipart(host, pairs, imageData, key);
+//        }
+        else if (method.equals("PUT")) {
             List<NameValuePair> pairs = TNHttpUtils
                     .convertToNameValuePair(jsonData);
             entity = httpHelper.doPut(host, pairs);
@@ -231,9 +233,11 @@ public class TNOAuth2 {
             List<NameValuePair> pairs = TNHttpUtils
                     .convertToNameValuePair(jsonData);
             entity = httpHelper.doDelete(host, pairs);
-        } else if (method.equals("UPLOAD")) {
+        } else if (method.equals("UPLOAD")) {// TODO
+            //获取路径
             String path = (String) TNUtils.getFromJSON(jsonData, "path");
             jsonData.remove("path");
+            //拼接路径
             host = TNHttpUtils.makeUrl(host, jsonData);
             TNUtils.putToJson(jsonData, "path", path);
             List<NameValuePair> pairs = TNHttpUtils

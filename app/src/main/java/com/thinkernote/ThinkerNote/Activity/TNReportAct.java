@@ -30,6 +30,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsSkin;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.KeyBoardManager;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.Utils.UiUtils;
 import com.thinkernote.ThinkerNote.Views.MyGridView;
 import com.thinkernote.ThinkerNote._constructer.presenter.ReportPresenterImpl;
@@ -37,6 +38,7 @@ import com.thinkernote.ThinkerNote._interface.p.IReportPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
+import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +49,7 @@ import java.util.List;
 /**
  * 设置--关于我们--反馈
  * 只支持上传一张图片
- * 0625 TODO 上传图片bug
+ * sjy 0710
  */
 public class TNReportAct extends TNActBase
         implements OnClickListener, OnItemClickListener, OnReportListener {
@@ -58,6 +60,7 @@ public class TNReportAct extends TNActBase
     private MyGridView mGridView;
     private PlusPhotoAdapter mPhotoAdapter;
     private ArrayList<String> mFiles = new ArrayList<String>();
+    private File uploadFile;//上传的图片
     private ProgressDialog mProgressDialog = null;
 //	private String mPhotoPath;
 //	private Uri mOutUri;
@@ -174,6 +177,13 @@ public class TNReportAct extends TNActBase
         }
     }
 
+    /**
+     * 获取图
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -190,6 +200,7 @@ public class TNReportAct extends TNActBase
     private String compress(String path) {
         try {
             File file = new File(path);
+            uploadFile = file;
             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             bitmap.compress(CompressFormat.JPEG, 80, new FileOutputStream(path));
             return path;
@@ -239,19 +250,24 @@ public class TNReportAct extends TNActBase
 
     private void pfeedBack(String content, List<String> mFiles, String email) {
         if (mFiles.size() > 0) {
-            presener.pFeedBackPic(mFiles, content, email);
+            presener.pFeedBackPic(uploadFile, content, email);
         } else {
-            presener.pFeedBack(content, -1L, email);
+            pFeedBackByContent(content, -1L, email);
         }
+    }
+
+    private void pFeedBackByContent(String content, long pid, String email) {
+        presener.pFeedBack(content, pid, email);
+
     }
 
     //--------------------------------------接口结果回调------------------------------------------
 
     @Override
     public void onPicSuccess(Object obj, String content, String email) {
-        OldNotePicBean picBean = (OldNotePicBean) obj;
+        FeedBackBean picBean = (FeedBackBean) obj;
         //拿到pid,上传内容
-        presener.pFeedBack(content, -picBean.getId(), email);
+        pFeedBackByContent(content, picBean.getId(), email);
     }
 
     @Override

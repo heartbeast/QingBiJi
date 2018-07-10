@@ -10,8 +10,11 @@ import java.io.Serializable;
  */
 
 public class OldNotePicBean extends CommonBean implements Serializable {
-    String md5;
     long id;
+    String name;
+    String path;
+    long size;
+    String md5;
 
     public String getMd5() {
         return md5;
@@ -35,5 +38,29 @@ public class OldNotePicBean extends CommonBean implements Serializable {
                 "md5='" + md5 + '\'' +
                 ", id=" + id +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

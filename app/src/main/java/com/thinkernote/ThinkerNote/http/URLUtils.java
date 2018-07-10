@@ -137,6 +137,7 @@ public class URLUtils {
 
         /**
          * pic 上传 （feedback，等）
+         * https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
          */
         public static final String UPLOAD_PIC = "api/attachment";
 
@@ -205,7 +206,8 @@ public class URLUtils {
         public static final String RECOVERY_NOTE = "api/note/trash";//
 
         /**
-         * getNote
+         * getNote：
+         * https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
          */
         public static final String UPLOAD_PIC = "api/attachment";//
 
@@ -236,10 +238,6 @@ public class URLUtils {
      * 设置相关
      */
     public static class Settings {
-        /**
-         * 反馈伤上传图片
-         */
-        public static final String UPLOAD_PIC = "api/attachment";
         /**
          * feedBack
          */

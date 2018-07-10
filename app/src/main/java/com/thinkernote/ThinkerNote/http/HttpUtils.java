@@ -17,25 +17,20 @@ import com.thinkernote.ThinkerNote.http.fileprogress.FileProgressListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -119,6 +114,20 @@ public class HttpUtils {
         return (T) fileHttps;
     }
 
+ /**
+     * 02 Retrofit构建:Retrofit+okhttp
+     * 查看文件上传下载进度/结合progress使用
+     */
+
+    public <T> T upLoadServer(Class<T> clz) {
+        if (fileHttps == null) {
+            synchronized (HttpUtils.class) {
+                fileHttps = uploadBuilder(URLUtils.API_BASE_URL).build().create(clz);
+            }
+        }
+        return (T) fileHttps;
+    }
+
 
     //设置缓存
     private void initCache() {
@@ -167,10 +176,12 @@ public class HttpUtils {
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.client(getDefaultOkhttp());//设置okhttp（重点），不设置走默认的
         builder.baseUrl(apiUrl);//设置远程地址
+        //如下1--4 至少四选一
         builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
         builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
         //builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
         //builder.addConverterFactory(JsonResultConvertFactory.create());    //04:自定义的json解析器处理不规范json
+
         builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());//添加RxJavaCallAdapter
 
         return builder;
@@ -190,9 +201,31 @@ public class HttpUtils {
         builder.baseUrl(apiUrl);//设置远程地址
         builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());//添加RxJavaCallAdapter
 
+        //如下1--4 至少四选一
         //builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
         //builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
-        //builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
+        builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
+        //builder.addConverterFactory(JsonResultConvertFactory.create());    //04:自定义的json解析器处理不规范json
+
+        return builder;
+    }
+
+    /**
+     * 03 文件上传
+     * <p>
+     */
+    private Retrofit.Builder uploadBuilder(String apiUrl) {
+        MLog.d("Retrofit-->getFileBuilder");
+        //retrofit配置
+        Retrofit.Builder builder = new Retrofit.Builder();
+        builder.client(uploadOkHttp());//设置okhttp（重点），不设置走默认的
+        builder.baseUrl(apiUrl);//设置远程地址
+        builder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());//添加RxJavaCallAdapter
+
+        //如下1--4 至少四选一
+        //builder.addConverterFactory(new NullOnEmptyConverterFactory());      //01:添加自定义转换器，处理null响应
+        //builder.addConverterFactory(GsonConverterFactory.create(getGson())); //02:添加Gson转换器,将规范的gson及解析成实体
+        builder.addConverterFactory(GsonConverterFactory.create());        //03:添加Gson转换器,将规范的gson及解析成实体
         //builder.addConverterFactory(JsonResultConvertFactory.create());    //04:自定义的json解析器处理不规范json
 
         return builder;
@@ -244,7 +277,7 @@ public class HttpUtils {
     //================================= okhttp构建 该处根据你的后台灵活设置====================================
 
     /**
-     * 01 header+token+无缓存
+     * 01 header+token+无缓存+utf-8
      *
      * @return
      */
@@ -272,7 +305,10 @@ public class HttpUtils {
                     if (myToken != null) {
                         okhttpRequst.addHeader("session_token", myToken);//TODO token 位置
                     }
-                    return chain.proceed(okhttpRequst.build());
+
+                    return chain.proceed(okhttpRequst
+                         // .post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded;charset=UTF-8"), URLDecoder.decode(okhttpRequest.body().toString(), "UTF-8")))
+                            .build());
                 }
             });
             okBuilder.hostnameVerifier(new HostnameVerifier() {
@@ -310,6 +346,49 @@ public class HttpUtils {
             okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
             okBuilder.addInterceptor(new FileProgressInterceptor(listener));//下载文件进度 拦截器
 
+            return okBuilder.build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * 02 查看文件上传下载进度/结合progress使用
+     * 不需要使用token
+     *
+     * @return
+     */
+    private OkHttpClient uploadOkHttp() {
+        MLog.d("OkHttpClient-->getFileOkHttp");
+        //log打印级别
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        try {
+            //具体配置，可用链式结构
+            OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
+            okBuilder.connectTimeout(60 * 1000, TimeUnit.MILLISECONDS);//链接超时
+            okBuilder.retryOnConnectionFailure(true);
+            okBuilder.addInterceptor(loggingInterceptor);//设置拦截器,打印// getInterceptor() 为默认的，现在改为自定义 loggingInterceptor
+            okBuilder.addInterceptor(new Interceptor() {//设置统一请求头，由后台要求，灵活设置
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request okhttpRequest = chain.request();
+                    TNSettings settings = TNSettings.getInstance();
+                    String myToken = settings.token;//添加你的token
+
+                    Request.Builder okhttpRequst = okhttpRequest.newBuilder()
+                            .addHeader("user-agent", HttpHead.getHeader());
+                    if (myToken != null) {
+                        okhttpRequst.addHeader("session_token", myToken);//TODO token 位置
+                    }
+
+                    return chain.proceed(okhttpRequst
+//                             .post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded;charset=UTF-8"), URLDecoder.decode(okhttpRequest.body().toString(), "UTF-8")))//请求体格式设置
+                            .build());
+                }
+            });
             return okBuilder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);

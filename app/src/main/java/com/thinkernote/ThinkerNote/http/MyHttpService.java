@@ -68,7 +68,7 @@ public interface MyHttpService {
 
     /**
      * （1）retrofit+okhttp+Rxjava默认构建样式（header+token+无缓存）
-     * 非文件使用
+     * 通用设置
      */
     class Builder {
         public static MyHttpService getHttpServer() {
@@ -83,6 +83,23 @@ public interface MyHttpService {
         public static MyHttpService getFileServer(FileProgressListener listener) {
             MLog.d("DownloadBuilder-->getFileServer");
             return HttpUtils.getInstance().getFileServer(MyHttpService.class, listener);
+        }
+    }
+
+    /**
+     * (3)上传图片设置（通用设置 和（1）没区别，用于解释上传图片的特殊情况）
+     * <p>
+     * <p>
+     * 本app需要注意：
+     * 1.url：需要修正，包含token：
+     * https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * <p>
+     * 2.header: user-agent-xxx
+     * 3.内容:file
+     */
+    class UpLoadBuilder {
+        public static MyHttpService getHttpServer() {
+            return HttpUtils.getInstance().upLoadServer(MyHttpService.class);
         }
     }
 
@@ -365,14 +382,6 @@ public interface MyHttpService {
             , @Field("session_token") String session_token);
 
 
-    /**
-     * 图片上传 TODO
-     *
-     * @return
-     */
-    @POST(URLUtils.Home.UPLOAD_PIC)
-    Observable<CommonBean> upLoadPic(@Field("session_token") String session_token);
-
     //-------------------------------------------------同步相关----------------------------------------------------
 
     /**
@@ -400,45 +409,58 @@ public interface MyHttpService {
     /**
      * 同步 上传图片
      *
+     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * @param part
      * @return
      */
     @Multipart
-    @POST(URLUtils.Note.UPLOAD_PIC)
+    @POST
     Observable<OldNotePicBean> syncOldNotePic(
-            @Part MultipartBody.Part file
-            , @Part("session_token") RequestBody session_token);
+            @Url String url
+            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
+    );
 
     /**
      * 同步 上传图片
      *
+     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * @param part
      * @return
      */
     @Multipart
-    @POST(URLUtils.Note.UPLOAD_PIC)
+    @POST
     Observable<OldNotePicBean> syncNewNotePic(
-            @Part MultipartBody.Part file
-            , @Part("session_token") RequestBody session_token);
+            @Url String url
+            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
+    );
 
     /**
      * 同步 上传图片
      *
+     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * @param part
      * @return
      */
     @Multipart
-    @POST(URLUtils.Note.UPLOAD_PIC)
+    @POST
     Observable<OldNotePicBean> syncEditNotePic(
-            @Part MultipartBody.Part file
-            , @Part("session_token") RequestBody session_token);
+            @Url String url
+            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
+    );
 
     /**
      * 同步 上传图片
      *
+     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * @param part
      * @return
      */
     @Multipart
-    @POST(URLUtils.Note.UPLOAD_PIC)
+    @POST
     Observable<OldNotePicBean> syncRecoveryNotePic(
-            @Part List<MultipartBody.Part> parts);
+            @Url String url
+            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
+    );
 
 
     /**
@@ -605,7 +627,6 @@ public interface MyHttpService {
 
     /**
      * 同步 EditNote
-     * TODO 需要测试put请求
      *
      * @return
      */
@@ -831,16 +852,20 @@ public interface MyHttpService {
     //-------------------------------------------------设置相关----------------------------------------------------
 
     /**
-     * 上传多张图片
+     * 反馈
+     * 上传1张图片
      *
-     * @param parts
+     * @param url  上传图片的url： https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132850.jpg&session_token=7E3ECyCspLM7NXPD6wRbBatBV9SKrX4q89fUxmwf
+     * @param part
      * @return
      */
     @Multipart
-    @POST(URLUtils.Settings.UPLOAD_PIC)
+    @POST
     Observable<FeedBackBean> upLoadFeedBackPic(
-            @Part List<MultipartBody.Part> parts
-            , @Part("session_token") String session_token);
+            @Url String url
+            , @Part MultipartBody.Part part//多文件使用 @Part List<MultipartBody.Parts> parts
+    );
+
 
     /**
      * feedBack

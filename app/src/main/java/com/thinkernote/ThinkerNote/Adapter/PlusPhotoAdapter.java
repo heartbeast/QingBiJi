@@ -37,13 +37,11 @@ public class PlusPhotoAdapter extends BaseAdapter implements OnClickListener {
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		return mFiles.get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return position;
 	}
 

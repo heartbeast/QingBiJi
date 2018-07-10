@@ -7,6 +7,7 @@ import com.thinkernote.ThinkerNote._interface.m.IReportModule;
 import com.thinkernote.ThinkerNote._interface.p.IReportPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnReportListener;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class ReportPresenterImpl implements IReportPresenter, OnReportListener {
     //============================p层重写，用于调用m层方法============================
 
     @Override
-    public void pFeedBackPic(List<String> mFiles,String content,String email) {
+    public void pFeedBackPic(File mFiles, String content, String email) {
         module.mFeedBackPic(this, mFiles,content,email);
     }
 

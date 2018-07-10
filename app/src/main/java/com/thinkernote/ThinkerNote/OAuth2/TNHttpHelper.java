@@ -247,6 +247,15 @@ public class TNHttpHelper {
         return execute(request);
     }
 
+    /**
+     *
+     * @param url
+     * @param filePath
+     * @param params
+     * @return
+     * @throws RestHttpException
+     * @throws HttpException
+     */
     public TNHttpEntity doUploadFile(String url, String filePath, List<NameValuePair> params) throws RestHttpException, HttpException {
         MLog.i("doUploadFile", "url=" + url);
         url = url.replace(" ", "%20");//文件名有空格

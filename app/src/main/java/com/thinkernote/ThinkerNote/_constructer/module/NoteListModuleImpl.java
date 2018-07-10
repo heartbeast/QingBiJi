@@ -32,6 +32,7 @@ import com.thinkernote.ThinkerNote.bean.main.NoteListBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNoteAddBean;
 import com.thinkernote.ThinkerNote.bean.main.OldNotePicBean;
 import com.thinkernote.ThinkerNote.bean.main.TagListBean;
+import com.thinkernote.ThinkerNote.bean.settings.FeedBackBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 import com.thinkernote.ThinkerNote.http.MyRxUtils;
 import com.thinkernote.ThinkerNote.http.URLUtils;
@@ -219,7 +220,7 @@ public class NoteListModuleImpl implements INoteListModule {
                     @Override
                     public void onCompleted() {
                         MLog.d(TAG, "upgrade--onCompleted");
-                        listener.onSyncNoteAttrSuccess(null, pos,attrs,noteId);
+                        listener.onSyncNoteAttrSuccess(null, pos, attrs, noteId);
                     }
 
                     @Override
@@ -527,19 +528,38 @@ public class NoteListModuleImpl implements INoteListModule {
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
-
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncOldNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
+
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
+
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncOldNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
                 .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "OldNotePic--onCompleted");
                     }
 
                     @Override
@@ -559,6 +579,7 @@ public class NoteListModuleImpl implements INoteListModule {
                             listener.onSyncOldNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
                     }
+
 
                 });
     }
@@ -645,19 +666,43 @@ public class NoteListModuleImpl implements INoteListModule {
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
-
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncNewNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
+
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
+
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncNewNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
                 .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mNewNotePic--onCompleted");
                     }
 
                     @Override
@@ -677,7 +722,6 @@ public class NoteListModuleImpl implements INoteListModule {
                             listener.onSyncNewNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
                     }
-
                 });
     }
 
@@ -757,24 +801,39 @@ public class NoteListModuleImpl implements INoteListModule {
     @Override
     public void mRecoveryNotePic(final OnSynchronizeDataListener listener, final int picPos, final int picArrySize, final int notePos, final int noteArrySize, final TNNoteAtt tnNoteAtt) {
         TNSettings settings = TNSettings.getInstance();
-        //token
-        // 需要加入到MultipartBody中，而不是作为参数传递
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)//表单类型
-                .addFormDataPart("token", settings.token);
         String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
         //file
-        File file = new File(filename);
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);//TODO image/jpg
-        builder.addFormDataPart("fileName", file.getName(), photoRequestBody);
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
 
-        List<MultipartBody.Part> parts = builder.build().parts();
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
 
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncRecoveryNotePic(parts)//接口方法
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncRecoveryNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -801,7 +860,6 @@ public class NoteListModuleImpl implements INoteListModule {
                             listener.onSyncRecoveryNotePicFailed(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
                     }
-
                 });
     }
 
@@ -990,19 +1048,43 @@ public class NoteListModuleImpl implements INoteListModule {
         String filePath = note.atts.get(attrPos).path;
         long fileId = note.atts.get(attrPos).attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
-
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncEditNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
+
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
+
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncEditNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
                 .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mNewNotePic--onCompleted");
                     }
 
                     @Override
@@ -1021,6 +1103,7 @@ public class NoteListModuleImpl implements INoteListModule {
                         } else {
                             listener.onSyncEditNotePicFailed(bean.getMessage(), null, cloudsPos, attrPos, note);
                         }
+
                     }
 
                 });
@@ -1145,19 +1228,43 @@ public class NoteListModuleImpl implements INoteListModule {
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
-
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncNewNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
+
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
+
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncNewNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
                 .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mNewNotePic--onCompleted");
                     }
 
                     @Override
@@ -1265,16 +1372,35 @@ public class NoteListModuleImpl implements INoteListModule {
         String filename = tnNoteAtt.attName;
         String filePath = tnNoteAtt.path;
         long fileId = tnNoteAtt.attId;
-        //file
-        File file = new File(filename);
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);//TODO image/jpg
-        builder.addFormDataPart("fileName", file.getName(), photoRequestBody);
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
 
-        List<MultipartBody.Part> parts = builder.build().parts();
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
 
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncRecoveryNotePic(parts)//接口方法
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncRecoveryNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
@@ -1301,7 +1427,6 @@ public class NoteListModuleImpl implements INoteListModule {
                             listener.onSyncRecoveryNotePicFailed2(bean.getMessage(), null, picPos, picArrySize, notePos, noteArrySize);
                         }
                     }
-
                 });
     }
 
@@ -1490,19 +1615,43 @@ public class NoteListModuleImpl implements INoteListModule {
         String filePath = note.atts.get(attrPos).path;
         long fileId = note.atts.get(attrPos).attId;
 
-        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), filePath);//TODO image/jpg
-        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", filename, photoRequestBody);
-
         TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .syncEditNotePic(part, MyRxUtils.toRequestBody(settings.token))//接口方法
+
+        //多个文件上传
+        // 需要加入到MultipartBody中，而不是作为参数传递
+//        MultipartBody.Builder builder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)//表单类型
+//                .addFormDataPart("token", settings.token);
+//        for(File file:files){
+//            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpg"), file);//TODO multipart/form-data /image/jpg
+//            builder.addFormDataPart("file", file.getName(), photoRequestBody);
+//            List<MultipartBody.Part> parts = builder.build().parts();
+//        }
+
+        //单个文件上传
+        File file = new File(filePath);
+        RequestBody requestFile = null;
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith("png")) {
+            requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file); //TODO multipart/form-data /image/jpg
+        } else {
+            requestFile = RequestBody.create(MediaType.parse("image/jpg"), file); //TODO multipart/form-data /image/jpg
+        }
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        //拼接url(本app后台特殊嗜好，蛋疼):
+        String url = URLUtils.API_BASE_URL + URLUtils.Home.UPLOAD_PIC + "?" + "filename=" + filename + "&session_token=" + settings.token;
+        MLog.d("FeedBackPic", "url=" + url + "\nfilename=" + file.toString() + "---" + file.getName());
+        url = url.replace(" ", "%20");//文件名有空格
+
+        //http调用
+        MyHttpService.UpLoadBuilder.getHttpServer()//固定样式，可自定义其他网络
+                .syncEditNotePic(url, part)//接口方法
                 .subscribeOn(Schedulers.io())//固定样式
                 .unsubscribeOn(Schedulers.io())//固定样式
                 .observeOn(AndroidSchedulers.mainThread())//固定样式
                 .subscribe(new Observer<OldNotePicBean>() {//固定样式，可自定义其他处理
                     @Override
                     public void onCompleted() {
-                        MLog.d(TAG, "mNewNotePic--onCompleted");
                     }
 
                     @Override
@@ -1522,6 +1671,7 @@ public class NoteListModuleImpl implements INoteListModule {
                             listener.onSyncEditNotePicFailed2(bean.getMessage(), null, cloudsPos, attrPos, note);
                         }
                     }
+
 
                 });
     }
