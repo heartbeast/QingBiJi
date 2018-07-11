@@ -16,6 +16,10 @@ public class OldNotePicBean extends CommonBean implements Serializable {
     long size;
     String md5;
 
+    public OldNotePicBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getMd5() {
         return md5;
     }

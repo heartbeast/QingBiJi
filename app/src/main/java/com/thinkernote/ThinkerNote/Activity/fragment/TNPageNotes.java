@@ -1330,6 +1330,8 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
             if (!trashNoteExit) {
                 pUpdataNote(position, noteId, is13);
+            }else{
+                pUpdataNote13(position + 1, is13);
             }
         } else {
             //同步所有接口完成，结束同步

@@ -52,7 +52,6 @@ import com.thinkernote.ThinkerNote.Database.TNSQLString;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
-import com.thinkernote.ThinkerNote.General.TNDownloadAttService;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
@@ -64,6 +63,7 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewDownloadPresenter;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteViewPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.INoteViewPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteViewListener;
@@ -85,8 +85,8 @@ import java.util.concurrent.Executors;
  */
 public class TNNoteViewAct extends TNActBase implements OnClickListener,
         SynthesizerPlayerListener,
-        TNDownloadAttService.OnDownloadEndListener,
-        TNDownloadAttService.OnDownloadStartListener,
+        NoteViewDownloadPresenter.OnDownloadEndListener,
+        NoteViewDownloadPresenter.OnDownloadStartListener,
         PoPuMenuView.OnPoPuMenuItemClickListener,
         OnNoteViewListener {
     public static final long ATT_MAX_DOWNLOAD_SIZE = 50 * 1024;
@@ -117,45 +117,42 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     //p
     private INoteViewPresenter presenter;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    if (!isFinishing())
-                        openContextMenu(findViewById(R.id.noteview_openatt_menu));
-                    break;
-                case 2:
-                    TNNoteAtt att = (TNNoteAtt) msg.getData()
-                            .getSerializable("att");
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case 1:
+                if (!isFinishing())
+                    openContextMenu(findViewById(R.id.noteview_openatt_menu));
+                break;
+            case 2:
+                TNNoteAtt att = (TNNoteAtt) msg.getData()
+                        .getSerializable("att");
 
-                    String s = "<img name=\\\"loading\\\" src=\\\"file:///android_asset/download.png\\\" /><span name=\\\"abcd\\\"><br />%s(%s)</span>";
-                    s = String.format(s, att.attName, att.size / 1024 + "K");
-                    mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
-                            att.attId, s));
-                    MLog.d(TAG, "start javascript:loading");
-                    mWebView.loadUrl("javascript:loading()");
-                    break;
-                case 3:
-                    DisplayMetrics dm = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(dm);
-                    mWebView.loadDataWithBaseURL("", mNote
-                            .makeHtml((int) (dm.widthPixels / dm.scaledDensity)), "text/html", "utf-8", null);
-                    break;
-                case 4:
-                    Bundle b = msg.getData();
-                    mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
-                            b.getLong("attLocalId"), b.getString("s")));
-                    break;
-                case DIALOG_DELETE:
-                    mProgressDialog.hide();
-                    finish();
+                String s = "<img name=\\\"loading\\\" src=\\\"file:///android_asset/download.png\\\" /><span name=\\\"abcd\\\"><br />%s(%s)</span>";
+                s = String.format(s, att.attName, att.size / 1024 + "K");
+                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
+                        att.attId, s));
+                MLog.d(TAG, "start javascript:loading");
+                mWebView.loadUrl("javascript:loading()");
+                break;
+            case 3:
+                DisplayMetrics dm = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(dm);
+                mWebView.loadDataWithBaseURL("", mNote
+                        .makeHtml((int) (dm.widthPixels / dm.scaledDensity)), "text/html", "utf-8", null);
+                break;
+            case 4:
+                Bundle b = msg.getData();
+                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")", b.getLong("attLocalId"), b.getString("s")));
+                break;
+            case DIALOG_DELETE:
+                mProgressDialog.hide();
+                finish();
 
-                    break;
-            }
-            super.handleMessage(msg);
+                break;
         }
-    };
+        super.handleMessage(msg);
+    }
 
     // Activity methods
     // -------------------------------------------------------------------------------
@@ -212,7 +209,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         registerForContextMenu(findViewById(R.id.noteview_read_menu));
         registerForContextMenu(findViewById(R.id.noteview_share_menu));
 
-        TNDownloadAttService download = TNDownloadAttService.getInstance();
+        NoteViewDownloadPresenter download = NoteViewDownloadPresenter.getInstance();
         download.setOnDownloadEndListener(this);
         download.setOnDownloadStartListener(this);
         mGestureDetector = new GestureDetector(this, new TNGestureListener());
@@ -221,9 +218,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mJSInterface = new JSInterface();
-        mWebView.addJavascriptInterface(mJSInterface, "demo");
-
         //TODO
+        mWebView.addJavascriptInterface(mJSInterface, "demo");
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -231,6 +227,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 super.onPageFinished(view, url);
 
                 view.loadUrl("javascript:loading()");
+                //下载附件
                 startAutoDownload();
             }
 
@@ -332,9 +329,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     protected void configView() {
         mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
         if (createStatus == 0) {
-            TNDownloadAttService.getInstance().init(this, mNote);
+            NoteViewDownloadPresenter.getInstance().init(this, mNote);
         } else {
-            TNDownloadAttService.getInstance().updateNote(mNote);
+            NoteViewDownloadPresenter.getInstance().updateNote(mNote);
         }
         //判断是否是回收站的笔记，如果是顶部显示还原的按钮
         if (mNote.trash == 1) {
@@ -353,7 +350,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             if (!TNUtils.isNetWork()) {
                 Message msg = new Message();
                 msg.what = 3;
-                mHandler.sendMessage(msg);
+                handler.sendMessage(msg);
                 TNUtilsUi.alert(this, R.string.alert_NoteView_NetNotWork);
             } else {
                 mWebView.loadDataWithBaseURL("", getString(R.string.getingcontent), "text/html", "utf-8", null);
@@ -364,7 +361,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         } else {
             Message msg = new Message();
             msg.what = 3;
-            mHandler.sendMessage(msg);
+            handler.sendMessage(msg);
         }
 
     }
@@ -695,13 +692,13 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         msg.what = 2;
         msg.arg1 = 2;
         msg.setData(date);
-        mHandler.sendMessage(msg);
+        handler.sendMessage(msg);
     }
 
 
     @Override
-    public void onEnd(TNAction aAction) {
-        respondSyncNoteAtt(aAction);
+    public void onEnd(TNNoteAtt att, boolean isSucess, String msg) {
+        respondSyncNoteAtt(att, isSucess, msg);
     }
 
 
@@ -739,13 +736,12 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         configView();
     }
 
-    public void respondSyncNoteAtt(TNAction aAction) {
-        MLog.i(TAG, "respondSyncNoteAtt: " + aAction.type + " isInFront: "
-                + isInFront);
+    public void respondSyncNoteAtt(TNNoteAtt att, boolean isSucess, String errorMsg) {
+        MLog.i(TAG, "respondSyncNoteAtt: " + att.type + " isInFront: " + isInFront);
         if (isInFront) {
-            if (!TNHandleError.handleResult(this, aAction)) {
+            if (isSucess) {
+                MLog.d("download","下载结束 act显示");
                 mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
-                TNNoteAtt att = (TNNoteAtt) aAction.inputs.get(0);
                 try {
                     att.makeThumbnail();
                 } catch (Exception e) {
@@ -805,9 +801,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 b.putLong("attLocalId", att.attLocalId);
                 msg.what = 4;
                 msg.setData(b);
-                mHandler.sendMessage(msg);
+                handler.sendMessage(msg);
             } else {
-                TNNoteAtt att = (TNNoteAtt) aAction.inputs.get(0);
+                MLog.d("download","下载结束 失败");
                 String s = "";
                 if (TextUtils.isEmpty(att.path) && att.syncState == 1) {
                     s = String
@@ -829,7 +825,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 b.putLong("attLocalId", att.attLocalId);
                 msg.what = 4;
                 msg.setData(b);
-                mHandler.sendMessage(msg);
+                handler.sendMessage(msg);
             }
         }
     }
@@ -899,6 +895,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
     }
 
+    /**
+     * 下载附件
+     */
     private void startAutoDownload() {
         MLog.d(TAG, "startAutoDownload");
         if (!TNUtils.isNetWork())
@@ -907,8 +906,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         if (mNote == null)
             return;
 
-        //TODO
-        TNDownloadAttService.getInstance().start();
+        NoteViewDownloadPresenter.getInstance().start();
     }
 
     private void showSynDialog() {
@@ -1283,7 +1281,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
          */
         public void downloadAtt(long id) {
             MLog.d(TAG, "downloadAtt:" + id);
-            TNDownloadAttService.getInstance().start(id);
+            NoteViewDownloadPresenter.getInstance().start(id);
         }
 
         public void openAtt(long id) {
@@ -1299,7 +1297,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 Message msg = new Message();
                 msg.what = 1;
                 msg.arg1 = 1;
-                mHandler.sendMessage(msg);
+                handler.sendMessage(msg);
             }
         }
 
@@ -1418,7 +1416,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -1477,7 +1474,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     //------------------------------p层调用------------------------------
     private void pGetNote(long mNoteLocalId) {
-
         presenter.pGetNote(mNoteLocalId);
 
         //TODO
@@ -1491,13 +1487,13 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         updateNote((GetNoteByNoteIdBean) obj);
 
         mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
-        TNDownloadAttService.getInstance().init(this, mNote);
+        NoteViewDownloadPresenter.getInstance().init(this, mNote);
 
         startAutoDownload();
 
         Message msg = new Message();
         msg.what = 3;
-        mHandler.sendMessage(msg);
+        handler.sendMessage(msg);
     }
 
     @Override

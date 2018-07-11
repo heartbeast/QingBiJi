@@ -17,6 +17,10 @@ public class MainUpgradeBean extends CommonBean implements Serializable {
     String url;
     String host;
 
+    public MainUpgradeBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getUpdate_at() {
         return update_at;
     }

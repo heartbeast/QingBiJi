@@ -14,6 +14,10 @@ public class LoginBean extends CommonBean implements Serializable {
     String token;
     long expire_at;
 
+    public LoginBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getUsername() {
         return username;
     }

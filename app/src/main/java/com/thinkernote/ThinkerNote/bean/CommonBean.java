@@ -26,6 +26,10 @@ public class CommonBean implements Serializable {
         this.msg = message;
     }
 
+    public CommonBean(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 
     @Override
     public String toString() {

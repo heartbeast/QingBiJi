@@ -13,6 +13,10 @@ public class VerifyPicBean extends CommonBean implements Serializable {
     private String nonce;
     private String hashkey;
 
+    public VerifyPicBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getCaptcha() {
         return captcha;
     }

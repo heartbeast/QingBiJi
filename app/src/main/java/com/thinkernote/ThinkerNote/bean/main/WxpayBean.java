@@ -21,6 +21,10 @@ public class WxpayBean extends CommonBean implements Serializable {
     String Package;
     String   sign;
 
+    public WxpayBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getAppid() {
         return appid;
     }

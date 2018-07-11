@@ -2090,8 +2090,12 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
             if (!trashNoteExit) {
                 pUpdataNote(position, noteId, is13);
+            } else {
+                //下一个接口
+                pUpdataNote13(position + 1, is13);
             }
         } else {
+            MLog.d("同步edit2-13--endSynchronize");
             //同步所有接口完成，结束同步
             endSynchronize();
         }
@@ -2417,7 +2421,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         MLog.e(msg);
     }
 
-    //2-12 说明：不执行该步骤
+    //2-12 说明：
     @Override
     public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
         trashNoteArr = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
@@ -2456,7 +2460,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e) {
-
+        mProgressDialog.hide();
+        MLog.e(msg);
     }
 
 }

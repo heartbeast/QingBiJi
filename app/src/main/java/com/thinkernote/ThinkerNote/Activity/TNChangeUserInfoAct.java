@@ -221,8 +221,8 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
 
     private void getUserInfo() {
         presener.pProfile();
-        // TODO
-        TNAction.runActionAsync(TNActionType.Profile);
+//        // TODO
+//        TNAction.runActionAsync(TNActionType.Profile);
     }
 
     //============================================接口结果返回====================================================

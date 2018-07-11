@@ -1868,6 +1868,9 @@ public class TNPageCats extends TNChildViewBase implements
             }
             if (!trashNoteExit) {
                 pUpdataNote1(position, noteId, is13);
+            }else{
+                pUpdataNote131(position + 1, is13);
+
             }
         } else {
             //同步所有接口完成，结束同步

@@ -6,12 +6,16 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 支付结果返回
+ *
  * 格式{code msg data {}}
  */
 
 public class AllNotesIdsBean extends CommonBean implements Serializable {
     List<NoteIdItemBean> note_ids;
+
+    public AllNotesIdsBean(int code, String msg) {
+        super(code, msg);
+    }
 
     public class NoteIdItemBean implements Serializable {
 

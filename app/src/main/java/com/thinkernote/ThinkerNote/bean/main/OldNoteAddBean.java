@@ -14,6 +14,10 @@ public class OldNoteAddBean extends CommonBean implements Serializable {
     String md5;
     long id;
 
+    public OldNoteAddBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public String getMd5() {
         return md5;
     }

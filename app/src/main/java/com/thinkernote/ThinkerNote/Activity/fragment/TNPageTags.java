@@ -1479,6 +1479,9 @@ public class TNPageTags extends TNChildViewBase implements
             }
             if (!trashNoteExit) {
                 pUpdataNote(position, noteId, is13);
+            } else {
+                //下一个接口
+                pUpdataNote13(position + 1, is13);
             }
         } else {
             //同步所有接口完成，结束同步

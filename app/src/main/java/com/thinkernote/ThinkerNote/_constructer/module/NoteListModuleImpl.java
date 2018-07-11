@@ -187,7 +187,7 @@ public class NoteListModuleImpl implements INoteListModule {
 //        aAction.runChildAction(TNActionType.TNHttpDownloadAtt, ("attachment/" + att.attId), att.attId, path);
 
         //url绝对路径
-        String url = URLUtils.API_BASE_URL + "attachment/" + att.attId;
+        String url = URLUtils.API_BASE_URL + "attachment/" + att.attId+"?session_token="+TNSettings.getInstance().token;
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .downloadFile(url)//接口方法
                 .subscribeOn(Schedulers.io())
@@ -238,6 +238,14 @@ public class NoteListModuleImpl implements INoteListModule {
 
         if (file.exists()) {
             file.delete();
+        }else{
+            //创建新文件
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         FileOutputStream fos = null;

@@ -2240,6 +2240,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
             if (!trashNoteExit) {
                 pUpdataNote2(position, noteId, is13);
+            }else{
+                pUpdataNote132(position+1,is13);
             }
         } else {
             //同步所有接口完成，结束同步

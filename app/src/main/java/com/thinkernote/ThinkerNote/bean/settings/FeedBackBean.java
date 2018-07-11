@@ -16,6 +16,10 @@ public class FeedBackBean extends CommonBean implements Serializable {
     long size;
     String md5;
 
+    public FeedBackBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public long getId() {
         return id;
     }

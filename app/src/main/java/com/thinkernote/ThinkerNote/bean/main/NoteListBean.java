@@ -14,6 +14,10 @@ public class NoteListBean extends CommonBean implements Serializable {
     int pagenum;
     int count;
 
+    public NoteListBean(int code, String msg) {
+        super(code, msg);
+    }
+
     public int getPagenum() {
         return pagenum;
     }

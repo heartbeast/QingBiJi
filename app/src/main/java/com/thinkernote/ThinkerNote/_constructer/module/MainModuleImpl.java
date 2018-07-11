@@ -150,6 +150,14 @@ public class MainModuleImpl implements IMainModule {
 
         if (file.exists()) {
             file.delete();
+        }else{
+            //创建新文件
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         FileOutputStream fos = null;
