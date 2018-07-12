@@ -864,6 +864,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     //更换标签后更新笔记
     public void respondNoteLocalChangeTag(TNAction aAction) {
+        //TODO
+        MLog.e("更新完标签");
         configView();
     }
 
@@ -1502,9 +1504,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     //------------------------------p层调用------------------------------
     private void pGetNote(long mNoteLocalId) {
         presenter.pGetNote(mNoteLocalId);
-
-        //TODO
-//        TNAction.runActionAsync(TNActionType.GetNoteByNoteId, mNote.noteId, this);
     }
 
     //-----------------------------接口结果回调-------------------------------

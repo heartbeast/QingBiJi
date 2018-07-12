@@ -71,8 +71,8 @@ public class TNAction {
 	 */
 	public static void regRunner(Object aType, Object aObject, String aMethod){
 		TNActionCenter center = TNActionCenter.getInstance();
-		Assert.assertTrue("regRunner !center.runners.containsKey(aType)", 
-				!center.runners.containsKey(aType));
+//		Assert.assertTrue("regRunner !center.runners.containsKey(aType)",
+//				!center.runners.containsKey(aType));
 		if( center.runners.containsKey(aType)){
 			center.runners.remove(aType);
 		}

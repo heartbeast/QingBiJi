@@ -629,8 +629,6 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      */
 
     private void pSynchronizeData() {
-        //TODO
-//		TNAction.runActionAsync(TNActionType.Synchronize, "pageNote");
         MLog.d("frag同步--全部笔记--pSynchronizeData");
         if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
             //需要同步的文件数据

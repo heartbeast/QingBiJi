@@ -166,7 +166,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notelist);
-
+        MLog.e("TNNoteListAct" + "跳转  TNNoteListAct");
         setViews();
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
@@ -2249,8 +2249,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
             if (!trashNoteExit) {
                 pUpdataNote2(position, noteId, is13);
-            }else{
-                pUpdataNote132(position+1,is13);
+            } else {
+                pUpdataNote132(position + 1, is13);
             }
         } else {
             //同步所有接口完成，结束同步
@@ -2743,7 +2743,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID,   new Object[]{nonteLocalID});
+                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, new Object[]{nonteLocalID});
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -2786,7 +2786,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotePic1(int position) {
         MLog.d("NoteList同步---pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes == null || editNotes.size() <= 0) {
@@ -2825,7 +2825,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotePic1(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("NoteList同步---pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -3612,7 +3612,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                             TNDb.beginTransaction();
                             try {
                                 //
-                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                                 TNDb.setTransactionSuccessful();
                             } finally {
@@ -3969,7 +3969,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                             TNDb.beginTransaction();
                             try {
                                 //
-                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                                 TNDb.setTransactionSuccessful();
                             } finally {

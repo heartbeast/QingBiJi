@@ -811,8 +811,6 @@ public class TNPageTags extends TNChildViewBase implements
      */
 
     private void pSynchronizeData() {
-        //TODO
-//        TNAction.runActionAsync(TNActionType.Synchronize, "Tags");
         if (mSettings.firstLaunch) {//如果第一次登录app，执行该处方法
             //需要同步的文件数据
             arrayFolderName = new String[]{TNConst.FOLDER_DEFAULT, TNConst.FOLDER_MEMO, TNConst.GROUP_FUN, TNConst.GROUP_WORK, TNConst.GROUP_LIFE};
