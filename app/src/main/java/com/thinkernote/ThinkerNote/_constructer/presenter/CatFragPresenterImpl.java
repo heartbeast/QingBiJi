@@ -5,6 +5,7 @@ import android.content.Context;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
 import com.thinkernote.ThinkerNote.General.TNSettings;
+import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.module.CatFragModuleImpl;
 import com.thinkernote.ThinkerNote._interface.m.ICatFragModule;
 import com.thinkernote.ThinkerNote._interface.p.ICatFragPresenter;
@@ -171,6 +172,7 @@ public class CatFragPresenterImpl implements ICatFragPresenter, OnCatFragListene
     //2-10-1
     @Override
     public void pEditNotePic(int cloudsPos, int attrPos, TNNote note) {
+        MLog.d("2-10-1 presenter实现");
         module.mEditNotePic(dataListener, cloudsPos, attrPos, note);
 
     }

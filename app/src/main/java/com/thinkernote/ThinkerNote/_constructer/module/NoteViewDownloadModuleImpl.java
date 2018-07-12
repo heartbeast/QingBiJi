@@ -1,6 +1,7 @@
 package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
@@ -53,13 +54,22 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
 
 
     @Override
-    public void listDownload(final TNNoteAtt att, TNNote tnNote, final Vector<TNNoteAtt> tmpList, final int position) {
+    public void listDownload(final TNNoteAtt att, final TNNote tnNote, final int position) {
 
 
         // check file downloadSize
+        File file = null;
+        if (!TextUtils.isEmpty(att.path)) {
+            file = new File(att.path);
+        }
+        if (file.length() != 0 && att.syncState == 2) {
+            listener.onListDownloadSuccess(tnNote, att, position);
+            return;
+        }
+
         final String path = TNUtilsAtt.getAttPath(att.attId, att.type);
         if (path == null) {
-            listener.onListDownloadFailed(TNUtils.getAppContext().getResources().getString(R.string.alert_NoSDCard), new Exception("接口异常！"), att, tmpList, position);
+            listener.onListDownloadFailed(TNUtils.getAppContext().getResources().getString(R.string.alert_NoSDCard), new Exception("接口异常！"), att, position);
             return;
         }
 
@@ -68,7 +78,13 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
 
         //url绝对路径:https://s.qingbiji.cn/attachment/28498638?session_token=KA6nN3d3eqMRuWJr8gmX6Svw7d27HPr69qmbpBhf
         String url = URLUtils.API_BASE_URL + "attachment/" + att.attId + "?session_token=" + TNSettings.getInstance().token;
-        MLog.d("download", "url=" + url + "下载路径：path=" + path);
+        MLog.d("download", "position=" + position + "--url=" + url + "--下载路径：path=" + path);
+        //返回有图片路径的TNNoteAtt
+        final TNNoteAtt newAtt = att;
+        newAtt.path = path;
+        newAtt.thumbnail = path;
+
+        //将路径保存到TNNoteAtt，成功后返回
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .downloadFile(url)//接口方法
                 .subscribeOn(Schedulers.io())
@@ -92,13 +108,13 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
                     @Override
                     public void onCompleted() {
                         MLog.d(TAG, "listDownload--onCompleted");
-                        listener.onListDownloadSuccess(null, att, tmpList, position);
+                        listener.onListDownloadSuccess( tnNote, newAtt, position);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         MLog.e("listDownload 异常onError:" + e.toString());
-                        listener.onListDownloadFailed("下载失败", new Exception("接口异常！"), att, tmpList, position);
+                        listener.onListDownloadFailed("下载失败", new Exception("接口异常！"), att, position);
                     }
 
                     @Override
@@ -110,7 +126,15 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
     }
 
     @Override
-    public void singleDownload(final TNNoteAtt att, TNNote tnNote) {
+    public void singleDownload(final TNNoteAtt att, final TNNote tnNote) {
+        File file = null;
+        if (!TextUtils.isEmpty(att.path)) {
+            file = new File(att.path);
+        }
+        if (file.length() != 0 && att.syncState == 2) {
+            listener.onSingleDownloadFailed(TNUtils.getAppContext().getResources().getString(R.string.alert_NoSDCard), new Exception("接口异常！"));
+            return;
+        }
 
         final String path = TNUtilsAtt.getAttPath(att.attId, att.type);
         if (path == null) {
@@ -124,6 +148,11 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
         //                https://s.qingbiji.cn/attachment/28498638?session_token=av8u9gGn6h4YEDbNd3RQKsyrd2X6SjKTu29DW6EU
         String url = URLUtils.API_BASE_URL + "attachment/" + att.attId + "?session_token=" + TNSettings.getInstance().token;
         MLog.d("download", "url=" + url + "下载路径：path=" + path);
+        //返回有图片路径的TNNoteAtt
+        final TNNoteAtt newAtt = att;
+        newAtt.path = path;
+        newAtt.thumbnail = path;
+
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .downloadFile(url)//接口方法
                 .subscribeOn(Schedulers.io())
@@ -147,7 +176,7 @@ public class NoteViewDownloadModuleImpl implements INoteViewDownloadModule {
                     @Override
                     public void onCompleted() {
                         MLog.d(TAG, "singleDownload--onCompleted");
-                        listener.onSingleDownloadSuccess(null, att);
+                        listener.onSingleDownloadSuccess(tnNote, newAtt);
                     }
 
                     @Override

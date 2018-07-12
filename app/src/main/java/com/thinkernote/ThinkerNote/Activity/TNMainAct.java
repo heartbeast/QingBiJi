@@ -1342,10 +1342,14 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
+                if (editNotes == null || editNotes.size() <= 0) {
+                    //执行下一个接口
+                    pUpdataNote(0, false);
+                }
                 //找出该日记，比较时间
                 for (int j = 0; j < editNotes.size(); j++) {
                     if (id == editNotes.get(j).noteId) {
@@ -1356,7 +1360,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                             updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
                         }
                     }
+                    if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                        //执行下一个position
+                        pEditNotePic(position + 1);
+                    }
                 }
+
             } else {
                 //执行下一个循环
                 pEditNotePic(position + 1);
@@ -1377,7 +1386,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("sync---2-10-1-pEditNotePic");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;

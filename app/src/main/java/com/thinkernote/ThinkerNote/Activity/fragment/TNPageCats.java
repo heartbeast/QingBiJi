@@ -1686,11 +1686,16 @@ public class TNPageCats extends TNChildViewBase implements
      * @param position cloudIds数据的其实操作位置
      */
     private void pEditNotePic1(int position) {
-        MLog.d("frag同步--pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+        MLog.d("frag同步--pEditNotePic1（position） 2-10-1");
+
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
 
+            if (editNotes == null || editNotes.size() <= 0) {
+                //执行下一个接口
+                pUpdataNote1(0, false);
+            }
             //找出该日记，比较时间
             for (int j = 0; j < editNotes.size(); j++) {
                 if (id == editNotes.get(j).noteId) {
@@ -1700,6 +1705,10 @@ public class TNPageCats extends TNChildViewBase implements
                     } else {
                         updataEditNotesLastTime1(position, editNotes.get(j).noteLocalId);
                     }
+                }
+                if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                    //执行下一个position
+                    pEditNotePic1(position + 1);
                 }
             }
 
@@ -1717,8 +1726,8 @@ public class TNPageCats extends TNChildViewBase implements
      * @param tnNote
      */
     private void pEditNotePic1(int cloudsPos, int attsPos, TNNote tnNote) {
-        MLog.d("frag同步--pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+        MLog.d("frag同步--pEditNotePic1（cloudsPos，attsPos，tnNote） 2-10-1");
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -1747,6 +1756,7 @@ public class TNPageCats extends TNChildViewBase implements
             }
 
             if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+                MLog.d("2-10-1 上传图片");
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
@@ -1868,7 +1878,7 @@ public class TNPageCats extends TNChildViewBase implements
             }
             if (!trashNoteExit) {
                 pUpdataNote1(position, noteId, is13);
-            }else{
+            } else {
                 pUpdataNote131(position + 1, is13);
 
             }
@@ -2414,7 +2424,7 @@ public class TNPageCats extends TNChildViewBase implements
                             TNDb.beginTransaction();
                             try {
                                 //
-                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                                TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                                 TNDb.setTransactionSuccessful();
                             } finally {

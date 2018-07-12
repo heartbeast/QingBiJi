@@ -576,7 +576,7 @@ public class TNPageTags extends TNChildViewBase implements
                 try {
                     TNNote note = TNDbUtils.getNoteByNoteId(nonteLocalID);
                     //
-                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{nonteLocalID});
+                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{nonteLocalID});
                     TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1301,10 +1301,14 @@ public class TNPageTags extends TNChildViewBase implements
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
+                if (editNotes == null || editNotes.size() <= 0) {
+                    //执行下一个接口
+                    pUpdataNote(0, false);
+                }
                 //找出该日记，比较时间
                 for (int j = 0; j < editNotes.size(); j++) {
                     if (id == editNotes.get(j).noteId) {
@@ -1314,6 +1318,10 @@ public class TNPageTags extends TNChildViewBase implements
                         } else {
                             updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
                         }
+                    }
+                    if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                        //执行下一个position
+                        pEditNotePic(position + 1);
                     }
                 }
             } else {
@@ -1335,7 +1343,7 @@ public class TNPageTags extends TNChildViewBase implements
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -2021,7 +2029,7 @@ public class TNPageTags extends TNChildViewBase implements
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                             TNDb.setTransactionSuccessful();
                         } finally {

@@ -2071,8 +2071,13 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
 
+            if (editNotes == null || editNotes.size() <= 0) {
+                //执行下一个接口
+                pUpdataNote2(0, false);
+            }
             //找出该日记，比较时间
             for (int j = 0; j < editNotes.size(); j++) {
+
                 if (id == editNotes.get(j).noteId) {
                     if (editNotes.get(j).lastUpdate > lastUpdate) {
                         //上传图片，之后上传文本
@@ -2080,6 +2085,10 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                     } else {
                         updataEditNotesLastTime2(position, editNotes.get(j).noteLocalId);
                     }
+                }
+                if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                    //执行下一个position
+                    pEditNotePic2(position + 1);
                 }
             }
 
@@ -2777,12 +2786,16 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotePic1(int position) {
         MLog.d("NoteList同步---pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
-
+            if (editNotes == null || editNotes.size() <= 0) {
+                //执行下一个接口
+                pUpdataNote1(0, false);
+            }
             //找出该日记，比较时间
             for (int j = 0; j < editNotes.size(); j++) {
+
                 if (id == editNotes.get(j).noteId) {
                     if (editNotes.get(j).lastUpdate > lastUpdate) {
                         //上传图片，之后上传文本
@@ -2790,6 +2803,10 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                     } else {
                         updataEditNotesLastTime1(position, editNotes.get(j).noteLocalId);
                     }
+                }
+                if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                    //执行下一个position
+                    pEditNotePic1(position + 1);
                 }
             }
 
@@ -2808,7 +2825,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pEditNotePic1(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("NoteList同步---pEditNotePic1 2-10-1");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;

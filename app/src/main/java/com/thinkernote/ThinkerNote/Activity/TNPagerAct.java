@@ -1671,7 +1671,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1684,6 +1684,10 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                         } else {
                             updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
                         }
+                    }
+                    if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
+                        //执行下一个position
+                        pEditNotePic(position + 1);
                     }
                 }
             } else {
@@ -1708,7 +1712,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("sync---2-10-1-pEditNotePic");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;

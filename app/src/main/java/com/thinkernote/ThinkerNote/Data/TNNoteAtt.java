@@ -33,6 +33,7 @@ public class TNNoteAtt implements Serializable{
 	
 	public int width;
 	public int height;
+
 	
 	public TNNoteAtt copyAtt(){
 		TNNoteAtt att = new TNNoteAtt();
@@ -140,5 +141,22 @@ public class TNNoteAtt implements Serializable{
 			thumbnail = TNUtilsAtt.makeThumbnailForImage(path);
 		}
 	}
-	
+
+	@Override
+	public String toString() {
+		return "TNNoteAtt{" +
+				"attLocalId=" + attLocalId +
+				", noteLocalId=" + noteLocalId +
+				", attId=" + attId +
+				", attName='" + attName + '\'' +
+				", type=" + type +
+				", path='" + path + '\'' +
+				", syncState=" + syncState +
+				", size=" + size +
+				", digest='" + digest + '\'' +
+				", thumbnail='" + thumbnail + '\'' +
+				", width=" + width +
+				", height=" + height +
+				'}';
+	}
 }

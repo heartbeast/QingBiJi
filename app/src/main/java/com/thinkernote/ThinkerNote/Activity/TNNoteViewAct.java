@@ -89,8 +89,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         NoteViewDownloadPresenter.OnDownloadStartListener,
         PoPuMenuView.OnPoPuMenuItemClickListener,
         OnNoteViewListener {
+
+    public static final String TAG = "TNNoteViewAct";
     public static final long ATT_MAX_DOWNLOAD_SIZE = 50 * 1024;
     public static final int DIALOG_DELETE = 101;//
+    public static final int WEBBVIEW_START = 102;//
+    public static final int WEBBVIEW_OPEN_ATT = 103;//
+    public static final int WEBBVIEW_LOADING = 104;//
+    public static final int WEBBVIEW_SHOW = 105;//
 
     // Class members
     // -------------------------------------------------------------------------------
@@ -120,11 +126,11 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     @Override
     public void handleMessage(Message msg) {
         switch (msg.what) {
-            case 1:
+            case WEBBVIEW_OPEN_ATT:
                 if (!isFinishing())
                     openContextMenu(findViewById(R.id.noteview_openatt_menu));
                 break;
-            case 2:
+            case WEBBVIEW_START:
                 TNNoteAtt att = (TNNoteAtt) msg.getData()
                         .getSerializable("att");
 
@@ -135,15 +141,18 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 MLog.d(TAG, "start javascript:loading");
                 mWebView.loadUrl("javascript:loading()");
                 break;
-            case 3:
+            case WEBBVIEW_LOADING:
                 DisplayMetrics dm = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(dm);
                 mWebView.loadDataWithBaseURL("", mNote
                         .makeHtml((int) (dm.widthPixels / dm.scaledDensity)), "text/html", "utf-8", null);
                 break;
-            case 4:
+            case WEBBVIEW_SHOW:
                 Bundle b = msg.getData();
-                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")", b.getLong("attLocalId"), b.getString("s")));
+                //javascript:wave("1", "<div id=\"1\"><a onClick=\"window.demo.openAtt(1)\"><img src=\"file://null\" /></a></div>")
+                //javascript:wave("1", "<div id=\"1\"><a onClick=\"window.demo.openAtt(1)\"><img src=\"file:///storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg\" /></a></div>")
+                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
+                        b.getLong("attLocalId"), b.getString("s")));
                 break;
             case DIALOG_DELETE:
                 mProgressDialog.hide();
@@ -170,7 +179,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mScale = metric.scaledDensity;
 
         // TODO 未做
-        TNAction.regResponder(TNActionType.SyncNoteAtt, this, "respondSyncNoteAtt");
+//        TNAction.regResponder(TNActionType.SyncNoteAtt, this, "respondSyncNoteAtt");
         TNAction.regResponder(TNActionType.NoteLocalDelete, this, "respondNoteHandle");
         TNAction.regResponder(TNActionType.NoteLocalRealDelete, this, "respondNoteHandle");
         TNAction.regResponder(TNActionType.NoteLocalRecovery, this, "respondNoteHandle");
@@ -220,35 +229,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mJSInterface = new JSInterface();
         //TODO
         mWebView.addJavascriptInterface(mJSInterface, "demo");
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                MLog.d(TAG, "onPageFinished:" + url);
-                super.onPageFinished(view, url);
 
-                view.loadUrl("javascript:loading()");
-                //下载附件
-                startAutoDownload();
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                MLog.d(TAG, "shouldOverrideUrlLoading:" + url);
-                super.shouldOverrideUrlLoading(view, url);
-
-                if (url.startsWith("http:") || url.startsWith("https:")) {
-                    return false;
-                }
-
-                // Otherwise allow the OS to handle it
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                TNUtilsDialog.startIntent(TNNoteViewAct.this, intent,
-                        R.string.alert_NoteView_CantOpenMsg);
-
-                return true;
-            }
-
-        });
 
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
     }
@@ -349,7 +330,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         if (mNote.syncState == 1) {
             if (!TNUtils.isNetWork()) {
                 Message msg = new Message();
-                msg.what = 3;
+                msg.what = WEBBVIEW_LOADING;
                 handler.sendMessage(msg);
                 TNUtilsUi.alert(this, R.string.alert_NoteView_NetNotWork);
             } else {
@@ -360,9 +341,40 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
         } else {
             Message msg = new Message();
-            msg.what = 3;
+            msg.what = WEBBVIEW_LOADING;
             handler.sendMessage(msg);
         }
+
+        //
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                MLog.d(TAG, "onPageFinished:" + url);
+                super.onPageFinished(view, url);
+
+                view.loadUrl("javascript:loading()");
+                //下载附件
+                startAutoDownload();
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                MLog.d(TAG, "shouldOverrideUrlLoading:" + url);
+                super.shouldOverrideUrlLoading(view, url);
+
+                if (url.startsWith("http:") || url.startsWith("https:")) {
+                    return false;
+                }
+
+                // Otherwise allow the OS to handle it
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                TNUtilsDialog.startIntent(TNNoteViewAct.this, intent,
+                        R.string.alert_NoteView_CantOpenMsg);
+
+                return true;
+            }
+
+        });
 
     }
 
@@ -689,7 +701,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         Message msg = new Message();
         Bundle date = new Bundle();
         date.putSerializable("att", att);
-        msg.what = 2;
+        msg.what = WEBBVIEW_START;
         msg.arg1 = 2;
         msg.setData(date);
         handler.sendMessage(msg);
@@ -698,7 +710,11 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onEnd(TNNoteAtt att, boolean isSucess, String msg) {
-        respondSyncNoteAtt(att, isSucess, msg);
+        if (isSucess) {
+            downloadOver(att, isSucess, msg);
+        } else {
+            configView();
+        }
     }
 
 
@@ -736,11 +752,18 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         configView();
     }
 
-    public void respondSyncNoteAtt(TNNoteAtt att, boolean isSucess, String errorMsg) {
-        MLog.i(TAG, "respondSyncNoteAtt: " + att.type + " isInFront: " + isInFront);
+    public void downloadOver(TNNoteAtt att, boolean isSucess, String errorMsg) {
+        MLog.i(TAG, "downloadOver: " + att.type + " isInFront: " + isInFront);
         if (isInFront) {
             if (isSucess) {
-                MLog.d("download","下载结束 act显示");
+                MLog.d(TAG, "download", "下载结束 act显示");
+                //TNNoteAtt{attLocalId=1, noteLocalId=1, attId=28499260, attName='1531292067567.jpg', type=10002, path='null',
+                // syncState=1, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394', thumbnail='null', width=0, height=0}
+
+                //TNNoteAtt{attLocalId=1, noteLocalId=1, attId=28499260, attName='1531292067567.jpg', type=10002, path='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg', syncState=1, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394',
+                // thumbnail='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg.thm', width=0, height=0}
+                MLog.d(TAG, "download", "att显示:" + att.toString());
+
                 mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
                 try {
                     att.makeThumbnail();
@@ -748,6 +771,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                     e.printStackTrace();
                 }
 
+                /**
+                 * 编写js代码
+                 */
                 String s;
                 if (att.type > 10000 && att.type < 20000)
                     s = String
@@ -795,15 +821,16 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                                     att.attLocalId, att.attLocalId,
                                     att.attName, (att.size * 100 / 1024) / 100f
                                             + "K");
+
                 Message msg = new Message();
                 Bundle b = new Bundle();
                 b.putString("s", s);
                 b.putLong("attLocalId", att.attLocalId);
-                msg.what = 4;
+                msg.what = WEBBVIEW_SHOW;
                 msg.setData(b);
                 handler.sendMessage(msg);
             } else {
-                MLog.d("download","下载结束 失败");
+                MLog.d("download", "下载结束 失败");
                 String s = "";
                 if (TextUtils.isEmpty(att.path) && att.syncState == 1) {
                     s = String
@@ -823,7 +850,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 Bundle b = new Bundle();
                 b.putString("s", s);
                 b.putLong("attLocalId", att.attLocalId);
-                msg.what = 4;
+                msg.what = WEBBVIEW_SHOW;
                 msg.setData(b);
                 handler.sendMessage(msg);
             }
@@ -899,7 +926,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
      * 下载附件
      */
     private void startAutoDownload() {
-        MLog.d(TAG, "startAutoDownload");
+        MLog.d("download", "startAutoDownload 打开界面自动下载");
         if (!TNUtils.isNetWork())
             return;
 
@@ -1280,7 +1307,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
          * loadUrl on the UI thread.
          */
         public void downloadAtt(long id) {
-            MLog.d(TAG, "downloadAtt:" + id);
+            MLog.d("download", "JSInterface-->downloadAtt:" + id);
             NoteViewDownloadPresenter.getInstance().start(id);
         }
 
@@ -1295,7 +1322,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             // 原因未知，故使用handle处理
             if (mCurAtt.syncState != 1) {
                 Message msg = new Message();
-                msg.what = 1;
+                msg.what = WEBBVIEW_OPEN_ATT;
                 msg.arg1 = 1;
                 handler.sendMessage(msg);
             }
@@ -1492,7 +1519,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         startAutoDownload();
 
         Message msg = new Message();
-        msg.what = 3;
+        msg.what = WEBBVIEW_LOADING;
         handler.sendMessage(msg);
     }
 
