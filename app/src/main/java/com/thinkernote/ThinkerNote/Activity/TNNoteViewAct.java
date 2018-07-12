@@ -178,8 +178,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         mScale = metric.scaledDensity;
 
-        // TODO 未做
-//        TNAction.regResponder(TNActionType.SyncNoteAtt, this, "respondSyncNoteAtt");
+        // TODO menu操作返回
         TNAction.regResponder(TNActionType.NoteLocalDelete, this, "respondNoteHandle");
         TNAction.regResponder(TNActionType.NoteLocalRealDelete, this, "respondNoteHandle");
         TNAction.regResponder(TNActionType.NoteLocalRecovery, this, "respondNoteHandle");
@@ -637,7 +636,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 openContextMenu(findViewById(R.id.noteview_share_menu));
                 break;
 
-            case R.id.noteview_actionitem_tag: {// 标签
+            case R.id.noteview_actionitem_tag: {// 更换标签
                 if (mNote.syncState == 1) {
                     Toast.makeText(this,
                             R.string.alert_NoteList_NotCompleted_ChangTag,
