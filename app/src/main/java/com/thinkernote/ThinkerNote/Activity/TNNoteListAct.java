@@ -1425,7 +1425,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -1696,7 +1695,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -1783,12 +1781,12 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
     //-------------------------------------p层调用----------------------------------------
-    //1-1
+    //1-1 GetNoteListByFolderId
     private void getNoteListByFolderId(long mListDetail, int mPageNum, int size, String sort) {
         presenter.pGetNoteListByFolderID(mListDetail, mPageNum, size, sort);
     }
 
-    //1-2
+    //1-2 GetNoteListByTagId
     private void getNoteListByTagId(long mListDetail, int mPageNum, int size, String sort) {
 
         presenter.pGetNoteListByTagID(mListDetail, mPageNum, size, sort);
@@ -1796,6 +1794,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
 
     /**
+     * GetAllDataByNoteId
      * TNActionType.GetAllDataByNoteId的顺序是：
      * GetNoteById-->SyncNoteAtt的循环下载--->数据库
      *
@@ -2980,6 +2979,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             endSynchronize1(0);
         }
     }
+
+
 
 
     //==================================接口结果返回=======================================

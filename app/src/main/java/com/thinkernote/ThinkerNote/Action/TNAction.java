@@ -12,7 +12,7 @@ import android.os.AsyncTask;
 
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-
+//TODO 删除
 public class TNAction {
 	private static final String TAG = "TNAction";
 
