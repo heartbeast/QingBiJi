@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--android7.0+ 使用应用间共享文件 /共享文件的文件根目录：external_files-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path
+        name="external_files"
+        path="." />
+</paths>
+

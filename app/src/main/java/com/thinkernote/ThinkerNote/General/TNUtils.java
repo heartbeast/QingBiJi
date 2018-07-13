@@ -24,7 +24,6 @@ import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import org.apache.http.util.EncodingUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -743,28 +742,6 @@ public class TNUtils {
 		}
 		MLog.i(TAG, "newPath:" + newPath);
 		return newPath;
-	}
-
-	// 读取文件
-	public static String readTextFile(String fileName) {
-		String res = "";
-		FileInputStream fin = null;
-		try {
-			fin = new FileInputStream(fileName);
-			int length = fin.available();
-			byte[] buffer = new byte[length];
-			fin.read(buffer);
-			res = EncodingUtils.getString(buffer, "UTF-8");
-			fin.close();
-		} catch (Exception e) {
-			if (fin != null) {
-				try {
-					fin.close();
-				} catch (IOException e1) {
-				}
-			}
-		}
-		return res;
 	}
 
 	public static String readFile(String fileName) {

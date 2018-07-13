@@ -8,11 +8,17 @@ public interface OnLogListener {
 
     void onLoginNormalFailed(String msg, Exception e);
 
+    void onQQUnionIdSuccess(Object obj,String accessToken,String refreshToken);
+
+    void onQQUnionIdFailed(String msg, Exception e);
+
     void onLoginThirdSuccess(Object obj);
 
-    void onLoginThirdFailed(String msg, Exception e, String bid,int btype, long currentTime, String accessToken, String refreshToken, String name);
+    void onLoginThirdFailed(String msg, Exception e, String bid, int btype, long currentTime, String accessToken, String refreshToken, String name);
 
     void onLogProfileSuccess(Object obj);
 
     void onLogProfileFailed(String msg, Exception e);
+
+
 }

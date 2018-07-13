@@ -16,8 +16,10 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.InflateException;
@@ -45,9 +47,11 @@ import com.tencent.tauth.Constants;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.thinkernote.ThinkerNote.Action.TNAction.TNRunner;
+import com.thinkernote.ThinkerNote.BuildConfig;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Utils.MLog;
+import com.thinkernote.ThinkerNote.base.TNApplication;
 
 import org.json.JSONObject;
 
@@ -647,8 +651,13 @@ public class TNUtilsUi {
         intent.setAction(android.content.Intent.ACTION_VIEW);
 
         /* 设置intent的file与MimeType */
-        intent.setDataAndType(Uri.fromFile(new File(filePath)),
-                "application/vnd.android.package-archive");
+        Uri contentUri = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
+            contentUri = FileProvider.getUriForFile(TNApplication.getInstance(), BuildConfig.APPLICATION_ID + ".FileProvider", new File(filePath));
+        } else {//7.0-正常调用
+            contentUri = Uri.fromFile(new File(filePath));
+        }
+        intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
         TNSettings.getInstance().topAct.startActivity(intent);
     }
 

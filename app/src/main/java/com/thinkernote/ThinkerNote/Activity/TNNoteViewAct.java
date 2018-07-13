@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.FileProvider;
 import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -42,6 +43,7 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.thinkernote.ThinkerNote.Action.TNAction;
+import com.thinkernote.ThinkerNote.BuildConfig;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -454,8 +456,17 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             case R.id.openatt_menu_view: {//产看
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(mCurAtt.path)),
-                        TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
+                Uri contentUri = null;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider", new File(mCurAtt.path));
+                } else {//7.0-正常调用
+                    contentUri = Uri.fromFile(new File(mCurAtt.path));
+                }
+
+//                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+                intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
                 TNUtilsDialog.startIntent(this, intent,
                         R.string.alert_NoteView_CantOpenAttMsg);
                 break;
@@ -472,10 +483,16 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                     TNUtilsAtt.copyFile(mCurAtt.path, temp);
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_SEND);
-                    intent.setType(TNUtilsAtt.getMimeType(mCurAtt.type,
-                            mCurAtt.attName));
-                    intent.putExtra(Intent.EXTRA_STREAM,
-                            Uri.fromFile(new File(temp)));
+
+                    intent.setType(TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
+
+                    Uri contentUri = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
+                        contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider", new File(temp));
+                    } else {//7.0-正常调用
+                        contentUri = Uri.fromFile(new File(temp));
+                    }
+                    intent.putExtra(Intent.EXTRA_STREAM, contentUri);
                     TNUtilsDialog.startIntent(this, intent,
                             R.string.alert_NoteView_CantSendAttMsg);
                 } catch (Exception e) {

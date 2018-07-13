@@ -11,8 +11,6 @@ import android.webkit.MimeTypeMap;
 
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import org.apache.http.util.EncodingUtils;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -682,26 +680,6 @@ public class TNUtilsAtt {
 		}
 	}
 
-	public static String readRule(int contribution, int rank) {
-		String fileName = "rule.html"; // 文件名字
-		String res = "";
-
-		try {
-			InputStream in = TNUtils.getAppContext().getResources().getAssets()
-					.open(fileName);
-			int length = in.available();
-			byte[] buffer = new byte[length];
-			in.read(buffer);
-			res = EncodingUtils.getString(buffer, "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		res = res.replace("#contribution#", String.valueOf(contribution));
-		res = res.replace("#con_rank#", String.valueOf(rank));
-		// Log.d(TAG, "rule:" + res);
-		return res;
-	}
 
 	// 获取指定路径的图 ?
 	public static Bitmap getImage(String path, int size) {

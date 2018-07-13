@@ -147,19 +147,6 @@ public class UiUtils {
 		startIntent(act, i, R.string.ak_alert_NoAppCanOpen);
 	}
 
-	/**
-	 * 璋冪敤绯荤粺鍒嗕韩鍥剧墖
-	 * 
-	 * @param act
-	 * @param filePath
-	 */
-	public static void sherPhoto(Activity act, String filePath) {
-		Intent i = new Intent(Intent.ACTION_SEND);
-		File file = new File(filePath);
-		i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-		i.setType("image/jpeg");
-		startIntent(act, i, R.string.ak_alert_NoAppCanOpen);
-	}
 
 	/**
 	 * 璋冪敤绯荤粺鍙戦?侀偖浠?

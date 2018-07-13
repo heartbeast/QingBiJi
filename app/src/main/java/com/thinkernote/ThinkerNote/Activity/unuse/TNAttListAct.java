@@ -6,7 +6,9 @@ import java.util.Vector;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -24,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.thinkernote.ThinkerNote.Activity.TNFileListAct;
+import com.thinkernote.ThinkerNote.BuildConfig;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
@@ -135,10 +138,17 @@ public class TNAttListAct extends TNActBase implements OnClickListener,
 		mCurAtt = mAttList.get(position);
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.fromFile(new File(mCurAtt.path)), 
-				TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
-		TNUtilsDialog.startIntent(this, intent, 
-				R.string.alert_NoteView_CantOpenAttMsg);		
+		Uri contentUri = null;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
+			intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider", new File(mCurAtt.path));
+		} else {//7.0-正常调用
+			contentUri = Uri.fromFile(new File(mCurAtt.path));
+		}
+
+//                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+		intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
+		TNUtilsDialog.startIntent(this, intent, R.string.alert_NoteView_CantOpenAttMsg);
 	}
 
 	@Override

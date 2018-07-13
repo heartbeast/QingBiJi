@@ -12,6 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 百度定位
+ */
 public class TNLBSService {
 	private static final String TAG = "TNBaiduLocationService";
 	private static final int LOCATION_SCANSPAN = 1000*60*1;
@@ -54,9 +57,10 @@ public class TNLBSService {
 	}
 	
 	public void startLocation(){
-		if(mLocationClient == null)
+		if(mLocationClient == null){
 			initBDLocationClient();
-		
+		}
+
 		if (mLocationClient != null && !mLocationClient.isStarted()) {
 			MLog.d(TAG, "startLocation");
 			mLocationClient.start();
@@ -151,11 +155,5 @@ public class TNLBSService {
 			}
 			MLog.i(TAG, sb.toString());
 		}
-
-		@Override
-		public void onReceivePoi(BDLocation arg0) {
-			MLog.i(TAG, "onReceivePoi");
-		}
-		
 	}
 }

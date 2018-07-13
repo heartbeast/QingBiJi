@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
@@ -37,6 +39,7 @@ import com.iflytek.speech.SpeechConfig.RATE;
 import com.iflytek.speech.SpeechError;
 import com.iflytek.ui.RecognizerDialog;
 import com.iflytek.ui.RecognizerDialogListener;
+import com.thinkernote.ThinkerNote.BuildConfig;
 import com.thinkernote.ThinkerNote.DBHelper.NoteAttrDbHelper;
 import com.thinkernote.ThinkerNote.DBHelper.NoteDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNNote;
@@ -63,6 +66,7 @@ import com.thinkernote.ThinkerNote._constructer.presenter.NoteEditPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.INoteEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteEditListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
+import com.thinkernote.ThinkerNote.base.TNApplication;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
 import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
@@ -144,14 +148,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         setContentView(R.layout.note_edit);
         initAct();
         presener = new NoteEditPresenterImpl(this, this);
-        if (savedInstanceState == null)
+        //开启百度定位
+        if (savedInstanceState == null) {
             TNLBSService.getInstance().startLocation();
-
-        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        RunningTaskInfo task = am.getRunningTasks(1).get(0);
-        String baseName = task.baseActivity.getClassName();
-        MLog.e(TAG, "baseActivity = " + baseName);
-
+        }
         if (savedInstanceState == null) {
             initNote();
         } else {
@@ -165,11 +165,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
             if (uri != null)
                 mCameraUri = uri;
-
             MLog.i(TAG, "onCreate" + mNote);
         }
         startTimer();
-
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
         showToolbar("note");
     }
@@ -284,7 +282,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         if (createStatus == 0) {
             startTargetAct(getIntent().getStringExtra("Target"));
         }
-
         refreshAttsView();
         initContentView();
         mTitleView.setText(mTitleView.getHint().equals(mNote.title) ? ""
@@ -458,7 +455,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     Media.EXTERNAL_CONTENT_URI, values);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraUri);
             TNUtilsDialog.startIntentForResult(this, intent,
-                    R.string.alert_NoteEdit_NoCamera, R.id.noteedit_camera);
+                    R.string.alert_NoteEdit_NoCamera, R.id.noteedit_camera);//TODO
         } catch (IllegalArgumentException e) {
             // 目前仅在1.6，HTC Magic发生过
             // getContentResolver().insert可能产生异常
@@ -543,11 +540,22 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.noteedit_att_look://查看
+
                 if (mCurrentAtt != null) {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(new File(mCurrentAtt.path)),
-                            TNUtilsAtt.getMimeType(mCurrentAtt.type, mCurrentAtt.attName));
+                    Uri contentUri = null;
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider", new File(mCurrentAtt.path));
+                    } else {//7.0-正常调用
+                        contentUri = Uri.fromFile(new File(mCurrentAtt.path));
+                    }
+
+//                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+                    intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurrentAtt.type, mCurrentAtt.attName));
+
                     TNUtilsDialog.startIntent(this, intent,
                             R.string.alert_NoteView_CantOpenAttMsg);
                 }
@@ -1904,7 +1912,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pEditNotePic(int position) {
         MLog.d("同步edit--pEditNotePic 2-10-1");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1947,7 +1955,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("同步edit--pEditNotePic 2-10-1");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;

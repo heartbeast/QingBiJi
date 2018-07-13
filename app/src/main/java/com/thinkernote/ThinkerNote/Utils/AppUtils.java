@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import org.apache.http.util.EncodingUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -77,7 +76,6 @@ public class AppUtils {
 
     /**
      * 閼惧嘲褰囬崶鍓у缂傛挸鐡ㄩ惄顔肩秿
-     * @param fileName
      * @return a
      */
 	public static String getImageCacheDir() {
@@ -242,29 +240,6 @@ public class AppUtils {
 	public static int getRandom(int max, int min) {
 		Random random = new Random();
 		return random.nextInt(max - min + 1) + min;
-	}
-
-	/**
-	 * 娴犲穬ssets 閺傚洣娆㈡径閫涜厬閼惧嘲褰囬弬鍥︽楠炴儼顕伴幋鎬眛ring
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static String readAssetsFile(Context context, String fileName) {
-		String result = "";
-		try {
-			InputStream in = context.getResources().getAssets().open(fileName);
-			// 閼惧嘲褰囬弬鍥︽閻ㄥ嫬鐡ч懞鍌涙殶
-			int lenght = in.available();
-			// 閸掓稑缂揵yte閺佹壆绮�
-			byte[] buffer = new byte[lenght];
-			// 鐏忓棙鏋冩禒鏈佃厬閻ㄥ嫭鏆熼幑顔款嚢閸掔櫚yte閺佹壆绮嶆稉?
-			in.read(buffer);
-			result = EncodingUtils.getString(buffer, "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
 	}
 
     /**

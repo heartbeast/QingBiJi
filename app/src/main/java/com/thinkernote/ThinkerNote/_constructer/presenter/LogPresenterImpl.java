@@ -48,6 +48,11 @@ public class LogPresenterImpl implements ILogPresenter, OnLogListener {
         logModule.mProfile(this);
     }
 
+    @Override
+    public void getQQUnionId(String url, String accessToken, String refreshToken) {
+        logModule.mGetQQUnionId(this, url, accessToken, refreshToken);
+    }
+
     //==========================结果回调==============================
     @Override
     public void onLoginNormalSuccess(Object obj) {
@@ -57,6 +62,16 @@ public class LogPresenterImpl implements ILogPresenter, OnLogListener {
     @Override
     public void onLoginNormalFailed(String msg, Exception e) {
         onLogView.onLoginNormalFailed(msg, e);
+    }
+
+    @Override
+    public void onQQUnionIdSuccess(Object obj, String accessToken, String refreshToken) {
+        onLogView.onQQUnionIdSuccess(obj, accessToken, refreshToken);
+    }
+
+    @Override
+    public void onQQUnionIdFailed(String msg, Exception e) {
+        onLogView.onQQUnionIdFailed(msg, e);
     }
 
     @Override

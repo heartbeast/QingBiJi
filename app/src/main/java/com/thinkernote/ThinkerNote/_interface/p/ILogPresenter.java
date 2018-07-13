@@ -9,4 +9,6 @@ public interface ILogPresenter {
     void loginThird(int aArray, String unionId, long currentTime, String accessToken, String refreshToken, String qqflag);
 
     void pUpdataProfile();
+
+    void getQQUnionId(String url,String accessToken,String refreshToken);
 }

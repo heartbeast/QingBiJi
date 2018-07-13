@@ -9,7 +9,6 @@ import com.thinkernote.ThinkerNote.Database.TNDb2;
 import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
-import com.thinkernote.ThinkerNote.OAuth2.TNOAuth2;
 import com.thinkernote.ThinkerNote.R;
 import com.thinkernote.ThinkerNote.Service.TNAttDownloadService;
 import com.thinkernote.ThinkerNote.Service.TNAttLocalService;
@@ -42,7 +41,7 @@ public class TNApplication extends Application {
 		application = this;
 
 		// 是否使用测试服务器
-		TNOAuth2.useTestServer(false);
+//		TNOAuth2.useTestServer(false);
 
 		//TODO 删
 		initialize();
@@ -51,13 +50,13 @@ public class TNApplication extends Application {
 		//注册反射方法，TNDb.java使用
 		TNAction.regRunner(TNActionType.DbReportError, this, "DbReportError");
 
-		//新网络框架初始化
+		//新网络框架 log初始化
 		MLog.init(true,"SJY");
 
-		//初始化网络
+		//新网络框架 初始化
 		HttpUtils.getInstance().init(this, MLog.DEBUG);
 
-		//微信初始化网络
+		//微信初始化网络 未使用，可删
 		WeichatHttpUtils.getInstance().init(this, MLog.DEBUG);
 	}
 	
@@ -87,7 +86,7 @@ public class TNApplication extends Application {
 		TNAttService.getInstance();
 		TNTagService.getInstance();
 		TNCatService.getInstance();
-		TNOAuth2.getInstance();
+//		TNOAuth2.getInstance();
 		TNAttDownloadService.getInstance();
 		
 		TNLBSService.getInstance();

@@ -2,6 +2,7 @@ package com.thinkernote.ThinkerNote._constructer.module;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._interface.m.ILogModule;
@@ -9,9 +10,14 @@ import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.bean.CommonBean2;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.bean.login.QQBean;
 import com.thinkernote.ThinkerNote.http.MyHttpService;
 
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -61,6 +67,58 @@ public class LogModuleImpl implements ILogModule {
                     }
 
                 });
+    }
+
+    /**
+     * qq的返回不是标准的json串:所以获取ResponseBody的原始json，自定义解析
+     * <p>
+     * 正确返回：callback( {"client_id":"101399197","openid":"5B0CB916D4A9BDB5D838A3F66AC0B684","unionid":"UID_CAE5B3A01604A9F7B709D3BF934E7AA4"} );
+     * 错误返回：callback({"error":100016,"error_description":"access token check failed"});
+     *
+     * @param listener
+     * @param url
+     * @param accessToken
+     * @param refreshToken
+     */
+    @Override
+    public void mGetQQUnionId(final OnLogListener listener, String url, final String accessToken, final String refreshToken) {
+        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
+                .getQQUnionID(url)//接口方法
+                .subscribeOn(Schedulers.io())//固定样式
+                .unsubscribeOn(Schedulers.io())//固定样式
+                .observeOn(AndroidSchedulers.mainThread())//固定样式
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        listener.onQQUnionIdFailed("获取qq unionid异常", null);
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            //拿到原始json,需要删除外层 callback();拿到 {"client_id":"101399197","openid":"5B0CB916D4A9BDB5D838A3F66AC0B684","unionid":"UID_CAE5B3A01604A9F7B709D3BF934E7AA4"}
+                            String jsonStr = new String(responseBody.bytes());
+                            //拿到标准json
+                            String jsonData = jsonStr.substring(jsonStr.indexOf('(')+1, jsonStr.lastIndexOf(')'));
+                            MLog.d("qq返回---jsonStr:" + jsonStr + "\njsonData:" + jsonData);
+                            if (jsonData.contains("unionid")) {
+                                //再使用Retrofit自带的JSON解析（或者别的什么）
+                                QQBean bean = new Gson().fromJson(jsonData, QQBean.class);
+                                listener.onQQUnionIdSuccess(bean, accessToken, refreshToken);
+                            } else {
+                                listener.onQQUnionIdFailed("获取qq unionid失败", null);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
     }
 
     @Override

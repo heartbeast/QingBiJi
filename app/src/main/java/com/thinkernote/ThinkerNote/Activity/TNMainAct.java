@@ -277,7 +277,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 Bundle b = new Bundle();
                 b.putString("Target", "doodle");
                 startActivity(TNNoteEditAct.class, b);
-                ;
+
                 break;
             }
             case R.id.main_recordnote: {//录音笔记
@@ -1342,7 +1342,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1386,7 +1386,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("sync---2-10-1-pEditNotePic");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -1535,7 +1535,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
             if (!trashNoteExit) {
                 pUpdataNote(position, noteId, is13);
-            }else{
+            } else {
                 pUpdataNote13(position + 1, is13);
             }
         } else {
@@ -2191,7 +2191,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                             TNDb.setTransactionSuccessful();
                         } finally {

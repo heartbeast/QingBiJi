@@ -9,6 +9,7 @@ import com.thinkernote.ThinkerNote.bean.CommonBean3;
 import com.thinkernote.ThinkerNote.bean.CommonListBean;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.bean.login.QQBean;
 import com.thinkernote.ThinkerNote.bean.login.VerifyPicBean;
 import com.thinkernote.ThinkerNote.bean.main.AlipayBean;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderBean;
@@ -122,6 +123,18 @@ public interface MyHttpService {
             @Field("username") String username
             , @Field("password") String password);
 
+    /**
+     * 获取qq 返回信息的原始json不标准，需要自定义处理
+     * <p>
+     * 正确返回：callback( {"client_id":"101399197","openid":"5B0CB916D4A9BDB5D838A3F66AC0B684","unionid":"UID_CAE5B3A01604A9F7B709D3BF934E7AA4"} );
+     * 错误返回：callback({"error":100016,"error_description":"access token check failed"});
+     *
+     * @param url
+     * @return
+     */
+    @Streaming
+    @GET
+    Observable<ResponseBody> getQQUnionID(@Url String url);
 
     /**
      * 02 第三方登录：qq登录/sina登录/wechat登录

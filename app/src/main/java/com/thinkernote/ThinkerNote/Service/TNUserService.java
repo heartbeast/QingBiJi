@@ -15,16 +15,9 @@ import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsAtt;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -429,45 +422,45 @@ public class TNUserService {
 
     //TODO 自定义下载
     public void UpdateSoftware(TNAction aAction) {
-        String uriPath = (String) aAction.inputs.get(0);
-        InputStream in = null;
-        try {
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(uriPath);
-            HttpResponse response = client.execute(request);
-            in = response.getEntity().getContent();
-            File myTempFile = new File(TNUtilsAtt.getTempPath("ThinkerNote-Setup.apk"));
-            if (!myTempFile.exists()) {
-                myTempFile.getParentFile().mkdirs();
-                myTempFile.createNewFile();
-            }
-            //Log.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
-
-            FileOutputStream fos = new FileOutputStream(myTempFile);
-            byte buf[] = new byte[1024];
-            int sum = 0;
-            int numread;
-            while ((numread = in.read(buf)) > 0) {
-                fos.write(buf, 0, numread);
-                sum += numread;
-                aAction.progressUpdate(sum);
-            }
-            fos.close();
-            in.close();
-            MLog.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
-            aAction.finished(myTempFile.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-            aAction.failed();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        String uriPath = (String) aAction.inputs.get(0);
+//        InputStream in = null;
+//        try {
+//            HttpClient client = new DefaultHttpClient();
+//            HttpGet request = new HttpGet(uriPath);
+//            HttpResponse response = client.execute(request);
+//            in = response.getEntity().getContent();
+//            File myTempFile = new File(TNUtilsAtt.getTempPath("ThinkerNote-Setup.apk"));
+//            if (!myTempFile.exists()) {
+//                myTempFile.getParentFile().mkdirs();
+//                myTempFile.createNewFile();
+//            }
+//            //Log.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
+//
+//            FileOutputStream fos = new FileOutputStream(myTempFile);
+//            byte buf[] = new byte[1024];
+//            int sum = 0;
+//            int numread;
+//            while ((numread = in.read(buf)) > 0) {
+//                fos.write(buf, 0, numread);
+//                sum += numread;
+//                aAction.progressUpdate(sum);
+//            }
+//            fos.close();
+//            in.close();
+//            MLog.i(TAG, "myTempFile=" + myTempFile.getAbsolutePath());
+//            aAction.finished(myTempFile.getAbsolutePath());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            aAction.failed();
+//        } finally {
+//            if (in != null) {
+//                try {
+//                    in.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 
     //TODO

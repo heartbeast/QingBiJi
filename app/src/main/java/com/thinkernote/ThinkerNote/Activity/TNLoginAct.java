@@ -37,6 +37,7 @@ import com.thinkernote.ThinkerNote._interface.v.OnLogListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
 import com.thinkernote.ThinkerNote.bean.login.LoginBean;
 import com.thinkernote.ThinkerNote.bean.login.ProfileBean;
+import com.thinkernote.ThinkerNote.bean.login.QQBean;
 import com.thinkernote.ThinkerNote.http.rx.RxBus;
 import com.thinkernote.ThinkerNote.http.rx.RxBusBaseMessage;
 import com.thinkernote.ThinkerNote.http.rx.RxCodeConstants;
@@ -47,9 +48,9 @@ import com.weibo.sdk.android.WeiboDialogError;
 import com.weibo.sdk.android.WeiboException;
 import com.weibo.sdk.android.sso.SsoHandler;
 
-import org.apache.http.Header;
 import org.json.JSONObject;
 
+import retrofit2.Response;
 import rx.functions.Action1;
 
 /**
@@ -269,28 +270,33 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
     }
 
     private void getQQUnionId(final String accessToken, final String refreshToken) {
-        AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://graph.qq.com/oauth2.0/me?access_token=" + accessToken + "&unionid=1";
-        client.get(url, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] data) {
-                super.onSuccess(statusCode, headers, data);
-                String s = new String(data);
-                String[] split = s.split(":");
-                s = split[split.length - 1];
-                split = s.split("\"");
-                s = split[1];
-                String unionId = s;
-                //
-                pLoginThird(3, unionId, System.currentTimeMillis(), accessToken, refreshToken, "QQ" + System.currentTimeMillis());
-            }
+        pGetQQUnionId(url, accessToken, refreshToken);
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] data, Throwable e) {
-                super.onFailure(statusCode, headers, data, e);
-                Toast.makeText(getApplicationContext(), "Auth Fail", Toast.LENGTH_LONG).show();
-            }
-        });
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.get(url, new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, byte[] data) {
+//                super.onSuccess(statusCode, headers, data);
+//                String s = new String(data);
+//                String[] split = s.split(":");
+//                s = split[split.length - 1];
+//                split = s.split("\"");
+//                s = split[1];
+//                String unionId = s;
+//                //
+//
+//                pLoginThird(3, unionId, System.currentTimeMillis(), accessToken, refreshToken, "QQ" + System.currentTimeMillis());
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, byte[] data, Throwable e) {
+//                super.onFailure(statusCode, headers, data, e);
+//                Toast.makeText(getApplicationContext(), "Auth Fail", Toast.LENGTH_LONG).show();
+//            }
+//        });
+
     }
 
 
@@ -402,6 +408,10 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         logPresener.pUpdataProfile();
     }
 
+    private void pGetQQUnionId(String url, String accessToken, String refreshToken) {
+        logPresener.getQQUnionId(url, accessToken, refreshToken);
+    }
+
     //-----------------------------------接口返回的回调--------------------------------------------
 
     /**
@@ -440,6 +450,18 @@ public class TNLoginAct extends TNActBase implements OnClickListener, OnLogListe
         } else {
             TNUtilsUi.alert(this, "error!");
         }
+    }
+
+    @Override
+    public void onQQUnionIdSuccess(Object obj, String accessToken, String refreshToken) {
+        QQBean bean = (QQBean) obj;
+        pLoginThird(3, bean.getUnioid(), System.currentTimeMillis(), accessToken, refreshToken, "QQ" + System.currentTimeMillis());
+
+    }
+
+    @Override
+    public void onQQUnionIdFailed(String msg, Exception e) {
+        MLog.e("获取qq unionId失败");
     }
 
     @Override

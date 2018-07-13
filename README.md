@@ -30,3 +30,7 @@ retrofit2.adapter.rxjava.HttpException: HTTP 500 Internal Server Error
 
 https://s.qingbiji.cn/api/attachment?filename=IMG_20180525_132849.jpg&session_token=UWtHMAmnPVVUQhLfxS76Wfs4MegYF5DkTE9u3AG7
 https://s.qingbiji.cn/api/attachment?filename=1531208537961.jpg&session_token=UWtHMAmnPVVUQhLfxS76Wfs4MegYF5DkTE9u3AG7
+
+5 Uri.fromFile(new File(temp))获取Uri的样式在android7.0+后，改成FileProvider.getUriForFile()样式，具体参考本app
+
+6

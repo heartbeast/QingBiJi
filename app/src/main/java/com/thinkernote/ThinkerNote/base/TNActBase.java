@@ -36,7 +36,6 @@ public class TNActBase extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MLog.d(TAG, "onCreate:" + savedInstanceState);
         super.onCreate(savedInstanceState);
         System.gc();
 
@@ -52,7 +51,6 @@ public class TNActBase extends Activity {
     }
 
     protected void onStart() {
-        MLog.d(TAG, "onStart");
         super.onStart();
 
         TNSettings settings = TNSettings.getInstance();
@@ -79,26 +77,22 @@ public class TNActBase extends Activity {
 
     @Override
     public void finish() {
-        MLog.d(TAG, "finish");
         TNAction.unregister(this);
         super.finish();
     }
 
     @Override
     protected void onRestart() {
-        // TODO Auto-generated method stub
         super.onRestart();
         createStatus = 2;
     }
 
     @Override
     protected void onStop() {
-        MLog.d(TAG, "onStop");
         super.onStop();
     }
 
     protected void onResume() {
-        MLog.d(TAG, "onResume");
 
         super.onResume();
 
@@ -151,7 +145,6 @@ public class TNActBase extends Activity {
     }
 
     protected void onPause() {
-        MLog.d(TAG, "onPause");
         overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
         super.onPause();
 
@@ -167,7 +160,6 @@ public class TNActBase extends Activity {
 
     @Override
     public void onDestroy() {
-        MLog.d(TAG, "onDestroy");
         TNAction.unregister(this);
 
         for (Dialog dialog : dialogs) {
@@ -209,11 +201,38 @@ public class TNActBase extends Activity {
         Intent i = new Intent(this, clz);//推荐显示调用
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+    }
 
+    /**
+     * android5.0要求第一个参数是具体的类
+     *
+     * @param act
+     * @param clz
+     */
+    public void startActivity(Activity act, Class clz) {
+        Intent i = new Intent(act, clz);//推荐显示调用
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 
     public void startActivity(Class clz, Bundle aBundle) {
         Intent i = new Intent(this, clz);//推荐显示调用
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (aBundle != null) {
+            i.putExtras(aBundle);
+        }
+        startActivity(i);
+
+    }
+
+    /**
+     * android5.0要求第一个参数是具体的类
+     *
+     * @param act
+     * @param clz
+     */
+    public void startActivity(Activity act,Class clz, Bundle aBundle) {
+        Intent i = new Intent(act, clz);//推荐显示调用
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (aBundle != null) {
             i.putExtras(aBundle);
@@ -263,12 +282,10 @@ public class TNActBase extends Activity {
     //===================================handler软引用 --结束==========================================
 
     public void RespondChangeSkin(TNAction aAction) {
-        MLog.i(TAG, "RespondChangeSkin");
         setViews();
     }
 
     public void addDialog(AlertDialog dialog) {
-        MLog.e(TAG, "dialog: " + dialog);
         dialogs.add(dialog);
     }
 }
