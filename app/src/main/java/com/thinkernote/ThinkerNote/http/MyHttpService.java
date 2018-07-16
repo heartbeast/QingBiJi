@@ -762,7 +762,7 @@ public interface MyHttpService {
      */
     @GET(URLUtils.Note.NOTE_LIST_TAGID)
     Observable<NoteListBean> getNoteListByTagId(
-            @Query("folder_id") long folder_id
+            @Query("tag_id") long folder_id
             , @Query("pagenum") int pagenum
             , @Query("pagesize") int pagesize
             , @Query("sortord") String sortord

@@ -44,13 +44,16 @@ public class NoteListBean extends CommonBean implements Serializable {
 
     public class NoteItemBean implements Serializable {
         long id;
-        int update_at;
+        long size;
+        String update_at;
         int folder_id;
         String title;
         String summary;
         String content_digest;
-        int create_at;
+        String create_at;
+        int trash;
         List<TagItemBean> tags;
+
 
         public String getTitle() {
             return title;
@@ -76,11 +79,11 @@ public class NoteListBean extends CommonBean implements Serializable {
             this.content_digest = content_digest;
         }
 
-        public int getCreate_at() {
+        public String getCreate_at() {
             return create_at;
         }
 
-        public void setCreate_at(int create_at) {
+        public void setCreate_at(String create_at) {
             this.create_at = create_at;
         }
 
@@ -100,11 +103,11 @@ public class NoteListBean extends CommonBean implements Serializable {
             this.id = id;
         }
 
-        public int getUpdate_at() {
+        public String getUpdate_at() {
             return update_at;
         }
 
-        public void setUpdate_at(int update_at) {
+        public void setUpdate_at(String update_at) {
             this.update_at = update_at;
         }
 
@@ -116,8 +119,34 @@ public class NoteListBean extends CommonBean implements Serializable {
             this.tags = tags;
         }
 
+        public long getSize() {
+            return size;
+        }
+
+        public void setSize(long size) {
+            this.size = size;
+        }
+
+        public int getTrash() {
+            return trash;
+        }
+
+        public void setTrash(int trash) {
+            this.trash = trash;
+        }
+
         public class TagItemBean implements Serializable{
             String name;
+
+            long id;
+
+            public long getId() {
+                return id;
+            }
+
+            public void setId(long id) {
+                this.id = id;
+            }
 
             public String getName() {
                 return name;

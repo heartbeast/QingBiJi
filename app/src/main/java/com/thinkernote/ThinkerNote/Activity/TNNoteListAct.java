@@ -87,6 +87,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         OnLastItemVisibleListener, OnRefreshListener, OnItemClickListener, OnNoteListListener {
 
     //syncData
+    public static final String TAG = "TAG";//1
     public static final int DELETE_LOCALNOTE = 101;//1
     public static final int DELETE_REALNOTE = 102;//
     public static final int DELETE_REALNOTE2 = 103;//
@@ -188,7 +189,26 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
         //
         presenter = new NoteListPresenterImpl(this, this, dataListener, editListener);
-        // initialize
+        //获取跳转值
+        getIntentData();
+
+
+        mNotes = new Vector<TNNote>();
+        //设置list布局及适配器
+        mPullListview = (PullToRefreshListView) findViewById(R.id.notelist_list);
+        mListView = mPullListview.getRefreshableView();
+        mLoadingView = (LinearLayout) TNUtilsUi.addListHelpInfoFootView(this, mListView, TNUtilsUi.getFootViewTitle(this, mListType), TNUtilsUi.getFootViewInfo(this, mListType));
+        mNotesAdapter = new TNNotesAdapter(this, mNotes, mScale);
+        mListView.setAdapter(mNotesAdapter);
+
+        mListView.setOnItemLongClickListener(this);
+        mListView.setOnItemClickListener(this);
+        mPullListview.setOnRefreshListener(this);
+        mPullListview.setOnLastItemVisibleListener(this);
+    }
+
+    //获取跳转值
+    private void getIntentData() {
         Bundle b = getIntent().getExtras();
         mListType = b.getInt("ListType", 0);
         mCount = b.getInt("count", 0);
@@ -203,18 +223,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             findViewById(R.id.ll_clearrecycler).setVisibility(View.VISIBLE);
             findViewById(R.id.maincats_menu_clearrecycler).setOnClickListener(this);
         }
-
-        mNotes = new Vector<TNNote>();
-        mPullListview = (PullToRefreshListView) findViewById(R.id.notelist_list);
-        mListView = mPullListview.getRefreshableView();
-        mLoadingView = (LinearLayout) TNUtilsUi.addListHelpInfoFootView(this, mListView, TNUtilsUi.getFootViewTitle(this, mListType), TNUtilsUi.getFootViewInfo(this, mListType));
-        mNotesAdapter = new TNNotesAdapter(this, mNotes, mScale);
-        mListView.setAdapter(mNotesAdapter);
-
-        mListView.setOnItemLongClickListener(this);
-        mListView.setOnItemClickListener(this);
-        mPullListview.setOnRefreshListener(this);
-        mPullListview.setOnLastItemVisibleListener(this);
+        MLog.e(TAG,"跳转后--"+"ListType="+mListType+"tag.tagId="+mListDetail+"--tag.noteCounts="+mCount);
     }
 
     @Override
@@ -579,7 +588,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void requestData() {
         switch (mListType) {
-            case 2:
+            case 2://folder
                 getNoteListByFolderId(mListDetail, mPageNum, TNConst.PAGE_SIZE, mSettings.sort);
 
                 break;
@@ -588,7 +597,9 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                     syncData();
 
                 break;
-            case 4:
+            case 4://tag
+                //
+                MLog.e("获取标签数据");
                 getNoteListByTagId(mListDetail, mPageNum, TNConst.PAGE_SIZE, mSettings.sort);
 
                 break;
@@ -1149,7 +1160,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                             "source", "android",
                             "catId", catId,
                             "content", obj.getSummary(),
-                            "createTime", obj.getCreate_at() / 1000,
+                            "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(obj.getCreate_at()) / 1000,
                             "lastUpdate", lastUpdate,
                             "syncState", syncState,
                             "noteId", noteId,
@@ -3093,7 +3104,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         TNUtilsUi.showToast(msg);
     }
 
-    //==================================接口结果返回=======================================
+    //==================================接口结果返回 syncData=======================================
 
     DataListener dataListener = new DataListener();
 

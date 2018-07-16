@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -82,7 +83,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * TODO
+ * TODO JS的图片点击事件需要重写
  * 笔记详情
  */
 public class TNNoteViewAct extends TNActBase implements OnClickListener,
@@ -128,7 +129,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     @Override
     public void handleMessage(Message msg) {
         switch (msg.what) {
-            case WEBBVIEW_OPEN_ATT:
+            case WEBBVIEW_OPEN_ATT://打开 文件的操作弹窗
+                MLog.d("TNNoteViewAct", "打开att操作弹窗");
                 if (!isFinishing())
                     openContextMenu(findViewById(R.id.noteview_openatt_menu));
                 break;
@@ -153,8 +155,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 Bundle b = msg.getData();
                 //javascript:wave("1", "<div id=\"1\"><a onClick=\"window.demo.openAtt(1)\"><img src=\"file://null\" /></a></div>")
                 //javascript:wave("1", "<div id=\"1\"><a onClick=\"window.demo.openAtt(1)\"><img src=\"file:///storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg\" /></a></div>")
-                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
-                        b.getLong("attLocalId"), b.getString("s")));
+                mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")", b.getLong("attLocalId"), b.getString("s")));
                 break;
             case DIALOG_DELETE:
 
@@ -222,12 +223,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mGestureDetector = new GestureDetector(this, new TNGestureListener());
 
         mWebView = (WebView) findViewById(R.id.noteview_web);
+        // 启用javascript
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mJSInterface = new JSInterface();
-        //TODO
+        // 添加js交互接口类，并起别名 demo，js代码中要试用 demo参数
         mWebView.addJavascriptInterface(mJSInterface, "demo");
-
+        //自定义WebViewClient 监听卸载configView中
 
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
     }
@@ -343,37 +346,32 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             handler.sendMessage(msg);
         }
 
-        //
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                MLog.d(TAG, "onPageFinished:" + url);
+                MLog.e("TNNoteViewAct", "WebViewClient--onPageFinished" + url);
                 super.onPageFinished(view, url);
 
                 view.loadUrl("javascript:loading()");
-                //下载附件
                 startAutoDownload();
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                MLog.d(TAG, "shouldOverrideUrlLoading:" + url);
+                MLog.e("TNNoteViewAct", "WebViewClient--shouldOverrideUrlLoading" + url);
                 super.shouldOverrideUrlLoading(view, url);
 
                 if (url.startsWith("http:") || url.startsWith("https:")) {
                     return false;
                 }
-
                 // Otherwise allow the OS to handle it
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 TNUtilsDialog.startIntent(TNNoteViewAct.this, intent,
                         R.string.alert_NoteView_CantOpenMsg);
-
                 return true;
             }
 
         });
-
     }
 
     @Override
@@ -398,7 +396,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -799,7 +796,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 }
 
                 /**
-                 * 编写js代码
+                 * 编写js代码 注入 监听事件
                  */
                 String s;
                 if (att.type > 10000 && att.type < 20000)
@@ -849,6 +846,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                                     att.attName, (att.size * 100 / 1024) / 100f
                                             + "K");
 
+                MLog.e("TNNoteViewAct", "js代码：" + s);
+
                 Message msg = new Message();
                 Bundle b = new Bundle();
                 b.putString("s", s);
@@ -873,6 +872,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                                             + "K");
                 }
 
+                MLog.e("TNNoteViewAct", "js代码：" + s);
                 Message msg = new Message();
                 Bundle b = new Bundle();
                 b.putString("s", s);
@@ -1289,9 +1289,53 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     }
 
+    //=================================js交互========================================
 
-    // Class JSInterface
-    // -------------------------------------------------------------------------------
+    /**
+     * TODO
+     * 新版本js交互 sjy 0716
+     */
+    final class MyJSInterface {
+
+        private Context context;
+
+        public MyJSInterface(Context context) {
+            this.context = context;
+        }
+
+        /**
+         * This is not called on the UI thread. Post a runnable to invoke
+         * loadUrl on the UI thread.
+         */
+        public void downloadAtt(long id) {
+            MLog.d("download", "JSInterface-->downloadAtt:" + id);
+            NoteViewDownloadPresenter.getInstance().start(id);
+        }
+
+        public void openAtt(long id) {
+            MLog.d("TNNoteViewAct", "js交互--打开弹窗");
+
+            mCurAtt = mNote.getAttDataByLocalId(id);
+
+            // Log.d(TAG, "curAtt.type" + mCurAtt.type
+            // + "curAtt.uploadFlag" + mCurAtt.uploadFlag);
+            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
+            // 此处会报一个Only the original thread that created a view hierarchy can
+            // touch its views
+            // 原因未知，故使用handle处理
+            if (mCurAtt.syncState != 1) {
+                Message msg = new Message();
+                msg.what = WEBBVIEW_OPEN_ATT;
+                msg.arg1 = 1;
+                handler.sendMessage(msg);
+            }
+        }
+
+        public void showSource(String html) {
+            MLog.e("HTML", html);
+        }
+    }
+
     final class JSInterface {
         /**
          * This is not called on the UI thread. Post a runnable to invoke
@@ -1303,6 +1347,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
 
         public void openAtt(long id) {
+            MLog.d("TNNoteViewAct", "js交互--打开弹窗");
+
             mCurAtt = mNote.getAttDataByLocalId(id);
 
             // Log.d(TAG, "curAtt.type" + mCurAtt.type

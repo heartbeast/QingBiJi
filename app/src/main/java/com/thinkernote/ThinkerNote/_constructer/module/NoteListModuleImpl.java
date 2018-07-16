@@ -122,7 +122,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
                         //处理返回结果
                         if (bean.getCode() == 0) {
-                            listener.onListByFolderIdSuccess(bean, mListDetail, mPageNum, pageSize, sort);
+                            listener.onNoteListByTagIdSuccess(bean, mListDetail, mPageNum, pageSize, sort);
                         } else {
                             listener.onNoteListByTagIdFailed(bean.getMessage(), null);
                         }

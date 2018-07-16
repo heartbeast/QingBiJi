@@ -77,12 +77,13 @@ public class TNPageTags extends TNChildViewBase implements
         , OnSynchronizeDataListener, OnTagsFragListener {
 
     //正常登录的同步常量
+    public static final String TAG = "TAG";//1
     public static final int DELETE_LOCALNOTE = 101;//1
     public static final int DELETE_REALNOTE = 102;//
     public static final int DELETE_REALNOTE2 = 103;//
     public static final int UPDATA_EDITNOTES = 104;//
+    public static final int TAGLIST = 105;//
 
-    private static final String TAG = "TNPageChildTags";
     private TNSettings mSettings = TNSettings.getInstance();
 
     private Vector<TNTagGroup> mGroups;
@@ -224,6 +225,7 @@ public class TNPageTags extends TNChildViewBase implements
         b.putInt("ListType", 4);
         b.putLong("ListDetail", tag.tagId);
         b.putInt("count", tag.noteCounts);
+        MLog.e(TAG, "跳转前", "ListType=" + 4 + "--tag.tagId=" + tag.tagId, "tag.noteCounts" + tag.noteCounts);
         mActivity.startActivity(TNNoteListAct.class, b);
         return true;
     }
@@ -417,6 +419,13 @@ public class TNPageTags extends TNChildViewBase implements
     protected void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch (msg.what) {
+            case TAGLIST:
+                //显示
+                long userId = (Long) msg.obj;
+                mTags = TNDbUtils.getTagList(userId);
+                notifyExpandList();
+                MLog.e(TAG, "onGetTagListSuccess--handler--mTags" + mTags.size() + "--settings.userId=" + userId);
+                break;
             case DELETE_LOCALNOTE://2-8-2的调用
                 //执行下一个position/执行下一个接口
                 pDelete(((int) msg.obj + 1));
@@ -1299,7 +1308,7 @@ public class TNPageTags extends TNChildViewBase implements
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1341,7 +1350,7 @@ public class TNPageTags extends TNChildViewBase implements
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -2147,34 +2156,47 @@ public class TNPageTags extends TNChildViewBase implements
 
     @Override
     public void onGetTagListSuccess(Object obj) {
+
         mListview.onRefreshComplete();
         //保存
         TagListBean tagListBean = (TagListBean) obj;
-        List<TagItemBean> beans = tagListBean.getTags();
-        //
-        TNSettings settings = TNSettings.getInstance();
-        TagDbHelper.clearTags();
+        final List<TagItemBean> beans = tagListBean.getTags();
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                TNSettings settings = TNSettings.getInstance();
+                TagDbHelper.clearTags();
 
-        for (int i = 0; i < beans.size(); i++) {
-            TagItemBean itemBean = beans.get(i);
+                for (int i = 0; i < beans.size(); i++) {
+                    TagItemBean itemBean = beans.get(i);
 
-            String tagName = itemBean.getName();
-            if (TextUtils.isEmpty(tagName)) {
-                tagName = "无";
+                    String tagName = itemBean.getName();
+                    if (TextUtils.isEmpty(tagName)) {
+                        tagName = "无";
+                    }
+                    JSONObject tempObj = TNUtils.makeJSON(
+                            "tagName", tagName,
+                            "userId", settings.userId,
+                            "trash", 0,
+                            "tagId", itemBean.getId(),
+                            "strIndex", TNUtils.getPingYinIndex(tagName),
+                            "count", itemBean.getCount()
+                    );
+                    TagDbHelper.addOrUpdateTag(tempObj);
+                }
+
+                Message msg = Message.obtain();
+                msg.what = TAGLIST;
+                msg.obj = settings.userId;
+                handler.sendMessage(msg);
+                MLog.e(TAG, "onGetTagListSuccess" + "--settings.userId=" + settings.userId);
             }
-            JSONObject tempObj = TNUtils.makeJSON(
-                    "tagName", tagName,
-                    "userId", settings.userId,
-                    "trash", 0,
-                    "tagId", itemBean.getId(),
-                    "strIndex", TNUtils.getPingYinIndex(tagName),
-                    "count", itemBean.getCount()
-            );
-            TagDbHelper.addOrUpdateTag(tempObj);
-        }
-        //显示
-        mTags = TNDbUtils.getTagList(settings.userId);
-        notifyExpandList();
+
+        });
+        //
+
+
     }
 
     @Override

@@ -753,7 +753,7 @@ public class TNPageCats extends TNChildViewBase implements
                             "source", "android",
                             "catId", catId,
                             "content", obj.getSummary(),
-                            "createTime", obj.getCreate_at() / 1000,
+                            "createTime", com.thinkernote.ThinkerNote.Utils.TimeUtils.getMillsOfDate(obj.getCreate_at()) / 1000,
                             "lastUpdate", lastUpdate,
                             "syncState", syncState,
                             "noteId", noteId,
