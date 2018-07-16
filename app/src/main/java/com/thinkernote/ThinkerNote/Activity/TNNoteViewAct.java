@@ -453,7 +453,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             //==================openatt_menu相关=====================
-            case R.id.openatt_menu_view: {//产看
+            case R.id.openatt_menu_view: {//查看
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 Uri contentUri = null;

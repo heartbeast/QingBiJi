@@ -33,4 +33,4 @@ https://s.qingbiji.cn/api/attachment?filename=1531208537961.jpg&session_token=UW
 
 5 Uri.fromFile(new File(temp))获取Uri的样式在android7.0+后，改成FileProvider.getUriForFile()样式，具体参考本app
 
-6
+6数据库比较乱，本次未修改，但是需要优化成一个数据库---sjy 0713

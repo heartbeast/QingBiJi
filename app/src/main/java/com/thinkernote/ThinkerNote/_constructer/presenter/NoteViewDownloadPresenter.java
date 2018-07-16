@@ -153,7 +153,7 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
      * 操作数据库
      */
     private void DbListDownload() {
-        MLog.d(TAG, "start()---for循环---数据库操作");
+        MLog.d(TAG, "数据库操作--再更新一边");
         //更新mNote
         mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
         mNote.syncState = mNote.syncState > 2 ? mNote.syncState : 2;
@@ -245,7 +245,8 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     public void onListDownloadSuccess(TNNote note, TNNoteAtt att, int position) {
         File file = new File(att.path);
         if (!TextUtils.isEmpty(att.path)) {
-            MLog.d("文件下载成功：", "原状态att.syncState=" + att.syncState + "文件路径" + file.toString() + "文件大小" + file.length());
+            MLog.d("onListDownloadSuccess", "list文件下载成功" + "--att.path：" + att.path);
+            MLog.d("list文件下载成功：", "原状态att.syncState=" + att.syncState + "文件路径" + file.toString() + "文件大小" + file.length());
         }
         //将图片路径保存到本地数据库
         try {
@@ -276,7 +277,7 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     public void onSingleDownloadSuccess(TNNote mNote, TNNoteAtt att) {
         File file = new File(att.path);
         if (!TextUtils.isEmpty(att.path)) {
-            MLog.d("文件下载成功：", "原状态att.syncState=" + att.syncState + "文件路径" + file.toString() + "文件大小" + file.length());
+            MLog.d("single文件下载成功：", "原状态att.syncState=" + att.syncState + "文件路径" + file.toString() + "文件大小" + file.length());
         }
         //将图片路径保存到本地数据库
         try {
@@ -287,7 +288,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
                 TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{att.path, mNote.noteLocalId});
             } else {
                 MLog.e("Bug 无法更新其他position数据");
-                MLog.d("att.type=" + att.type);
                 TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, new Object[]{att.attName, att.type, att.path, att.noteLocalId, file.length(), 2, att.digest, att.attId, att.width, att.height, mNote.noteLocalId});
                 TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{att.path, mNote.noteLocalId});
             }

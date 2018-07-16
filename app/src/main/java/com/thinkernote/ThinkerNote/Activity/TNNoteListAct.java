@@ -176,7 +176,16 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
         // TODO 未发现调用
         TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
+        // register action
+        TNAction.regResponder(TNActionType.GetNoteListByTagId, this, "respondGetNoteList");
+        TNAction.regResponder(TNActionType.GetNoteListByFolderId, this, "respondGetNoteList");
+        TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
+        TNAction.regResponder(TNActionType.SynchronizeEdit, this, "respondSynchronizeEdit");
+        TNAction.regResponder(TNActionType.Synchronize, this, "respondSynchronize");
 
+
+        TNAction.regResponder(TNActionType.GetNoteListBySearch, this, "respondGetNoteListBySearch");
+        TNAction.regResponder(TNActionType.GetAllData, this, "respondGetAllData");
         //
         presenter = new NoteListPresenterImpl(this, this, dataListener, editListener);
         // initialize
@@ -663,6 +672,13 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
      */
     private void endSynchronize2(int state) {
+            MLog.d("SynchronizeEdit结束");
+//        mLoadingView.setVisibility(View.GONE);
+//        mPullListview.onRefreshComplete();
+//        mNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, mSettings.sort);
+//        mNotesAdapter.updateNotes(mNotes);
+//        mNotesAdapter.notifyDataSetChanged();
+//        setButtonsAndNoteList();
 
         if (state == 0) {
             // 正常流程完成
@@ -2981,8 +2997,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
 
-
-
     //==================================接口结果返回=======================================
 
     //1-1/同1-2
@@ -3080,6 +3094,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     }
 
     //==================================接口结果返回=======================================
+
     DataListener dataListener = new DataListener();
 
     class DataListener implements OnSynchronizeDataListener {

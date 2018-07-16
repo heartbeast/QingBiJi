@@ -1245,8 +1245,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     msg.what = SAVE_OVER;
                     handler.sendMessage(msg);
                 }
-
-
             }
         });
     }

@@ -11,8 +11,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -50,7 +48,6 @@ import com.weibo.sdk.android.sso.SsoHandler;
 
 import org.json.JSONObject;
 
-import retrofit2.Response;
 import rx.functions.Action1;
 
 /**
