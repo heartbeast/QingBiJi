@@ -268,7 +268,9 @@ public class TNPageCats extends TNChildViewBase implements
                 b.putInt("ListType", 3);
                 b.putInt("count", cat.noteCounts);
                 b.putLong("ListDetail", cat.catId);
+                MLog.e(TAG, "跳转前", "ListType=" + 3 + "--cat.catId=" + cat.catId, "cat.noteCounts" + cat.noteCounts);
                 mActivity.startActivity(TNNoteListAct.class, b);
+
             } else {
                 mPCat = cat.copy();
                 configView(0);

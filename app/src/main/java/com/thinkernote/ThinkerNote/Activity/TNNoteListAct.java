@@ -223,7 +223,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             findViewById(R.id.ll_clearrecycler).setVisibility(View.VISIBLE);
             findViewById(R.id.maincats_menu_clearrecycler).setOnClickListener(this);
         }
-        MLog.e(TAG,"跳转后--"+"ListType="+mListType+"tag.tagId="+mListDetail+"--tag.noteCounts="+mCount);
+        MLog.e(TAG, "跳转后--" + "ListType=" + mListType + "tag.tagId=" + mListDetail + "--tag.noteCounts=" + mCount);
     }
 
     @Override
@@ -350,7 +350,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 break;
             }
 
-            case R.id.recycler_menu_delete: {//删除
+            case R.id.recycler_menu_delete: {//彻底删除
                 mMenuBuilder.destroy();
                 showRealDeleteDialog(mCurNoteId);
                 break;
@@ -593,9 +593,9 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
                 break;
             case 3:
+                //CatFrag跳转值
                 if (mPageNum == 1)
                     syncData();
-
                 break;
             case 4://tag
                 //
@@ -683,7 +683,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * @param state 0 = 成功/1=back取消同步/2-异常触发同步终止
      */
     private void endSynchronize2(int state) {
-            MLog.d("SynchronizeEdit结束");
+        MLog.d("SynchronizeEdit结束");
 //        mLoadingView.setVisibility(View.GONE);
 //        mPullListview.onRefreshComplete();
 //        mNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, mSettings.sort);
@@ -3000,6 +3000,8 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
             if (!trashNoteExit) {
                 pUpdataNote1(position, noteId, is13);
+            } else {
+                pUpdataNote131(position + 1, is13);
             }
         } else {
             //同步所有接口完成，结束同步
