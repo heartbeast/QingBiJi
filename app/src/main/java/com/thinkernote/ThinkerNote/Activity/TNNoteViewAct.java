@@ -157,6 +157,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         b.getLong("attLocalId"), b.getString("s")));
                 break;
             case DIALOG_DELETE:
+
                 mProgressDialog.hide();
                 finish();
 
@@ -181,12 +182,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mScale = metric.scaledDensity;
 
         // TODO menu操作返回
-        TNAction.regResponder(TNActionType.NoteLocalDelete, this, "respondNoteHandle");
-        TNAction.regResponder(TNActionType.NoteLocalRealDelete, this, "respondNoteHandle");
         TNAction.regResponder(TNActionType.NoteLocalRecovery, this, "respondNoteHandle");
-        TNAction.regResponder(TNActionType.NoteLocalChangeTag, this, "respondNoteLocalChangeTag");
         TNAction.regResponder(TNActionType.GetAllDataByNoteId, this, "respondGetAllDataByNoteId");
-        TNAction.regResponder(TNActionType.Synchronize, this, "respondSynchronize");
 
         presenter = new NoteViewPresenterImpl(this, this);
 
@@ -467,17 +464,22 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
 //                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
                 intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
+
+                //TODO
+                MLog.d("笔记详情", "响应--查看");
                 TNUtilsDialog.startIntent(this, intent,
                         R.string.alert_NoteView_CantOpenAttMsg);
                 break;
             }
 
             case R.id.openatt_menu_save: {//保存
+                MLog.d("笔记详情", "响应--保存");
                 saveAttDialog();
                 break;
             }
 
             case R.id.openatt_menu_send: {//发送
+
                 try {
                     String temp = TNUtilsAtt.getTempPath(mCurAtt.path);
                     TNUtilsAtt.copyFile(mCurAtt.path, temp);
@@ -493,6 +495,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         contentUri = Uri.fromFile(new File(temp));
                     }
                     intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    MLog.d("笔记详情", "响应--发送");
                     TNUtilsDialog.startIntent(this, intent,
                             R.string.alert_NoteView_CantSendAttMsg);
                 } catch (Exception e) {
@@ -599,12 +602,12 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.noteview_home: {
+            case R.id.noteview_home: {//
                 finish();
                 break;
             }
 
-            case R.id.noteview_edit:
+            case R.id.noteview_edit://
                 editNote();
                 break;
 
@@ -663,6 +666,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 Bundle b = new Bundle();
                 b.putString("TagStrForEdit", mNote.tagStr);
                 b.putSerializable("ChangeTagForNoteList", mNote.noteLocalId);
+                MLog.d("TNNOteViewAct", "更换标签--" + mNote.noteLocalId);
                 startActivity(TNTagListAct.class, b);
                 break;
             }
@@ -768,6 +772,13 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         configView();
     }
 
+    /**
+     * 下载结束后的操作
+     *
+     * @param att
+     * @param isSucess
+     * @param errorMsg
+     */
     public void downloadOver(TNNoteAtt att, boolean isSucess, String errorMsg) {
         MLog.i(TAG, "downloadOver: " + att.type + " isInFront: " + isInFront);
         if (isInFront) {
@@ -878,23 +889,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         finish();
     }
 
-    //更换标签后更新笔记
-    public void respondNoteLocalChangeTag(TNAction aAction) {
-        //TODO
-        MLog.e("更新完标签");
-        configView();
-    }
-
-    // Private methods
-    // -------------------------------------------------------------------------------
-    public void dialogCB() {
-        mProgressDialog.show();
-    }
-
-    public void dialogCallBackProgress() {
-        mProgressDialog.show();
-    }
-
     private void setPopuMenu() {
         mPopuMenu = new PoPuMenuView(this);
         mPopuMenu.addItem(R.id.noteview_actionitem_tag,
@@ -952,29 +946,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             return;
 
         NoteViewDownloadPresenter.getInstance().start();
-    }
-
-    private void showSynDialog() {
-        TNUtilsUi.showToast(R.string.alert_NoteView_ReadHint);
-        if (mSynthesizerPlayer == null) {
-            mSynthesizerPlayer = SynthesizerPlayer.createSynthesizerPlayer(
-                    this, "appid=4ea04eee");
-            mPlainText = mNote.getPlainText();
-
-            TNSettings settings = TNSettings.getInstance();
-            mSynthesizerPlayer.setVoiceName(settings.voice);
-            mSynthesizerPlayer.setSpeed(settings.speed);
-            mSynthesizerPlayer.setVolume(settings.volume);
-            mSynthesizerPlayer.setBackgroundSound("0");
-        }
-
-        if (mStartPos > 0) {
-            openContextMenu(findViewById(R.id.noteview_read_menu));
-        } else {
-            mStartPos = 0;
-            mSynthesizerPlayer.playText(getNextReadStr(), null, this);
-            setReadBarVisible(true);
-        }
     }
 
     private void setReadBarVisible(boolean visible) {
@@ -1042,6 +1013,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
      * @param noteLocalId
      */
     private void resetNoteDialog(final long noteLocalId) {
+        mProgressDialog.show();
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //title
         LayoutInflater lf1 = LayoutInflater.from(this);
@@ -1103,6 +1075,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
      * @param noteLocalId
      */
     private void showRealDeleteDialog(final long noteLocalId) {
+        mProgressDialog.show();
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //title
         LayoutInflater lf1 = LayoutInflater.from(this);
@@ -1196,7 +1169,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
      * @param noteLocalId
      */
     private void showDeleteDialog(final long noteLocalId) {
-
+        mProgressDialog.show();
         //
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //title

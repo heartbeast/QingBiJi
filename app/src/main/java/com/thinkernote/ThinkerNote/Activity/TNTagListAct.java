@@ -64,7 +64,7 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
     private String mTagStr = null;
     private TNTagAdapter mAdapter;
     private long mNoteLocalId;
-    private TNNote mNote;
+    private TNNote mNote = null;
     private Vector<TNTag> mTags;
     private ProgressDialog mProgressDialog = null;
 
@@ -89,8 +89,10 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
 
         mOriginal = mTagStr = getIntent().getStringExtra("TagStrForEdit");
         mNoteLocalId = getIntent().getLongExtra("ChangeTagForNoteList", -1);
+        MLog.d("TNNOteViewAct","获取跳转值=" + mNoteLocalId);
         if (mNoteLocalId != -1) {
             mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
+            MLog.d("TNNOteViewAct","获取mNote值=" + mNote.toString());
         }
 
         ListView lv = (ListView) findViewById(R.id.taglist_list);
@@ -183,11 +185,9 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
      *
      */
     private void noteLocalChangeTag() {
-        final long noteLocalId = mNote.noteLocalId;
         final String tags = mTagStr;
         final int lastUpdate = (int) (System.currentTimeMillis() / 1000);
-        TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
-        final int syncState = note.noteId == -1 ? 3 : 4;
+        final int syncState = mNote.noteId == -1 ? 3 : 4;
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -195,18 +195,14 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
             public void run() {
                 TNDb.beginTransaction();
                 try {
-                    TNNote note = TNDbUtils.getNoteByNoteId(noteLocalId);
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_CHANGE_TAG, new Object[]{tags, syncState , lastUpdate , noteLocalId });
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000 , note.catId });
+                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_CHANGE_TAG, new Object[]{tags, syncState, lastUpdate, mNote.noteLocalId});
+                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, mNote.catId});
 
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
                 }
-
-                //
-
                 handler.sendEmptyMessage(BACK_CHECKDB);
             }
         });
