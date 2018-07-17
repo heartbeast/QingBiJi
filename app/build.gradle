@@ -34,8 +34,8 @@ android {
         }
     }
 
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             jniLibs.srcDirs 'libs'
             jni.srcDirs = []
         }
@@ -52,9 +52,7 @@ dependencies {
     implementation files('libs/android_api.jar')
 
     //旧版百度定位
-
     //    implementation files('libs/baidu_locSDK_2.3.jar')
-
     //新版百度定位 2018-0712 sjy
     implementation files('libs/BaiduLBS_Android.jar')
     implementation files('libs/httpmime-4.1.jar')

@@ -10,17 +10,7 @@ import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Service.TNAttDownloadService;
-import com.thinkernote.ThinkerNote.Service.TNAttLocalService;
-import com.thinkernote.ThinkerNote.Service.TNAttService;
-import com.thinkernote.ThinkerNote.Service.TNCacheService;
-import com.thinkernote.ThinkerNote.Service.TNCatService;
-import com.thinkernote.ThinkerNote.Service.TNLBSService;
-import com.thinkernote.ThinkerNote.Service.TNNoteLocalService;
-import com.thinkernote.ThinkerNote.Service.TNNoteService;
-import com.thinkernote.ThinkerNote.Service.TNSyncService;
-import com.thinkernote.ThinkerNote.Service.TNTagService;
-import com.thinkernote.ThinkerNote.Service.TNUserService;
+import com.thinkernote.ThinkerNote.Service.LocationService;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.http.HttpUtils;
 import com.thinkernote.ThinkerNote.http.third.WeichatHttpUtils;
@@ -69,7 +59,9 @@ public class TNApplication extends Application {
 //		//设置定制的默认皮肤， 暂指三星定制的奥运皮肤
 //		TNUtilsSkin.setAssetsSkins(TNUtilsSkin.DEFAULT_SKIN);
         //地图定位
-        TNLBSService.getInstance();
+//        TNLBSService.getInstance();
+        //地图定位 新版
+        LocationService.getInstance();
         watchAppSwitch();
 
 

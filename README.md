@@ -35,4 +35,4 @@ https://s.qingbiji.cn/api/attachment?filename=1531208537961.jpg&session_token=UW
 
 6数据库比较乱，本次未修改，但是需要优化成一个数据库---sjy 0713
 
-7.百度地图开元账号：行客记事 Qunbiji2015
+7.百度地图开元账号：行客记事 Qunbiji2015 (目前没有定位正确)

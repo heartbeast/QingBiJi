@@ -86,19 +86,16 @@
         <!-- 百度统计分析 end ================================================================ -->
 
         <!-- 百度定位  start ================================================================= -->
-        <!--TODO 定位key值-->
+        <!--开发者申请的AK 账号信息见readme.md-->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="开发者申请的AK"></meta-data>
+            android:value="P726XL75U1osiDzewotN1XNeQjNrfyWb"></meta-data>
 
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:permission="android.permission.BAIDU_LOCATION_SERVICE"
             android:process=":remote">
-            <intent-filter>
-                <action android:name="com.baidu.location.service_v2.3"></action>
-            </intent-filter>
+
         </service>
         <!-- 百度定位 end ================================================================= -->
 

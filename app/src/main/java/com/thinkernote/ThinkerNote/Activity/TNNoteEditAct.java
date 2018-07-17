@@ -1,7 +1,5 @@
 package com.thinkernote.ThinkerNote.Activity;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -60,13 +58,12 @@ import com.thinkernote.ThinkerNote.General.TNUtilsUi;
 import com.thinkernote.ThinkerNote.Other.PoPuMenuView;
 import com.thinkernote.ThinkerNote.Other.PoPuMenuView.OnPoPuMenuItemClickListener;
 import com.thinkernote.ThinkerNote.R;
-import com.thinkernote.ThinkerNote.Service.TNLBSService;
+import com.thinkernote.ThinkerNote.Service.LocationService;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote._constructer.presenter.NoteEditPresenterImpl;
 import com.thinkernote.ThinkerNote._interface.p.INoteEditPresenter;
 import com.thinkernote.ThinkerNote._interface.v.OnNoteEditListener;
 import com.thinkernote.ThinkerNote.base.TNActBase;
-import com.thinkernote.ThinkerNote.base.TNApplication;
 import com.thinkernote.ThinkerNote.bean.main.AllFolderItemBean;
 import com.thinkernote.ThinkerNote.bean.main.AllNotesIdsBean;
 import com.thinkernote.ThinkerNote.bean.main.GetNoteByNoteIdBean;
@@ -150,7 +147,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         presener = new NoteEditPresenterImpl(this, this);
         //开启百度定位
         if (savedInstanceState == null) {
-            TNLBSService.getInstance().startLocation();
+//            TNLBSService.getInstance().startLocation();
+            LocationService.getInstance().start();
         }
         if (savedInstanceState == null) {
             initNote();
@@ -165,7 +163,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
             if (uri != null)
                 mCameraUri = uri;
-            MLog.i(TAG, "onCreate" + mNote);
         }
         startTimer();
         mProgressDialog = TNUtilsUi.progressDialog(this, R.string.in_progress);
@@ -214,7 +211,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             if (it != null && it.getAction() != null) {
                 Bundle extras = it.getExtras();
                 if (extras.containsKey(Intent.EXTRA_STREAM)) {
-                    MLog.i(TAG, "uri++=" + extras.get(Intent.EXTRA_STREAM));
                     Object extraStream = extras.get(Intent.EXTRA_STREAM);
                     if (Uri.class.isInstance(extraStream)) {
                         Uri uri = (Uri) extraStream;
@@ -234,7 +230,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 }
                 if (extras.containsKey(Intent.EXTRA_SUBJECT)) {
                     Object subject = extras.get(Intent.EXTRA_SUBJECT);
-                    MLog.i(TAG, "subject++=" + subject);
                     if (subject == null) {
                         mNote.title = "";
                     } else
@@ -242,7 +237,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 }
                 if (extras.containsKey(Intent.EXTRA_TEXT)) {
                     Object text = extras.get(Intent.EXTRA_TEXT);
-                    MLog.i(TAG, "text++=" + text);
                     if (text == null)
                         mNote.content = "";
                     else
@@ -268,7 +262,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             newnote.atts.addAll(mNote.atts);
             newnote.createTime = mNote.createTime;
             if (mNote.isEditable()) {
-                MLog.i(TAG, mNote.content);
                 newnote.content = mNote.getPlainText();
             } else {
                 newnote.setMappingAndPlainText();
@@ -308,7 +301,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     public void onDestroy() {
         try {
             mTimer.cancel();
-            TNLBSService.getInstance().stopLocation();
+//            TNLBSService.getInstance().stopLocation();
+            LocationService.getInstance().stop();
         } catch (Exception e) {
         }
         handleProgressDialog("dismiss");
@@ -326,20 +320,17 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         outBundle.putParcelable("CAMERA_URI", mCameraUri);
         outBundle.putBoolean("IS_OTHER_ACT", mIsStartOtherAct);
 
-        MLog.i(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outBundle);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle outBundle) {
         super.onRestoreInstanceState(outBundle);
-        MLog.i(TAG, "onRestoreInstanceState");
 
         mNote = (TNNote) outBundle.getSerializable("NOTE");
         mCameraUri = outBundle.getParcelable("CAMERA_URI");
         mIsStartOtherAct = outBundle.getBoolean("IS_OTHER_ACT");
 
-        MLog.i(TAG, "onRestoreInstanceState" + mNote);
     }
 
     @Override
@@ -753,9 +744,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        MLog.i(TAG,
-                "onFocusChange" + v + hasFocus
-                        + ((EditText) v).getSelectionStart());
         if (v.getId() == R.id.noteedit_input_title && !hasFocus) {
             String title = ((EditText) v).getText().toString();
             String trimTitle = title.trim();
@@ -808,7 +796,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         for (RecognizerResult recognizerResult : results) {
             builder.append(recognizerResult.text);
         }
-        MLog.i(TAG, "iat:" + builder.toString());
 
         EditText currentText = null;
         if (mTitleView.isFocused()) {
@@ -829,8 +816,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        MLog.w(TAG, "onActivityResult:" + requestCode + "," + resultCode + ","
-                + data);
 
         if (resultCode != RESULT_OK
                 || (data == null && requestCode != R.id.noteedit_camera)) {
@@ -861,15 +846,12 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         } else if (requestCode == R.id.noteedit_doodle) {
             addAtt(data.getStringExtra("TuYa"), false);
         }
-        MLog.d(TAG, "onActivityResult end");
     }
 
     private void addAtt(final String path, boolean delete) {
         if (path == null) {
-            MLog.e(TAG, "addAtt path is NULL");
             return;
         }
-        MLog.i(TAG, "srcpath: " + path);
 
         if (mNote.atts.size() > 200) {
             TNUtilsUi.alert(this, R.string.alert_Att_too_Much);
@@ -979,7 +961,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
-                MLog.i(TAG, "sendMessage savenote");
             }
         };
         mTimer.schedule(mTimerTask, 60 * 1000, 60 * 1000);
@@ -1039,7 +1020,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 break;
             case 6://空间不够
                 TNUtilsUi.alert(TNNoteEditAct.this, R.string.alert_NoSDCard);
-                MLog.e(TAG, "record faild: no space");
                 showToolbar("note");
                 break;
             case 7://异步停止录音
@@ -1113,7 +1093,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     syncEdit();
                     break;
 
-
                 }
             case DELETE_LOCALNOTE://2-8-2的调用
                 //执行下一个position/执行下一个接口
@@ -1154,7 +1133,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     //==========================================数据库操作======================================
 
     /**
-     * 数据库操作
+     * 数据库操作 线程操作
      *
      * @param note
      */
@@ -1178,9 +1157,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     if (note.noteLocalId < 0) {
-                        MLog.d("saveNote:", "note.noteLocalId < 0");
-
                         // insert
+                        MLog.e("saveNote:", "insert", "note.noteLocalId < 0", "具体内容：" + note.toString());
                         note.createTime = (int) (System.currentTimeMillis() / 1000);
                         long id = TNDb.getInstance().insertSQL(TNSQLString.NOTE_INSERT//19个参数
                                 , new Object[]{note.title,
@@ -1204,8 +1182,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                                         note.contentDigest});//19
                         note.noteLocalId = id;
 
+                        MLog.d("saveNote:", "insert", "note.noteLocalId < 0", "note.noteLocalId=" + id);
                     } else {
-                        MLog.d("saveNote:", "note.noteLocalId >=0", "note.contentDigest" + note.contentDigest);
+                        MLog.d("saveNote:", " update", "note.noteLocalId >=0");
                         // update
                         note.syncState = note.noteId != -1 ? 4 : 3;
                         TNDb.getInstance().updataSQL(TNSQLString.NOTE_LOCAL_UPDATE, new Object[]{note.title,
@@ -1228,6 +1207,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     } else {
                         msg.obj = note2;
                         TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note2.catId});
+                        MLog.d("saveNote", "保存的内容：" + note2.toString());
 
                     }
                     TNDb.setTransactionSuccessful();
@@ -1261,7 +1241,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         Vector<TNNoteAtt> newAtts = note.atts;
         Vector<TNNoteAtt> exsitAtts = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
         try {
-            if (exsitAtts.size() != 0) {
+
+            if (exsitAtts.size() != 0) {//有图
                 MLog.d("saveNote", "save attr", "exsitAtts.size()=" + exsitAtts.size());
 
                 //循环判断是否与本地同步，新增没有就删除本地
@@ -1283,16 +1264,16 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 for (int k = 0; k < newAtts.size(); k++) {
                     TNNoteAtt att = newAtts.get(k);
                     if (att.attLocalId == -1) {
-                        long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new String[]{att.attName + "",
-                                att.type + "",
-                                att.path + "",
-                                note.noteLocalId + "",
-                                att.size + "",
-                                0 + "",
+                        long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new Object[]{att.attName,
+                                att.type,
+                                att.path,
+                                note.noteLocalId,
+                                att.size,
+                                0,
                                 TNUtilsAtt.fileToMd5(att.path),
-                                att.attId + "",
-                                att.width + "",
-                                att.height + ""});
+                                att.attId,
+                                att.width,
+                                att.height});
 
                         // copy file to path
                         String tPath = TNUtilsAtt.getAttPath(attLocalId, att.type);
@@ -1317,16 +1298,16 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     TNNoteAtt att = note.atts.get(i);
                     // insert
                     long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT
-                            , new String[]{att.attName,
-                                    att.type + "",
+                            , new Object[]{att.attName,
+                                    att.type,
                                     att.path,
-                                    note.noteLocalId + "",
-                                    att.size + "",
-                                    3 + "",
+                                    note.noteLocalId,
+                                    att.size,
+                                    3,
                                     TNUtilsAtt.fileToMd5(att.path),
-                                    att.attId + "",
-                                    att.width + "",
-                                    att.height + ""});
+                                    att.attId,
+                                    att.width,
+                                    att.height});
 
                     note.atts.get(i).attLocalId = attLocalId;
                 }
@@ -2334,13 +2315,14 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     @Override
     public void onSyncAllNotesIdSuccess(Object obj) {
         cloudIds = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
-        MLog.d("saveNote", "onSyncAllNotesIdSuccess--cloudIds数据个数=" + cloudIds.size());
+
 
         //与云端同步数据 sjy-0623
         allNotes = TNDbUtils.getAllNoteList(TNSettings.getInstance().userId);
         for (int i = 0; i < allNotes.size(); i++) {
             boolean isExit = false;
             final TNNote note = allNotes.get(i);
+            MLog.d("saveNote", "onSyncAllNotesIdSuccess--cloudIds数据=" + cloudIds.size() + "个---allNotes.size()" + allNotes.size() + "个---TNNote内容：" + note.toString());
             //查询本地是否存在
             for (int j = 0; j < cloudIds.size(); j++) {
                 if (note.noteId == cloudIds.get(j).getId()) {
@@ -2458,7 +2440,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new String[]{trashNote.noteId + ""});
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{trashNote.noteId + ""});
                             TNDb.setTransactionSuccessful();
                         } finally {
                             TNDb.endTransaction();

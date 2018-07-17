@@ -9,7 +9,7 @@ import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNSettings;
 import com.thinkernote.ThinkerNote.General.TNUtils;
 import com.thinkernote.ThinkerNote.General.TNUtilsHtml;
-import com.thinkernote.ThinkerNote.Service.TNLBSService;
+import com.thinkernote.ThinkerNote.Service.LocationService;
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
 import java.io.Serializable;
@@ -131,7 +131,8 @@ public class TNNote implements Serializable{
 		
 		note.mapping = new Vector<Integer>();
 		
-		BDLocation location = TNLBSService.getInstance().getLocation();
+//		BDLocation location = TNLBSService.getInstance().getLocation();
+		BDLocation location = LocationService.getInstance().getLocation();
 		note.lbsLongitude = TNUtils.doubleToInt(location.getLongitude(), 1000000);
 		note.lbsLatitude = TNUtils.doubleToInt(location.getLatitude(), 1000000);
 		note.lbsRadius = TNUtils.doubleToInt(location.getRadius(), 10000);
@@ -320,7 +321,8 @@ public class TNNote implements Serializable{
 		content = sb.toString();
 		contentDigest = TNUtils.toMd5(content);
 		shortContent = TNUtils.getBriefContent(content);
-		BDLocation location = TNLBSService.getInstance().getLocation();
+//		BDLocation location = TNLBSService.getInstance().getLocation();
+		BDLocation location = LocationService.getInstance().getLocation();
 		lbsLongitude = TNUtils.doubleToInt(location.getLongitude(), 1000000);
 		lbsLatitude = TNUtils.doubleToInt(location.getLatitude(), 1000000);
 		lbsRadius = TNUtils.doubleToInt(location.getRadius(), 10000);

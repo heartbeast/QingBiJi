@@ -261,7 +261,6 @@ public class TNDb extends SQLiteOpenHelper {
     public long insertSQL(String sql, Object[] args) {
         long id = -1;
         try {
-
             db = getWritableDatabase();
             int start = 0, end = 0;
             String tableName = "";
@@ -271,30 +270,31 @@ public class TNDb extends SQLiteOpenHelper {
             start = sql.indexOf("`");
             end = sql.indexOf("`", start + 1);
             tableName = sql.substring(start, end + 1);
-            StringBuffer str = new StringBuffer();
+
+
             //打印要拼接的数据信息
+            StringBuffer str = new StringBuffer();
             for (Object obj : args) {
-                str.append(obj.toString() + " ");
+                str.append(obj == null ? "" : obj.toString() + " ");
             }
-            MLog.d("saveNote--insertSQL", "tableName:" + tableName, "start=" + start, "end=" + end, "sql=" + sql + "\nargs=" + str.toString());
+            MLog.e("saveNote--insertSQL", "tableName:" + tableName, "start=" + start, "end=" + end, "sql=" + sql + "\nargs=" + str.toString());
 
             //取内容
             for (int i = 0; i < args.length; i++) {
                 start = sql.indexOf("`", end + 1);
                 end = sql.indexOf("`", start + 1);
                 //sql中
-                values.put(sql.substring(start, end + 1), args[i].toString());
+                values.put(sql.substring(start, end + 1), args[i] != null ? args[i].toString() : "");
 
                 //打印
                 int s = start;
                 int e = end;
-                MLog.e("saveNote--insertSQL", "start=" + start + "--end=" + (end + 1) + "--key--values:" + sql.substring(s, e + 1) + "<----->" + args[i].toString());
             }
 
             id = db.insertOrThrow(tableName, null, values);
             MLog.d("saveNote", "TNDb--insertSQL-->noteLocalId=" + id);
         } catch (Exception e) {
-            MLog.e("TNDb--insertSQL", "插入数据库失败");
+            MLog.e("TNDb--insertSQL", "插入数据库失败:" + e.toString());
         }
         return id;
     }
