@@ -84,7 +84,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * TODO JS的图片点击事件需要重写
+ * TODO 下载图片的方法需要重做 sjy 20180718
  * 笔记详情
  */
 public class TNNoteViewAct extends TNActBase implements OnClickListener,
@@ -452,7 +452,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 Uri contentUri = null;
-
+                MLog.d("查看图片--路径：" + mCurAtt.path);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0+版本安全设置
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider", new File(mCurAtt.path));
@@ -461,12 +461,16 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 }
 
 //                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
-                intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
 
-                //TODO
-                MLog.d("笔记详情", "响应--查看");
-                TNUtilsDialog.startIntent(this, intent,
-                        R.string.alert_NoteView_CantOpenAttMsg);
+                if (contentUri != null) {
+                    intent.setDataAndType(contentUri, TNUtilsAtt.getMimeType(mCurAtt.type, mCurAtt.attName));
+                    MLog.d("笔记详情", "响应--查看");
+                    TNUtilsDialog.startIntent(this, intent, R.string.alert_NoteView_CantOpenAttMsg);
+                } else {
+                    TNUtilsUi.showToast("打开失败！");
+                    MLog.e("笔记详情", "响应--查看--异常");
+                }
+
                 break;
             }
 
@@ -1312,9 +1316,11 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
         @JavascriptInterface
         public void openAtt(long id) {
-            MLog.d("TNNoteViewAct", "js交互--打开弹窗");
+            //正常值：{attLocalId=1, noteLocalId=6, attId=28499260, attName='1531292067567.jpg', type=10002, path='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg', syncState=2, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394', thumbnail='null', width=432, height=576}<<---
+            //{attLocalId=1, noteLocalId=6, attId=28499260, attName='1531292067567.jpg', type=10002, path='null', syncState=1, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394', thumbnail='null', width=0, height=0}
             mCurAtt = mNote.getAttDataByLocalId(id);
-            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
+            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing()+"id="+id+"--mCurAtt:"+mCurAtt.toString());
+
 //            if (mCurAtt.syncState != 1) {
             Message msg = Message.obtain();
             msg.what = WEBBVIEW_OPEN_ATT;
