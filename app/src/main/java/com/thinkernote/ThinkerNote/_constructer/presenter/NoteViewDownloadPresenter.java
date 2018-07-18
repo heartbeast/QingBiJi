@@ -103,7 +103,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     //循环下载  替换for
 
     /**
-     *
      * @param position
      * @param endAttr  最后结束循环使用
      */
@@ -116,6 +115,9 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
             //如果downAtts该处position的TNNoteAtt有图片，就执行下个position
             if (!TextUtils.isEmpty(att.path)) {
                 file = new File(att.path);
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
                 MLog.d("att.syncState=" + att.syncState + "文件路径：" + att.path + "文件大小：" + att.size);
             }
 
@@ -135,7 +137,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
                 //下载
                 MLog.d(TAG, "下载文件");
                 listDownload(att, mNote, position);
-
             } else {
                 MLog.d(TAG, "网络差 无法下载");
                 endListDownload(endAttr, false);
@@ -217,20 +218,12 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     private void singledownload(TNNoteAtt tnNoteAtt, TNNote tnNote) {
         MLog.d("download", "singledownload下载文件");
         module.singleDownload(tnNoteAtt, tnNote);
-//        //TODO
-//        TNAction.runActionAsync(TNActionType.SyncNoteAtt,
-//                tnNoteAtt,
-//                tnNote);
     }
 
     //调用接口
     private void listDownload(TNNoteAtt tnNoteAtt, TNNote tnNote, int position) {
         MLog.d("download", "listDownload下载文件");
         module.listDownload(tnNoteAtt, tnNote, position);
-//        //TODO
-//        TNAction.runActionAsync(TNActionType.SyncNoteAtt,
-//                tnNoteAtt,
-//                tnNote);
     }
     //===========================接口返回=================================
 
