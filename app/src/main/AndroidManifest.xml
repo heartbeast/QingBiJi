@@ -25,7 +25,7 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!--网络框架必要权限    开始-->
     <!-- 访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET" />

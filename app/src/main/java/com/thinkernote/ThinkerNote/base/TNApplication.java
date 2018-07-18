@@ -53,17 +53,18 @@ public class TNApplication extends Application {
         TNSettings settings = TNSettings.getInstance();
         settings.appContext = this;
         settings.readPref();
+
         // db initialize
         TNDb.getInstance();
         TNDb2.getInstance();
 //		//设置定制的默认皮肤， 暂指三星定制的奥运皮肤
 //		TNUtilsSkin.setAssetsSkins(TNUtilsSkin.DEFAULT_SKIN);
+
         //地图定位
 //        TNLBSService.getInstance();
         //地图定位 新版
         LocationService.getInstance();
         watchAppSwitch();
-
 
         // TODO 删 service initialize
 //		TNSyncService.getInstance();

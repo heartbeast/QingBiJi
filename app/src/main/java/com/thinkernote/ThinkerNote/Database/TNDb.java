@@ -93,28 +93,28 @@ public class TNDb extends SQLiteOpenHelper {
         }
     }
 
-//    public void DBReset(TNAction aAction){
-////        beginTransaction();
-////        try {
-////            //drop tables
-////            getInstance().db.execSQL(TNSQLString.USER_DROP_TABLE);
-////            getInstance().db.execSQL(TNSQLString.CAT_DROP_TABLE);
-////            getInstance().db.execSQL(TNSQLString.TAG_DROP_TABLE);
-////            getInstance().db.execSQL(TNSQLString.NOTE_DROP_TABLE);
-////            getInstance().db.execSQL(TNSQLString.ATT_DROP_TABLE);
-////
-////            //create tables
-////            getInstance().db.execSQL(TNSQLString.USER_CREATE_TABLE);
-////            getInstance().db.execSQL(TNSQLString.CAT_CREATE_TABLE);
-////            getInstance().db.execSQL(TNSQLString.TAG_CREATE_TABLE);
-////            getInstance().db.execSQL(TNSQLString.NOTE_CREATE_TABLE);
-////            getInstance().db.execSQL(TNSQLString.ATT_CREATE_TABLE);
-////
-////            setTransactionSuccessful();
-////        } finally {
-////            endTransaction();
-////        }
-////    }
+    public void DBReset(TNAction aAction){
+        beginTransaction();
+        try {
+            //drop tables
+            getInstance().db.execSQL(TNSQLString.USER_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.CAT_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.TAG_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.NOTE_DROP_TABLE);
+            getInstance().db.execSQL(TNSQLString.ATT_DROP_TABLE);
+
+            //create tables
+            getInstance().db.execSQL(TNSQLString.USER_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.CAT_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.TAG_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.NOTE_CREATE_TABLE);
+            getInstance().db.execSQL(TNSQLString.ATT_CREATE_TABLE);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
 
     private long insert(String sql, String[] args) {
         int start = 0, end = 0;

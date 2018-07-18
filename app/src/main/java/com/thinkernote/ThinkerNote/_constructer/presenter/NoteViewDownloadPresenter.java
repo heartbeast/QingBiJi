@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * TODO 该处逻辑有问题 需要重写
  * 非mvp框架内容，原框架下载文件的类
+ * 说明：下载的文件 是TNNote.atts,是list样式，for循环每一个atts的item数据
  */
 public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     private static final String TAG = "TNDownloadAttService";
@@ -103,7 +103,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     //循环下载  替换for
 
     /**
-     * TODO 该处依然有问题
      *
      * @param position
      * @param endAttr  最后结束循环使用
@@ -111,15 +110,16 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
     private void startPosition(int position, TNNoteAtt endAttr) {
 
         if (downAtts != null && downAtts.size() > 0 && position < downAtts.size()) {
-            MLog.d("downAtts.size=" + downAtts.size());
+            //获取当前position的TNNoteAtt
             TNNoteAtt att = downAtts.get(position);
             File file = null;
+            //如果downAtts该处position的TNNoteAtt有图片，就执行下个position
             if (!TextUtils.isEmpty(att.path)) {
                 file = new File(att.path);
                 MLog.d("att.syncState=" + att.syncState + "文件路径：" + att.path + "文件大小：" + att.size);
-
             }
 
+            //如果已经下载该位置的文件，就执行下一个position
             if (file.length() != 0 && att.syncState == 2) {
                 MLog.d("执行下一个循环");
                 //执行下一个循环
