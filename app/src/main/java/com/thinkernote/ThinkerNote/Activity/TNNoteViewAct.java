@@ -132,8 +132,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         switch (msg.what) {
             case WEBBVIEW_OPEN_ATT://打开 文件的操作弹窗
                 MLog.d("TNNoteViewAct", "打开att操作弹窗");
-                if (!isFinishing())
-                    openContextMenu(findViewById(R.id.noteview_openatt_menu));
+//                if (!isFinishing())
+                openContextMenu(findViewById(R.id.noteview_openatt_menu));
                 break;
             case WEBBVIEW_START:
                 TNNoteAtt att = (TNNoteAtt) msg.getData()
@@ -1313,21 +1313,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         @JavascriptInterface
         public void openAtt(long id) {
             MLog.d("TNNoteViewAct", "js交互--打开弹窗");
-
             mCurAtt = mNote.getAttDataByLocalId(id);
-
-            // Log.d(TAG, "curAtt.type" + mCurAtt.type
-            // + "curAtt.uploadFlag" + mCurAtt.uploadFlag);
             MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
-            // 此处会报一个Only the original thread that created a view hierarchy can
-            // touch its views
-            // 原因未知，故使用handle处理
-            if (mCurAtt.syncState != 1) {
-                Message msg = new Message();
-                msg.what = WEBBVIEW_OPEN_ATT;
-                msg.arg1 = 1;
-                handler.sendMessage(msg);
-            }
+//            if (mCurAtt.syncState != 1) {
+            Message msg = Message.obtain();
+            msg.what = WEBBVIEW_OPEN_ATT;
+            msg.arg1 = 1;
+            handler.sendMessage(msg);
+//            }
         }
 
         @JavascriptInterface

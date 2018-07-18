@@ -115,9 +115,9 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
             //如果downAtts该处position的TNNoteAtt有图片，就执行下个position
             if (!TextUtils.isEmpty(att.path)) {
                 file = new File(att.path);
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
+//                if (file.getParentFile()==null||file.getParentFile().exists()) {
+////                    file.getParentFile().mkdirs();
+////                }
                 MLog.d("att.syncState=" + att.syncState + "文件路径：" + att.path + "文件大小：" + att.size);
             }
 
@@ -170,12 +170,14 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
                     if (tempAtt.type > 10000 && tempAtt.type < 20000) {
                         TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{tempAtt.path, mNote.noteLocalId});
                     }
-                    if (TextUtils.isEmpty(tempAtt.path) || "null".equals(tempAtt.path)) {
-                        mNote.syncState = 1;
-                    }
+                    //只要又一个图片没下载就为mNote.syncState = 1
+//                    if (TextUtils.isEmpty(tempAtt.path) || "null".equals(tempAtt.path)) {
+//                        mNote.syncState = 1;
+//                    }
                     MLog.d("数据库操作：" + "mNote.syncState=" + mNote.syncState + "--mNote.atts.size()=" + mNote.atts.size() + "--TNNoteAtt-->position=" + i + "--内容=" + tempAtt.toString());
                 }
             }
+            //更改mNote.syncState状态
             TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new Object[]{mNote.syncState, mNote.noteLocalId});
             TNDb.setTransactionSuccessful();
         } finally {
@@ -229,8 +231,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
 
 
     /**
-     * TODO 说明：
-     *
      * @param att      已经拿到下载图片的路径
      * @param position
      */
@@ -258,7 +258,7 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
         //执行数据库操作
         DbListDownload();
         //等价于 start（）,但是有 att参数
-        startPosition(0, att);
+        startPosition(position + 1, att);
     }
 
     @Override
