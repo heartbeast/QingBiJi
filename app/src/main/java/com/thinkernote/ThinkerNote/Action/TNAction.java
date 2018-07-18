@@ -12,7 +12,11 @@ import android.os.AsyncTask;
 
 import com.thinkernote.ThinkerNote.Utils.MLog;
 
-//TODO 删除
+/**
+ * TODO 删除
+ *说明：由本类调用异步的http方法都已清除 sjy 0717
+ *
+ */
 public class TNAction {
 	private static final String TAG = "TNAction";
 

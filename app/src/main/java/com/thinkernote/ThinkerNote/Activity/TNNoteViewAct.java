@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -1291,61 +1292,25 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
     //=================================js交互========================================
 
+
     /**
-     * TODO
-     * 新版本js交互 sjy 0716
+     * js调用android代码
+     * android4.2以后，任何为JS暴露的接口，都需要加@JavascriptInterface
      */
-    final class MyJSInterface {
-
-        private Context context;
-
-        public MyJSInterface(Context context) {
-            this.context = context;
-        }
-
-        /**
-         * This is not called on the UI thread. Post a runnable to invoke
-         * loadUrl on the UI thread.
-         */
-        public void downloadAtt(long id) {
-            MLog.d("download", "JSInterface-->downloadAtt:" + id);
-            NoteViewDownloadPresenter.getInstance().start(id);
-        }
-
-        public void openAtt(long id) {
-            MLog.d("TNNoteViewAct", "js交互--打开弹窗");
-
-            mCurAtt = mNote.getAttDataByLocalId(id);
-
-            // Log.d(TAG, "curAtt.type" + mCurAtt.type
-            // + "curAtt.uploadFlag" + mCurAtt.uploadFlag);
-            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing());
-            // 此处会报一个Only the original thread that created a view hierarchy can
-            // touch its views
-            // 原因未知，故使用handle处理
-            if (mCurAtt.syncState != 1) {
-                Message msg = new Message();
-                msg.what = WEBBVIEW_OPEN_ATT;
-                msg.arg1 = 1;
-                handler.sendMessage(msg);
-            }
-        }
-
-        public void showSource(String html) {
-            MLog.e("HTML", html);
-        }
-    }
-
     final class JSInterface {
+
+
         /**
          * This is not called on the UI thread. Post a runnable to invoke
          * loadUrl on the UI thread.
          */
+        @JavascriptInterface
         public void downloadAtt(long id) {
             MLog.d("download", "JSInterface-->downloadAtt:" + id);
             NoteViewDownloadPresenter.getInstance().start(id);
         }
 
+        @JavascriptInterface
         public void openAtt(long id) {
             MLog.d("TNNoteViewAct", "js交互--打开弹窗");
 
@@ -1365,6 +1330,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
         }
 
+        @JavascriptInterface
         public void showSource(String html) {
             MLog.e("HTML", html);
         }
