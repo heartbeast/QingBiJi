@@ -1087,7 +1087,11 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         return;
                     }
                     TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-                    //p
+
+                    for (TNNoteAtt att : mNote.atts) {
+                        MLog.e("遍历打印存储信息TNNoteAtt:" + att.toString());
+                    }
+
                     syncEdit();
                     break;
 
@@ -1198,14 +1202,14 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                                 note.noteLocalId);
                     }
 
-                    // save att
+                    // save att/(文件 图片)的保存
                     TNNote note2 = attLocalSave(note);
                     if (note2 == null) {
                         //如果null,则存储空间不足
                         msg.obj = note2;
                     } else {
                         msg.obj = note2;
-                        TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME,System.currentTimeMillis() / 1000, note2.catId);
+                        TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note2.catId);
                         MLog.d("saveNote", "保存的内容：" + note2.toString());
 
                     }
@@ -1263,6 +1267,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 for (int k = 0; k < newAtts.size(); k++) {
                     TNNoteAtt att = newAtts.get(k);
                     if (att.attLocalId == -1) {
+                        //保存图片
                         long attLocalId = TNDb.getInstance().insertSQL(TNSQLString.ATT_INSERT, new Object[]{att.attName,
                                 att.type,
                                 att.path,
@@ -1318,9 +1323,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 MLog.d("saveNote", "save attr 第一个附件是图片");
                 TNNoteAtt temp = noteAttrs.get(0);
                 if (temp.type > 10000 && temp.type < 20000) {
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL
-                            , temp.path,
-                                    note.noteLocalId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, temp.path, note.noteLocalId);
                 }
             }
         } catch (Exception e) {
@@ -1628,7 +1631,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         }
     }
 
-    //========================================p层调用========================================
+    //========================================p层调用 ========================================
 
     private void syncEdit() {
         mProgressDialog.show();
@@ -1888,6 +1891,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      *
      * @param position cloudIds数据的其实操作位置
      */
+
     private void pEditNotePic(int position) {
         MLog.d("同步edit--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && position < (cloudIds.size())) {
@@ -1932,6 +1936,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param tnNote
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+
         MLog.d("同步edit--pEditNotePic 2-10-1");
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
@@ -1960,7 +1965,11 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     note.content = note.content.replaceAll(temp, "");
                 }
             }
-
+            /**
+             * TODO bug
+             * 上传attsPos的图片
+             *
+             */
             if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
@@ -1973,18 +1982,21 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     note.content = note.content.replaceAll(s3, s4);
 
                     //执行下一个attsPos位置的数据
+                    MLog.e("saveAtt", "pEditNotePic--执行下一个attsPos位置的数据--pEditNotePic"+ "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
                     pEditNotePic(cloudsPos, attsPos + 1, note);
-
                 } else {
+                    MLog.e("saveAtt", "pEditNotePic--同步上传att图片" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
                     //接口，上传图片
                     presener.pEditNotePic(cloudsPos, attsPos, note);
                 }
             } else {
+                MLog.e("saveAtt", "pEditNotePic--同步上传att图片" + "--图片上传完，再上传文本" + "cloudsPos=" + cloudsPos);
                 //图片上传完，再上传文本
                 pEditNotes(cloudsPos, note);
             }
         } else {
             //执行下一个接口
+            MLog.e("saveAtt", "pEditNotePic--执行下一个接口pUpdataNote");
             pUpdataNote(0, false);
 
         }
@@ -2004,6 +2016,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             presener.pEditNote(cloudsPos, note);
         } else {
             //执行下一个接口
+            MLog.e("saveAtt", "pEditNotes--执行下一个接口pUpdataNote");
             pUpdataNote(0, false);
         }
     }

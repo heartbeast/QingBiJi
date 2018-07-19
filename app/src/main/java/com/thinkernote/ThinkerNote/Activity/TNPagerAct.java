@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thinkernote.ThinkerNote.Action.TNAction;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageCats;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageNotes;
 import com.thinkernote.ThinkerNote.Activity.fragment.TNPageTags;
@@ -26,6 +27,7 @@ import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
+import com.thinkernote.ThinkerNote.General.TNActionType;
 import com.thinkernote.ThinkerNote.General.TNActionUtils;
 import com.thinkernote.ThinkerNote.General.TNConst;
 import com.thinkernote.ThinkerNote.General.TNHandleError;
@@ -340,7 +342,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 break;
             }
 
-            case R.id.notelistitem_menu_delete: {// 标签 删除
+            case R.id.notelistitem_menu_delete: {// 删除
                 mMenuBuilder.destroy();
                 if (mCurrNote == null)
                     break;
@@ -591,6 +593,9 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      * @param noteLocalId
      */
     private void showDeleteDialog(final long noteLocalId) {
+
+        TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
+        MLog.d("删除笔记--noteLocalId=" + noteLocalId + "--TNNote：" + note.toString());
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //title
         LayoutInflater lf1 = LayoutInflater.from(this);
@@ -1054,7 +1059,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                         }
                     }
                 }
-                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE,note.syncState, note.noteLocalId);
+                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, note.syncState, note.noteLocalId);
 
                 if (isCat) {
                     //下一个catpos
@@ -1082,7 +1087,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH,0, 2, System.currentTimeMillis() / 1000, note.noteLocalId);
+            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 0, 2, System.currentTimeMillis() / 1000, note.noteLocalId);
             TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
             TNDb.setTransactionSuccessful();
@@ -1117,7 +1122,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 try {
                     TNNote note = TNDbUtils.getNoteByNoteId(nonteLocalID);
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  nonteLocalID);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, nonteLocalID);
                     TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1360,6 +1365,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
             public void run() {
                 TNDb.beginTransaction();
                 try {
+
                     TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 2, 6, System.currentTimeMillis() / 1000, noteLocalId);
 
                     TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
@@ -1630,7 +1636,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID,  new Object[]{nonteLocalID});
+                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, new Object[]{nonteLocalID});
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1671,7 +1677,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      */
     private void pEditNotePic(int position) {
         MLog.d("sync---2-10-pEditNotePic");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1712,7 +1718,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("sync---2-10-1-pEditNotePic");
-        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             TNNote note = tnNote;
             String shortContent = TNUtils.getBriefContent(note.content);
             String content = note.content;
@@ -2216,7 +2222,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                             TNDb.setTransactionSuccessful();
                         } finally {

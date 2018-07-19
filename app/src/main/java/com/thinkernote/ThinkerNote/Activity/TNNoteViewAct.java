@@ -487,12 +487,23 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
             case R.id.openatt_menu_save: {//保存
                 MLog.d("笔记详情", "响应--保存");
+                MLog.d("文件点击事件--保存--att--id=" + mCurAttId + "--mNoteLocalId=" + mNoteLocalId);
+                //更新 mNote
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+                MLog.d("文件点击事件--保存--mNote:" + mNote.toString());
+                mCurAtt = mNote.getAttDataByLocalId(mCurAttId);
+                MLog.e(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing() + "id=" + mCurAttId + "--mCurAtt:" + mCurAtt.toString());
                 saveAttDialog();
                 break;
             }
 
             case R.id.openatt_menu_send: {//发送
-
+                MLog.d("文件点击事件--发送--att--id=" + mCurAttId + "--mNoteLocalId=" + mNoteLocalId);
+                //更新 mNote
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+                MLog.d("文件点击事件--发送--mNote:" + mNote.toString());
+                mCurAtt = mNote.getAttDataByLocalId(mCurAttId);
+                MLog.e(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing() + "id=" + mCurAttId + "--mCurAtt:" + mCurAtt.toString());
                 try {
                     String temp = TNUtilsAtt.getTempPath(mCurAtt.path);
                     TNUtilsAtt.copyFile(mCurAtt.path, temp);
@@ -532,6 +543,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
             //==================noteview_share分享相关=====================
             case R.id.noteview_menu_shareto_WX: {//分享微信好友
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -541,6 +553,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.noteview_menu_shareto_WXCycle: {//分享朋友圈
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -550,6 +563,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.noteview_menu_shareto_QQ: {//分享qq好友
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -559,6 +573,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.noteview_menu_shareto_SMS: {//分享到短信
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 if (mNote.syncState == 1) {
                     TNUtilsUi.showToast(R.string.alert_NoteList_NotCompleted_Share);
                     break;
@@ -569,12 +584,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             //==================share_url_menu 链接相关=====================
 
             case R.id.share_url_menu_copy: {//复制链接
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 c.setText("http://www.qingbiji.cn/note/" + TNUtils.Hash17(mNote.noteId));
                 break;
             }
 
             case R.id.share_url_menu_send: {//邮件发送
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 String email = String.format("mailto:?subject=%s&body=%s", mNote.title, msg);
                 Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(email));
@@ -584,6 +601,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.share_url_menu_open: {//打开链接
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("http://www.qingbiji.cn/note/" + TNUtils.Hash17(mNote.noteId)));
                 TNUtilsDialog.startIntent(this, intent,
@@ -592,11 +611,15 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             }
 
             case R.id.share_url_menu_sms: {//短信分享
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 TNUtilsUi.sendToSMS(this, msg);
                 break;
             }
             case R.id.share_url_menu_other: {//其他分享
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+
                 String msg = getString(R.string.shareinfo_publicnote_url, mNote.title, TNUtils.Hash17(mNote.noteId));
                 TNUtilsUi.shareContent(this, msg, "轻笔记分享");
                 break;
