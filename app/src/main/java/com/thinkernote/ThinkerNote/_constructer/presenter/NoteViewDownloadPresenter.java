@@ -29,7 +29,7 @@ import java.util.Vector;
  * 说明：下载的文件 是TNNote.atts,是list样式，for循环每一个atts的item数据
  */
 public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
-    private static final String TAG = "TNDownloadAttService";
+    private static final String TAG = "NoteViewDownloadPresenter";
     private static final long ATT_MAX_DOWNLOAD_SIZE = 50 * 1024;
 
     private static NoteViewDownloadPresenter singleton = null;
@@ -73,29 +73,35 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
         this.downAtts.addAll(note.atts);
     }
 
+    /**
+     * 多图下载（自动下载）
+     */
     public void start() {
-        MLog.d(TAG, "start");
-        Vector<TNNoteAtt> tmpList = new Vector<TNNoteAtt>();//标记已经下载了的文件
-        //不会readyDownloadAtts.size = 0
+        MLog.d(TAG, "start()");
         startPosition(0, null);
     }
 
+    /**
+     * 点击下载
+     *
+     * @param attId
+     */
     public void start(long attId) {
-        MLog.d(TAG, "start:" + attId);
+        MLog.d(TAG, "start(attId):" + attId);
         if (act == null || act.isFinishing()) {
             return;
         }
         if (TNUtils.checkNetwork(act)) {
             TNNoteAtt att = mNote.getAttDataById(attId);
-            MLog.d(TAG, "downloadAtt:" + att.attId);
+            MLog.d(TAG, "start(attId)--TNNoteAtt:" + att.toString());
+
             if (!TNActionUtils.isDownloadingAtt(att.attId)) {
-                MLog.d(TAG, "3 -> SyncNoteContent: " + att.attId);
+                //开始下载回调
                 if (startListener != null)
                     startListener.onStart(att);
-
+                MLog.d(TAG, "start(attId)--singledownload 下载文件");
                 //下载
                 singledownload(att, mNote);
-
             }
         }
     }
@@ -104,9 +110,9 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
 
     /**
      * @param position
-     * @param endAttr  最后结束循环使用
+     * @param onAtt    结束一个position时使用，用于回调
      */
-    private void startPosition(int position, TNNoteAtt endAttr) {
+    private void startPosition(int position, TNNoteAtt onAtt) {
 
         if (downAtts != null && downAtts.size() > 0 && position < downAtts.size()) {
             //获取当前position的TNNoteAtt
@@ -118,78 +124,59 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
 //                if (file.getParentFile()==null||file.getParentFile().exists()) {
 ////                    file.getParentFile().mkdirs();
 ////                }
-                MLog.d("att.syncState=" + att.syncState + "文件路径：" + att.path + "文件大小：" + att.size);
+                MLog.d("startPosition--att.syncState=" + att.syncState + "文件路径：" + att.path + "文件大小：" + att.size);
             }
 
-            //如果已经下载该位置的文件，就执行下一个position
+            //如果att已经下载，执行下一个position
             if (file.length() != 0 && att.syncState == 2) {
-                MLog.d("执行下一个循环");
-                //执行下一个循环
-                startPosition(position + 1, att);
+                MLog.e("startPosition--文件已下载--回调主界面，执行下一个循环");
+                if (downAtts.size() == 1) {
+                    endOneAttCallback(att, true);
+                } else {
+                    if (position == downAtts.size() - 1) {
+                        endOneAttCallback(att, true);
+                    } else {
+                        endOneAttCallback(att, true);
+                        //执行下一个循环
+                        startPosition(position + 1, att);
+                    }
+                }
                 return;
             }
 
             if (TNUtils.isNetWork() && att.attId != -1 && !TNActionUtils.isDownloadingAtt(att.attId)) {
+                //开始下载回调
                 if (startListener != null) {
                     startListener.onStart(att);
                 }
-
                 //下载
-                MLog.d(TAG, "下载文件");
+                MLog.d(TAG, "startPosition--下载文件");
                 listDownload(att, mNote, position);
             } else {
-                MLog.d(TAG, "网络差 无法下载");
-                endListDownload(endAttr, false);
+                MLog.d(TAG, "startPosition--网络差 无法下载");
+                if (downAtts.size() == 1) {
+                    endOneAttCallback(att, false);
+                } else {
+                    if (position == downAtts.size() - 1) {
+                        endOneAttCallback(att, false);
+                    } else {
+                        endOneAttCallback(att, false);
+                        //执行下一个循环
+                        startPosition(position + 1, att);
+                    }
+                }
             }
 
         } else {
-            //进行数据库操作
-            DbListDownload();
-            //结束循环,调用endListener
-            endListDownload(endAttr, true);
+            //循环结束，回调
+            endOneAttCallback(onAtt, true);
         }
     }
 
     /**
-     * 操作数据库
+     * 结束一个att下载回调
      */
-    private void DbListDownload() {
-        MLog.d(TAG, "数据库操作--再更新一边");
-        //更新mNote
-        mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
-        mNote.syncState = mNote.syncState > 2 ? mNote.syncState : 2;
-        //更新for循环的数据
-        downAtts.clear();
-        downAtts.addAll(mNote.atts);
-
-        try {
-            TNDb.beginTransaction();
-            if (mNote.attCounts > 0) {
-                for (int i = 0; i < mNote.atts.size(); i++) {
-                    TNNoteAtt tempAtt = mNote.atts.get(i);
-                    if (tempAtt.type > 10000 && tempAtt.type < 20000) {
-                        TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{tempAtt.path, mNote.noteLocalId});
-                    }
-                    //只要又一个图片没下载就为mNote.syncState = 1
-//                    if (TextUtils.isEmpty(tempAtt.path) || "null".equals(tempAtt.path)) {
-//                        mNote.syncState = 1;
-//                    }
-                    MLog.d("数据库操作：" + "mNote.syncState=" + mNote.syncState + "--mNote.atts.size()=" + mNote.atts.size() + "--TNNoteAtt-->position=" + i + "--内容=" + tempAtt.toString());
-                }
-            }
-            //更改mNote.syncState状态
-            TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new Object[]{mNote.syncState, mNote.noteLocalId});
-            TNDb.setTransactionSuccessful();
-        } finally {
-            TNDb.endTransaction();
-        }
-        MLog.d(TAG, "start()---for循环---数据库操作--结束");
-    }
-
-    /**
-     * 循环下载结束
-     */
-    private void endListDownload(TNNoteAtt att, boolean isSuccess) {
+    private void endOneAttCallback(TNNoteAtt att, boolean isSuccess) {
         if (att != null) {
             MLog.d(TAG, "回调act endListener attName=" + att.attName);
             //回调act
@@ -200,7 +187,6 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
                         endListener.onEnd(att, true, null);
                     } else {
                         endListener.onEnd(null, false, null);
-
                     }
                 } else {
                     MLog.i(TAG, "att:" + att.attId + " not in the note:" + mNote.noteId);
@@ -208,7 +194,7 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
             }
         } else {
             if (!isSuccess) {
-                endListener.onEnd(null, false, null);
+                endListener.onEnd(att, false, null);
             }
         }
 
@@ -236,6 +222,7 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
      */
     @Override
     public void onListDownloadSuccess(TNNote note, TNNoteAtt att, int position) {
+        TNNoteAtt newAtt = att;
         File file = new File(att.path);
         if (!TextUtils.isEmpty(att.path)) {
             MLog.d("onListDownloadSuccess", "list文件下载成功" + "--att.path：" + att.path);
@@ -246,19 +233,27 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
             TNDb.beginTransaction();
 
             if (att.type > 10000 && att.type < 20000) {
-                MLog.e("更新数据库");
-                TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, new Object[]{att.attName, att.type, att.path, att.noteLocalId, file.length(), 2, att.digest, att.attId, att.width, att.height, mNote.noteLocalId});
-                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{att.path, mNote.noteLocalId});
+                MLog.e("List--更新数据库");
+                newAtt.syncState = mNote.syncState > 2 ? mNote.syncState : 2;
+                TNDb.getInstance().execSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, att.attName, att.type, att.path, att.noteLocalId, file.length(), mNote.syncState > 2 ? mNote.syncState : 2, att.digest, att.attId, att.width, att.height, att.noteLocalId);
+                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, att.path, mNote.noteLocalId);
+                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, mNote.syncState > 2 ? mNote.syncState : 2, mNote.noteLocalId);
+
             }
             TNDb.setTransactionSuccessful();
         } finally {
             TNDb.endTransaction();
         }
 
-        //执行数据库操作
-        DbListDownload();
-        //等价于 start（）,但是有 att参数
-        startPosition(position + 1, att);
+        //更新mNote
+        mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+        //更新for循环的数据
+        downAtts.clear();
+        downAtts.addAll(mNote.atts);
+        //下载成功的一个position的att展示
+        endOneAttCallback(newAtt, true);
+        //开始下一个position
+        startPosition(position + 1, newAtt);
     }
 
     @Override
@@ -266,33 +261,39 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
         MLog.d(TAG, msg);
     }
 
+    /**
+     * @param att 已经拿到下载图片的路径
+     */
     @Override
-    public void onSingleDownloadSuccess(TNNote mNote, TNNoteAtt att) {
+    public void onSingleDownloadSuccess(TNNote note, TNNoteAtt att) {
+        TNNoteAtt newAtt = att;
         File file = new File(att.path);
         if (!TextUtils.isEmpty(att.path)) {
             MLog.d("single文件下载成功：", "原状态att.syncState=" + att.syncState + "文件路径" + file.toString() + "文件大小" + file.length());
         }
+
         //将图片路径保存到本地数据库
         try {
             TNDb.beginTransaction();
-
             if (att.type > 10000 && att.type < 20000) {
-                TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, new Object[]{att.attName, att.type, att.path, att.noteLocalId, file.length(), 2, att.digest, att.attId, att.width, att.height, mNote.noteLocalId});
-                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{att.path, mNote.noteLocalId});
+                MLog.e("Single-更新数据库");
+                newAtt.syncState = mNote.syncState > 2 ? mNote.syncState : 2;
+                TNDb.getInstance().execSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, att.attName, att.type, att.path, att.noteLocalId, file.length(), mNote.syncState > 2 ? mNote.syncState : 2, att.digest, att.attId, att.width, att.height, att.noteLocalId);
+                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, att.path, mNote.noteLocalId);
+                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, mNote.syncState > 2 ? mNote.syncState : 2, mNote.noteLocalId);
+
             } else {
                 MLog.e("Bug 无法更新其他position数据");
-                TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_ATTLOCALID, new Object[]{att.attName, att.type, att.path, att.noteLocalId, file.length(), 2, att.digest, att.attId, att.width, att.height, mNote.noteLocalId});
-                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_THUMBNAIL, new Object[]{att.path, mNote.noteLocalId});
+                //结束一个att下载回调
+                endOneAttCallback(att, false);
             }
+
             TNDb.setTransactionSuccessful();
         } finally {
             TNDb.endTransaction();
         }
-
-        //执行数据库操作
-        DbListDownload();
-        //等价于 start（）,但是有 att参数
-        startPosition(0, att);
+        //结束一个att下载回调
+        endOneAttCallback(newAtt, true);
     }
 
     @Override
@@ -310,11 +311,17 @@ public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
         this.endListener = endListener;
     }
 
-
+    /**
+     * 点击下载 或自动下载 ，完成一个 回调一个
+     */
     public interface OnDownloadStartListener {
+
         public void onStart(TNNoteAtt att);
     }
 
+    /**
+     * 点击下载 或自动下载 ，完成一个 回调一个
+     */
     public interface OnDownloadEndListener {
         public void onEnd(TNNoteAtt att, boolean isSucess, String msg);
     }

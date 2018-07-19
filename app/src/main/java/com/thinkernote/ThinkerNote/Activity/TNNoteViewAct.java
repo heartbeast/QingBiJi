@@ -131,14 +131,21 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     public void handleMessage(Message msg) {
         switch (msg.what) {
             case WEBBVIEW_OPEN_ATT://打开 文件的操作弹窗
+
                 MLog.d("TNNoteViewAct", "打开att操作弹窗");
+                long attId = (long) msg.obj;
+                MLog.d("文件点击事件--att--id=" + attId + "--mNoteLocalId=" + mNoteLocalId);
+                //更新 mNote
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+                MLog.d("文件点击事件--mNote:" + mNote.toString());
+                mCurAtt = mNote.getAttDataByLocalId(attId);
+                MLog.e(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing() + "id=" + attId + "--mCurAtt:" + mCurAtt.toString());
 //                if (!isFinishing())
                 openContextMenu(findViewById(R.id.noteview_openatt_menu));
                 break;
             case WEBBVIEW_START:
-                TNNoteAtt att = (TNNoteAtt) msg.getData()
-                        .getSerializable("att");
-
+                //webView显示
+                TNNoteAtt att = (TNNoteAtt) msg.getData().getSerializable("att");
                 String s = "<img name=\\\"loading\\\" src=\\\"file:///android_asset/download.png\\\" /><span name=\\\"abcd\\\"><br />%s(%s)</span>";
                 s = String.format(s, att.attName, att.size / 1024 + "K");
                 mWebView.loadUrl(String.format("javascript:wave(\"%d\", \"%s\")",
@@ -265,6 +272,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         mProgressDialog.dismiss();
         if (mPopuMenu != null)
             mPopuMenu.dismiss();
+        presenter = null;
         super.onDestroy();
     }
 
@@ -775,7 +783,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     }
 
     /**
-     * 下载结束后的操作
+     * 文件下载结束后的操作
      *
      * @param att
      * @param isSucess
@@ -791,9 +799,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
 
                 //TNNoteAtt{attLocalId=1, noteLocalId=1, attId=28499260, attName='1531292067567.jpg', type=10002, path='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg', syncState=1, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394',
                 // thumbnail='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg.thm', width=0, height=0}
-                MLog.d(TAG, "download", "att显示:" + att.toString());
+                MLog.d(TAG, "download返回--att显示:" + att.toString());
 
+                MLog.d(TAG, "act---mNoteLocalId=" + mNoteLocalId + "--获取值--att.attLocalId=" + att.attLocalId);
                 mNote = TNDbUtils.getNoteByNoteLocalId(mNoteLocalId);
+
+                mCurAtt = mNote.getAttDataByLocalId(att.attLocalId);
+                MLog.d(TAG, "存储--att显示:" + mCurAtt.toString());
+
                 try {
                     att.makeThumbnail();
                 } catch (Exception e) {
@@ -1302,8 +1315,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
      * android4.2以后，任何为JS暴露的接口，都需要加@JavascriptInterface
      */
     final class JSInterface {
-
-
         /**
          * This is not called on the UI thread. Post a runnable to invoke
          * loadUrl on the UI thread.
@@ -1315,16 +1326,13 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         }
 
         @JavascriptInterface
-        public void openAtt(long id) {
-            //正常值：{attLocalId=1, noteLocalId=6, attId=28499260, attName='1531292067567.jpg', type=10002, path='/storage/emulated/0/Android/data/com.thinkernote.ThinkerNote/files/Attachment/28/28499/28499260.jpeg', syncState=2, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394', thumbnail='null', width=432, height=576}<<---
-            //{attLocalId=1, noteLocalId=6, attId=28499260, attName='1531292067567.jpg', type=10002, path='null', syncState=1, size=124599, digest='7DEF553FB5A7E8E28D7654C1AEBC2394', thumbnail='null', width=0, height=0}
-            mCurAtt = mNote.getAttDataByLocalId(id);
-            MLog.i(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing()+"id="+id+"--mCurAtt:"+mCurAtt.toString());
+        public void openAtt(long attId) {
 
 //            if (mCurAtt.syncState != 1) {
             Message msg = Message.obtain();
             msg.what = WEBBVIEW_OPEN_ATT;
             msg.arg1 = 1;
+            msg.obj = attId;
             handler.sendMessage(msg);
 //            }
         }
@@ -1362,6 +1370,9 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     public static void updateNote(GetNoteByNoteIdBean bean) {
 
         long noteId = bean.getId();
+        if (noteId >= 0) {
+
+        }
         String contentDigest = bean.getContent_digest();
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);//在全部笔记页同步，会走这里，没在首页同步过的返回为null
 

@@ -93,7 +93,7 @@ public class TNDb extends SQLiteOpenHelper {
         }
     }
 
-    public void DBReset(TNAction aAction){
+    public void DBReset(TNAction aAction) {
         beginTransaction();
         try {
             //drop tables
@@ -158,6 +158,13 @@ public class TNDb extends SQLiteOpenHelper {
         db.execSQL(sql, args);
     }
 
+    /**
+     * 使用没问题
+     *
+     * @param sql
+     * @param args
+     * @return
+     */
     public Object execSQL(String sql, Object... args) {
         String[] valus = new String[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -175,6 +182,7 @@ public class TNDb extends SQLiteOpenHelper {
         return null;
     }
 
+    //TODO 不用 delete
     public void executeSQL(TNAction aAction) {
         MLog.d("TNDB--executeSQL", aAction.inputs.toString());
         try {
@@ -237,6 +245,14 @@ public class TNDb extends SQLiteOpenHelper {
 //==================================sjy 更改 开始======================================
 
 
+    /**
+     * TODO 部分使用有问题
+     * <p>
+     * 推荐使用execSQL
+     *
+     * @param sql
+     * @param args
+     */
     public void updataSQL(String sql, Object[] args) {
         try {
             db.execSQL(sql, args);
