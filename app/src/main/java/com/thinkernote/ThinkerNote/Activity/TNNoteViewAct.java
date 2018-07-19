@@ -1059,7 +1059,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         public void run() {
                             TNDb.beginTransaction();
                             try {
-                                TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH,0, 7, System.currentTimeMillis() / 1000, noteLocalId);
+                                TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 0, 7, System.currentTimeMillis() / 1000, noteLocalId);
 
                                 TNDb.setTransactionSuccessful();
                             } finally {
@@ -1333,7 +1333,8 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             msg.what = WEBBVIEW_OPEN_ATT;
             msg.arg1 = 1;
             msg.obj = attId;
-            handler.sendMessage(msg);
+            //等待图片下载完成
+            handler.sendMessageDelayed(msg, 500);
 //            }
         }
 

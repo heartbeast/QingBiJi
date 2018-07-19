@@ -1,6 +1,8 @@
-轻笔记大改说明
+轻笔记大改说明：
 
-网络框架不适用，需要修改
+本版本使用MVP+(Retrofit+Okhttp+Rxjava)网络框架，Act的接口处理，大块串行同步接口，如有bug,请参考老版源码,新版已完全删除
+
+旧版的网络框架不适用，需要修改
 
 1forResult的RequestID都需要修改，bug
 
@@ -12,12 +14,12 @@
 
 新框架MVP的使用说明：
 每一个界面（eg：TNMainAct），都有对应的m v p的类，_interface包封装的是main的抽象接口（调用传递-->p,调用接口-->m，接口回调-->v），用于具体实现
-在_constructer包和Activity包（act是V层的具体实现）中,具体显示更新ui在v的Activity中实现，具体接口http的封装使用在m的module类中。
+在_constructer包和Activity包（act是V层的具体实现）中,具体显示更新ui在v的Activity中实现，具体接口http的封装使用在m的module类中使用。
 
 3.旧框架说明：
-不用包1：Action
-不用包2：NetWork
-不用包3:OAuth2 网络框架太老，不可用
+不用包1：Action（但是数据库仍使用，无法根除，后续必删）
+不用包2：NetWork（已删除，httpclient类封装）
+不用包3:OAuth2 网络框架太老，不可用（已删除，httpclient类封装）
 4.若完全放弃就框架，要删除的jar包：
 org.apache.http.legacy.jar
 
@@ -25,6 +27,6 @@ org.apache.http.legacy.jar
 
 6数据库比较乱，本次未修改，但是需要优化成一个数据库---sjy 0713
 
-7.百度地图开元账号：行客记事 Qunbiji2015 (目前没有定位正确)
+7.百度地图开元账号：行客记事/Qunbiji2015 (目前没有定位正确)
 
 8.android4.2以后，任何为JS暴露的接口，都需要加@JavascriptInterface
