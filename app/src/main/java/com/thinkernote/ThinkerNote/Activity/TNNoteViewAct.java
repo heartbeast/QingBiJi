@@ -86,6 +86,7 @@ import java.util.concurrent.Executors;
 /**
  * TODO 下载图片的方法需要重做 sjy 20180718
  * 笔记详情
+ *
  */
 public class TNNoteViewAct extends TNActBase implements OnClickListener,
         SynthesizerPlayerListener,
@@ -107,6 +108,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
     private Dialog mProgressDialog = null;
     private JSInterface mJSInterface;
     private TNNoteAtt mCurAtt;
+    private long  mCurAttId;
     private long mNoteLocalId;
     private TNNote mNote;
     private Tencent mTencent;
@@ -133,13 +135,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             case WEBBVIEW_OPEN_ATT://打开 文件的操作弹窗
 
                 MLog.d("TNNoteViewAct", "打开att操作弹窗");
-                long attId = (long) msg.obj;
-                MLog.d("文件点击事件--att--id=" + attId + "--mNoteLocalId=" + mNoteLocalId);
-                //更新 mNote
-                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
-                MLog.d("文件点击事件--mNote:" + mNote.toString());
-                mCurAtt = mNote.getAttDataByLocalId(attId);
-                MLog.e(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing() + "id=" + attId + "--mCurAtt:" + mCurAtt.toString());
+                mCurAttId = (long) msg.obj;
 //                if (!isFinishing())
                 openContextMenu(findViewById(R.id.noteview_openatt_menu));
                 break;
@@ -457,6 +453,14 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
         switch (item.getItemId()) {
             //==================openatt_menu相关=====================
             case R.id.openatt_menu_view: {//查看
+
+                MLog.d("文件点击事件--查看--att--id=" + mCurAttId + "--mNoteLocalId=" + mNoteLocalId);
+                //更新 mNote
+                mNote = TNDbUtils.getNoteByNoteLocalId(mNote.noteLocalId);
+                MLog.d("文件点击事件--查看--mNote:" + mNote.toString());
+                mCurAtt = mNote.getAttDataByLocalId(mCurAttId);
+                MLog.e(TAG, createStatus + " " + TNNoteViewAct.this.isFinishing() + "id=" + mCurAttId + "--mCurAtt:" + mCurAtt.toString());
+                //打开文件
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 Uri contentUri = null;
@@ -467,7 +471,6 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                 } else {//7.0-正常调用
                     contentUri = Uri.fromFile(new File(mCurAtt.path));
                 }
-
 //                  intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
 
                 if (contentUri != null) {
@@ -1334,7 +1337,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
             msg.arg1 = 1;
             msg.obj = attId;
             //等待图片下载完成
-            handler.sendMessageDelayed(msg, 500);
+            handler.sendMessage(msg );
 //            }
         }
 

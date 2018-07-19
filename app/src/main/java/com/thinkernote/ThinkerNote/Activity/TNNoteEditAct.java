@@ -409,7 +409,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 break;
             }
             case R.id.noteedit_doodle: {//涂鸦
-                startActForResult(TNTuYaAct.class, null, R.id.noteedit_doodle);// TODO
+                startActForResult(TNTuYaAct.class, null, R.id.noteedit_doodle);
                 break;
             }
             case R.id.noteedit_camera://相机
@@ -446,7 +446,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     Media.EXTERNAL_CONTENT_URI, values);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraUri);
             TNUtilsDialog.startIntentForResult(this, intent,
-                    R.string.alert_NoteEdit_NoCamera, R.id.noteedit_camera);//TODO
+                    R.string.alert_NoteEdit_NoCamera, R.id.noteedit_camera);
         } catch (IllegalArgumentException e) {
             // 目前仅在1.6，HTC Magic发生过
             // getContentResolver().insert可能产生异常
@@ -496,13 +496,13 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 saveInput();
                 Bundle b = new Bundle();
                 b.putString("TagStrForEdit", mNote.tagStr);
-                startActForResult(TNTagListAct.class, b, R.id.noteedit_tag);// TODO
+                startActForResult(TNTagListAct.class, b, R.id.noteedit_tag);
                 break;
             }
 
             case R.id.noteedit_addatt://添加附件
                 saveInput();
-                startActForResult(TNFileListAct.class, null, R.id.noteedit_addatt);// TODO
+                startActForResult(TNFileListAct.class, null, R.id.noteedit_addatt);
                 break;
 
             case R.id.noteedit_insertcurrenttime: {//插入当前时间
@@ -526,7 +526,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 Bundle b = new Bundle();
                 b.putLong("OriginalCatId", mNote.catId);
                 b.putInt("Type", 2);
-                startActForResult(TNCatListAct.class, b, R.id.noteedit_folders);// TODO
+                startActForResult(TNCatListAct.class, b, R.id.noteedit_folders);
                 break;
             }
 
@@ -912,8 +912,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             handleProgressDialog("show");
             mNote.prepareToSave();
             pNoteSave(mNote, true);
-            // TODO
-            // TNAction action = TNAction.runAction(TNActionType.NoteSave, mNote);
         }
     }
 
