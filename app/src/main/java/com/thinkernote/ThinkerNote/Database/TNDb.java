@@ -245,15 +245,7 @@ public class TNDb extends SQLiteOpenHelper {
 //==================================sjy 更改 开始======================================
 
 
-    /**
-     * TODO 部分使用有问题
-     * <p>
-     * 推荐使用execSQL
-     *
-     * @param sql
-     * @param args
-     */
-    public void updataSQL(String sql, Object[] args) {
+    public void deleteSQL(String sql, Object[] args) {
         try {
             db.execSQL(sql, args);
 
@@ -261,10 +253,6 @@ public class TNDb extends SQLiteOpenHelper {
             e.printStackTrace();
             TNApplication.getInstance().DbReportError("username:" + TNSettings.getInstance().username + " SQLiteException:" + e.toString());
         }
-    }
-
-    public void deleteSQL(String sql, Object[] args) {
-        updataSQL(sql, args);
     }
 
     /**

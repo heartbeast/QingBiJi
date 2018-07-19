@@ -398,8 +398,8 @@ public class TNCatListAct extends TNActBase
                 int syncState = note.noteId == -1 ? 3 : 4;
                 TNDb.beginTransaction();
                 try {
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_MOVE_CAT, new Object[]{catId , syncState , lastUpdate, noteLocalId });
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId });
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_MOVE_CAT, catId , syncState , lastUpdate, noteLocalId );
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId );
 
                     TNDb.setTransactionSuccessful();
                 } finally {

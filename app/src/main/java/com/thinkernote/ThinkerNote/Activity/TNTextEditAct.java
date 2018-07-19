@@ -33,7 +33,7 @@ import org.json.JSONObject;
 /**
  * 通用类
  * 编辑文件夹名称，标签名称等
- *
+ * <p>
  * sjy 0614
  */
 public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyListener, OnTextEditListener {
@@ -334,11 +334,11 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     //------------------------------------p层调用-----------------------------------------
 
     private void folderAdd(String text) {
-        presener.pFolderAdd(mParentId,text);
+        presener.pFolderAdd(mParentId, text);
     }
 
     private void folderRename(String text) {
-        presener.pFolderRename(mParentId,text);
+        presener.pFolderRename(mParentId, text);
     }
 
     private void tagAdd(String text) {
@@ -346,7 +346,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     }
 
     private void tagRename(String text) {
-        presener.pTagRename(mParentId,text);
+        presener.pTagRename(mParentId, text);
 
     }
 
@@ -363,10 +363,10 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     }
 
     @Override
-    public void onFolderRenameSuccess(Object obj,String name,long pid) {
+    public void onFolderRenameSuccess(Object obj, String name, long pid) {
         TNDb.beginTransaction();
-        try{
-            TNDb.getInstance().updataSQL(TNSQLString.CAT_RENAME,new Object[]{name,pid});
+        try {
+            TNDb.getInstance().execSQL(TNSQLString.CAT_RENAME, name, pid);
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -393,7 +393,7 @@ public class TNTextEditAct extends TNActBase implements OnClickListener, OnKeyLi
     }
 
     @Override
-    public void onTagRenameSuccess(Object obj,String name,long pid ) {
+    public void onTagRenameSuccess(Object obj, String name, long pid) {
         TNDb.getInstance().execSQL(TNSQLString.TAG_RENAME, name, TNUtils.getPingYinIndex(name), pid);
         TNUtilsUi.showToast("修改成功！");
         finish();

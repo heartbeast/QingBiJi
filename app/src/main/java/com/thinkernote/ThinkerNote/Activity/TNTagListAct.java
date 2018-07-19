@@ -196,8 +196,8 @@ public class TNTagListAct extends TNActBase implements OnClickListener, OnItemCl
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_CHANGE_TAG, new Object[]{tags, syncState, lastUpdate, mNote.noteLocalId});
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, mNote.catId});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_CHANGE_TAG, tags, syncState, lastUpdate, mNote.noteLocalId);
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, mNote.catId);
 
                     TNDb.setTransactionSuccessful();
                 } finally {

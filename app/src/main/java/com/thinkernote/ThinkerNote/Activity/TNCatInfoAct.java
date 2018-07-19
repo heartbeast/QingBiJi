@@ -320,8 +320,8 @@ public class TNCatInfoAct extends TNActBase
             public void run() {
                 TNDb.beginTransaction();
                 try {
-                    TNDb.getInstance().deleteSQL(TNSQLString.CAT_DELETE_CAT, new Object[]{catId});
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_TRASH_CATID, new Object[]{2, System.currentTimeMillis() / 1000, TNSettings.getInstance().defaultCatId, catId});
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_DELETE_CAT, catId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_TRASH_CATID, 2, System.currentTimeMillis() / 1000, TNSettings.getInstance().defaultCatId, catId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();

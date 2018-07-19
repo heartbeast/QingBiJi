@@ -437,7 +437,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             public void run() {
                 TNDb.beginTransaction();
                 try {
-                    TNDb.getInstance().updataSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, new Object[]{2, attrId, (int) tnNoteAtt.noteLocalId});
+                    TNDb.getInstance().execSQL(TNSQLString.ATT_UPDATE_SYNCSTATE_ATTID, 2, attrId, (int) tnNoteAtt.noteLocalId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -453,7 +453,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         long id = oldNoteAddBean.getId();
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_NOTEID_BY_NOTELOCALID, new Object[]{id, note.noteLocalId});
+            TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_NOTEID_BY_NOTELOCALID, id, note.noteLocalId);
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -497,9 +497,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{0, 2, System.currentTimeMillis() / 1000, note.noteLocalId});
+            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 0, 2, System.currentTimeMillis() / 1000, note.noteLocalId);
 
-            TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+            TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -512,8 +512,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{2, 1, System.currentTimeMillis() / 1000, note.noteLocalId});
-            TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 2, 1, System.currentTimeMillis() / 1000, note.noteLocalId);
+            TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
             TNDb.setTransactionSuccessful();
         } finally {
@@ -533,9 +533,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 try {
                     TNNote note = TNDbUtils.getNoteByNoteId(nonteLocalID);
                     //
-                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{nonteLocalID});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, nonteLocalID);
 
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -564,7 +564,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new Object[]{noteId});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, noteId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -591,10 +591,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SHORT_CONTENT, new Object[]{shortContent, note.noteId});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_SHORT_CONTENT, shortContent, note.noteId);
 
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1237,10 +1237,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{2, 6, System.currentTimeMillis() / 1000, noteLocalId});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 2, 6, System.currentTimeMillis() / 1000, noteLocalId);
                     //
                     TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
-                    TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1299,7 +1299,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, new Object[]{nonteLocalID});
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_DELETE_BY_NOTELOCALID, nonteLocalID);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();

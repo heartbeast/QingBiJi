@@ -1059,7 +1059,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         public void run() {
                             TNDb.beginTransaction();
                             try {
-                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{0, 7, System.currentTimeMillis() / 1000, noteLocalId});
+                                TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH,0, 7, System.currentTimeMillis() / 1000, noteLocalId);
 
                                 TNDb.setTransactionSuccessful();
                             } finally {
@@ -1121,7 +1121,7 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         public void run() {
                             TNDb.beginTransaction();
                             try {
-                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, new Object[]{5, noteLocalId});
+                                TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, 5, noteLocalId);
 
                                 TNDb.setTransactionSuccessful();
                             } finally {
@@ -1221,10 +1221,10 @@ public class TNNoteViewAct extends TNActBase implements OnClickListener,
                         public void run() {
                             TNDb.beginTransaction();
                             try {
-                                TNDb.getInstance().updataSQL(TNSQLString.NOTE_SET_TRASH, new Object[]{2, 6, System.currentTimeMillis() / 1000, noteLocalId});
+                                TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 2, 6, System.currentTimeMillis() / 1000, noteLocalId);
 
                                 TNNote note = TNDbUtils.getNoteByNoteLocalId(noteLocalId);
-                                TNDb.getInstance().updataSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, new Object[]{System.currentTimeMillis() / 1000, note.catId});
+                                TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
                                 TNDb.setTransactionSuccessful();
                             } finally {
                                 TNDb.endTransaction();

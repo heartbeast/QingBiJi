@@ -241,7 +241,7 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
                 try {
                     //
                     TNSettings settings = TNSettings.getInstance();
-                    TNDb.getInstance().updataSQL(TNSQLString.USER_UPDATE_PWD, new Object[]{newPs, settings.userId });
+                    TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_PWD, newPs, settings.userId );
                     TNDb.setTransactionSuccessful();
                     settings.password = newPs;
                     settings.savePref(false);
@@ -274,11 +274,11 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
                         settings.username = nameOrEmail;
                         settings.loginname = nameOrEmail;
                         String userId = settings.userId+"";
-                        TNDb.getInstance().updataSQL(TNSQLString.USER_UPDATE_NAME, new Object[]{nameOrEmail, userId});
+                        TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_NAME, nameOrEmail, userId);
                     } else {
                         settings.email = nameOrEmail;
                         String userId = settings.userId+"";
-                        TNDb.getInstance().updataSQL(TNSQLString.USER_UPDATE_EMAIL, new Object[]{nameOrEmail, userId});
+                        TNDb.getInstance().execSQL(TNSQLString.USER_UPDATE_EMAIL,nameOrEmail, userId);
                     }
                     //
                     TNDb.setTransactionSuccessful();
