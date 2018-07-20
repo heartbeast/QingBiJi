@@ -38,6 +38,7 @@ import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
@@ -943,7 +944,7 @@ public class TNPageCats extends TNChildViewBase implements
                     TNDb.getInstance().execSQL(TNSQLString.NOTE_SHORT_CONTENT, shortContent, note.noteId);
 
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME,System.currentTimeMillis() / 1000, note.catId);
+                    TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
                     TNDb.setTransactionSuccessful();
                 } finally {
@@ -1427,13 +1428,21 @@ public class TNPageCats extends TNChildViewBase implements
 
 
     /**
+     * 只有 tagFrag和main使用，其他界面不使用
+     * <p>
      * (二.4)正常同步 pGetTagList
      */
 
     private void pGetTagList1() {
+        Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
+        if(tags.size()==0){
+            MLog.d("frag同步--pGetTagList1 2-4");
+            presenter.pGetTagList();
+        }else{
+            //执行下一个接口
+            pAddNewNote1();
+        }
 
-        MLog.d("frag同步--pGetTagList1 2-4");
-        presenter.pGetTagList();
     }
 
 

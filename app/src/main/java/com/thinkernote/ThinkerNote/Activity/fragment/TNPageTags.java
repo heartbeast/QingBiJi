@@ -1064,7 +1064,14 @@ public class TNPageTags extends TNChildViewBase implements
      */
 
     private void pGetTagList() {
-        presenter.pGetTagList();
+        Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
+        if(tags.size()==0){
+            MLog.d("frag同步--pGetTagList1 2-4");
+            presenter.pGetTagList();
+        }else{
+            //执行下一个接口
+            pAddNewNote();
+        }
     }
 
 

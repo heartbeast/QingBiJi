@@ -34,6 +34,7 @@ import com.thinkernote.ThinkerNote.DBHelper.UserDbHelper;
 import com.thinkernote.ThinkerNote.Data.TNCat;
 import com.thinkernote.ThinkerNote.Data.TNNote;
 import com.thinkernote.ThinkerNote.Data.TNNoteAtt;
+import com.thinkernote.ThinkerNote.Data.TNTag;
 import com.thinkernote.ThinkerNote.Database.TNDb;
 import com.thinkernote.ThinkerNote.Database.TNDbUtils;
 import com.thinkernote.ThinkerNote.Database.TNSQLString;
@@ -1024,6 +1025,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //-------正常登录同步的p调用-------
 
     /**
+     * Profile
+     * <p>
      * （二.1）正常同步 第一个接口
      */
     private void syncProfile() {
@@ -1032,6 +1035,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * syncOldDb
+     * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
@@ -1061,6 +1066,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * syncOldDb
      * (二.2)正常同步 第一个执行的接口 上传图片OldNotePic 循环调用
      * 说明：先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片...,如此循环
      * 和（二.3组成双层for循环，该处是最内层for执行）
@@ -1071,6 +1077,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * syncOldDb
      * (二.3)正常同步 第2个执行的接口 循环调用
      * 和（二.2组成双层for循环，该处是最外层for执行）
      */
@@ -1082,16 +1089,25 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
+     * GetTagList
+     * <p>
      * (二.4)正常同步 pGetTagList
      */
 
     private void pGetTagList() {
-        presener.pGetTagList();
-        MLog.d("sync---2-4-pGetTagList");
+        Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
+        if (tags.size() == 0) {
+            presener.pGetTagList();
+            MLog.d("sync---2-4-pGetTagList");
+        } else {
+            //执行下一个接口
+            pAddNewNote();
+        }
     }
 
 
     /**
+     * addNotes
      * (二.5+二.6)正常同步 pAddNewNote
      * 说明：同(二.2+二.3)的执行顺序，先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片，如此循环
      * 接口个数：addNewNotes.size * addNewNotes.size
@@ -1118,6 +1134,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * addNotes
+     * <p>
      * (二.5)正常同步 第一个执行的接口 上传图片OldNotePic 循环调用
      * 和（二.6组成双层for循环，该处是最内层for执行）
      */
@@ -1127,6 +1145,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * addNotes
+     * <p>
      * (二.6)正常同步 第2个执行的接口 循环调用
      * 和（二.5组成双层for循环，该处是最外层for执行）
      */
@@ -1139,7 +1159,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
-     * (二.7)正常同步 recoveryNote
+     * recoveryNote
+     * <p>
+     * <p>
+     * (二.7)正常同步
      * 从0开始执行
      * 接口个数：如果走NoteRecovery:recoveryNotes.size /如果走NoteAdd：recoveryNotes.size * recoveryNotesattrs.size
      * 说明：同(二.7-2+二.7-3)的执行顺序，先处理recoveryNotes的图片，处理完就上传recoveryNotes的文本，然后再处理position+1的图片，如此循环
@@ -1170,6 +1193,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * recoveryNote
+     * <p>
      * (二.7)01
      */
     private void pRecoveryNote(long noteID, int position, int arrySize) {
@@ -1178,6 +1203,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * recoveryNote
+     * <p>
      * (二.7)02
      */
     private void pRecoveryNotePic(int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
@@ -1186,6 +1213,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * recoveryNote
+     * <p>
      * (二.7)03
      */
     private void pRecoveryNoteAdd(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
@@ -1195,6 +1224,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
+     * deleteNotes
+     * <p>
      * (二.8)
      *
      * @param position
@@ -1217,6 +1248,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * deleteNotes
+     * <p>
      * (二.8)
      */
     private void pNoteDelete(long noteId, int postion) {
@@ -1225,6 +1258,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * deleteNotes
+     * <p>
      * (二.8)删除本地数据 （不调接口）
      */
     private void pNoteLocalDelete(final int position, final long noteLocalId) {
@@ -1257,7 +1292,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * (二.9)deleteRealNotes
+     * deleteRealNotes
+     * <p>
+     * (二.9)
      *
      * @param position deleteRealNotes执行位置
      */
@@ -1283,7 +1320,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
-     * (二.9) deleteReadNotes
+     * deleteReadNotes
+     * <p>
+     * (二.9)
      * 数据库
      * 接口个数：2
      *
@@ -1315,6 +1354,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * deleteReadNotes
+     * <p>
      * (二.9)
      */
     private void pDeleteRealNotes(long noteId, int postion) {
@@ -1334,6 +1375,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * editNotes
+     * <p>
      * (二.10)-1 editNote上传图片
      * 说明：
      * 2-10-1和2-11-1图片上传和2-5/2-6相同
@@ -1378,6 +1421,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * editNotes
+     * <p>
      * (二.10)-1
      * 图片上传
      *
@@ -1446,6 +1491,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
+     * editNotes
+     * <p>
      * (二.11)-1 edit  通过最后更新时间来与云端比较，是否该上传本地编辑的笔记
      * 上传文本
      *
@@ -1462,6 +1509,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * editNotes
+     * <p>
      * (二.11)-2 更新云端的笔记
      *
      * @param position 执行的位置
@@ -1496,6 +1545,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * editNotes
+     * <p>
      * (二.11)-2/(二.13) 更新云端的笔记
      * <p>
      * p层
@@ -1506,6 +1557,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * trashNotes
+     * <p>
      * (二.12) 同步回收站的笔记
      */
     private void pTrashNotes() {
@@ -1514,6 +1567,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * trashNotes
+     * <p>
      * (二.13) 更新云端的笔记
      * <p>
      * 该接口同(二.11)-2
