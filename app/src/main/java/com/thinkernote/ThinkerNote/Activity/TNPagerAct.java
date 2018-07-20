@@ -982,7 +982,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
             case CAT:
                 //执行下一个pos
                 pGetAllDataByNoteId(((Integer) msg.obj + 1));
-
                 break;
             case DIALOG_DELETE:
                 configView();
@@ -999,7 +998,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
             case SYNC_DATA_BY_NOTEID:
                 //关闭弹窗
                 endGetAllDataByNoteId(0);
-
                 break;
         }
 

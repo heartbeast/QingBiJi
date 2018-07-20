@@ -64,21 +64,6 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
             }
         }
         setContentView(R.layout.splash);
-
-    }
-
-    //权限回调处理
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)) {
-            //权限请求结果，并已经处理了该回调
-            return;
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    protected void configView() {
         //初始化并发起权限申请
 
         mPermissionHelper = new PermissionHelper(this, new PermissionInterface() {
@@ -114,6 +99,20 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
             }
         });
         mPermissionHelper.requestPermissions();
+    }
+
+    //权限回调处理
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)) {
+            //权限请求结果，并已经处理了该回调
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void configView() {
 
     }
 

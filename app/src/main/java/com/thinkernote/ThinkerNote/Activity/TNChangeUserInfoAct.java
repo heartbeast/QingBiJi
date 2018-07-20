@@ -51,8 +51,6 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_change_userinfo);
-
-        TNAction.regResponder(TNActionType.Profile, this, "respondProfile");
         //p
         presener = new ChangeUserInfoPresenterImpl(this, this);
         initView();
@@ -221,8 +219,6 @@ public class TNChangeUserInfoAct extends TNActBase implements OnClickListener, O
 
     private void getUserInfo() {
         presener.pProfile();
-//        // TODO
-//        TNAction.runActionAsync(TNActionType.Profile);
     }
 
     //============================================接口结果返回====================================================

@@ -33,10 +33,6 @@ public class TNApplication extends Application {
 
         initialize();
 
-        //TODO 修改
-        //注册反射方法，TNDb.java使用
-        TNAction.regRunner(TNActionType.DbReportError, this, "DbReportError");
-
         //新网络框架 log初始化
         MLog.init(true, "SJY");
 
@@ -57,27 +53,12 @@ public class TNApplication extends Application {
         // db initialize
         TNDb.getInstance();
         TNDb2.getInstance();
-//		//设置定制的默认皮肤， 暂指三星定制的奥运皮肤
-//		TNUtilsSkin.setAssetsSkins(TNUtilsSkin.DEFAULT_SKIN);
 
         //地图定位
 //        TNLBSService.getInstance();
         //地图定位 新版
         LocationService.getInstance();
         watchAppSwitch();
-
-        // TODO 删 service initialize
-//		TNSyncService.getInstance();
-//		TNNoteLocalService.getInstance();
-//		TNAttLocalService.getInstance();
-//		TNCacheService.getInstance();
-//		TNUserService.getInstance();
-//		TNNoteService.getInstance();
-//		TNAttService.getInstance();
-//		TNTagService.getInstance();
-//		TNCatService.getInstance();
-//		TNOAuth2.getInstance();
-//		TNAttDownloadService.getInstance();
         // 设置此接口后，音频文件和识别结果文件保存在/sdcard/msc/record/目录下
         //com.iflytek.resource.MscSetting.setLogSaved(true);
 

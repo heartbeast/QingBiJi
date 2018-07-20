@@ -235,11 +235,7 @@ public class TNDb extends SQLiteOpenHelper {
             aAction.result = TNActionResult.Finished;
         } catch (SQLiteException e) {
             e.printStackTrace();
-
-            TNAction.runAction(TNActionType.DbReportError,
-                    "username:" + TNSettings.getInstance().username +
-                            " SQLiteException:" + e.toString());
-            aAction.result = TNActionResult.Finished;
+            MLog.e("数据库异常：" + e.toString());
         }
     }
 //==================================sjy 更改 开始======================================
