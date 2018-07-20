@@ -837,6 +837,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
+
             //执行下一个接口
             syncOldNote();
 
@@ -854,6 +855,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
      * 第一次登录同步
      * <p>
      * （一.2）更新 tag
@@ -863,14 +866,32 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         presener.tagAdd(position, arraySize, name);
     }
 
+
+    //-------正常登录同步的p调用-------
+
     /**
-     * 第一次登录同步
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
+     * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        MLog.d("sync---1-3-pGetFolder");
+
+        //TODO 修改部分
         presener.pGetFolder();
+
+        //cats.size()==0||main|catsFrag必执行，其他界面不执行
+
+//        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+//        MLog.d("sync---1-3-pGetFolder");
+//
+//        if(cats.size()==0){
+//            presener.pGetFolder();
+//        }else{
+//            //
+//            presener.pGetFolder();
+//        }
     }
 
     /**
@@ -950,7 +971,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1004,7 +1025,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
 
         }
     }
@@ -1020,16 +1041,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
         MLog.d("sync---1-5-syncTNCat--syncTNCat--pFirstFolderAdd");
-
         presener.pFirstFolderAdd(workPos, workSize, catID, name, catPos, flag);
     }
 
 
-    //-------正常登录同步的p调用-------
-
-
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * syncOldDb
      * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
@@ -1084,7 +1101,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * Profile
      * <p>
      * （二.1）正常同步 第一个接口
@@ -1099,8 +1116,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
-     *
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     * <p>
      * GetTagList
      * <p>
      * (二.4)正常同步 pGetTagList
@@ -1742,9 +1759,11 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
         } else {
             //
+            mSettings.firstLaunch = false;
             mSettings.savePref(false);
+
             //执行下个接口
-            syncGetFolder();
+            syncOldNote();
         }
     }
 
@@ -1833,7 +1852,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1881,7 +1900,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         settings.savePref(false);
 
         //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-        pGetTagList();
+        syncGetFolder();
     }
 
     @Override

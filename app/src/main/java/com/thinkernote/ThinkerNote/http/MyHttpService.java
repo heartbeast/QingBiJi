@@ -504,7 +504,6 @@ public interface MyHttpService {
     Observable<CommonBean> syncRecoveryNote(@Field("note_id") long note_id
             , @Field("session_token") String session_token);
 
-
     /**
      * 同步获取folder get形式
      *

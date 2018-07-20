@@ -842,6 +842,8 @@ public class TNPageTags extends TNChildViewBase implements
     }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
      * 第一次登录同步
      * <p>
      * （一.2）更新 tag
@@ -849,9 +851,10 @@ public class TNPageTags extends TNChildViewBase implements
     private void pTagAdd(int position, int arraySize, String name) {
         presenter.tagAdd(position, arraySize, name);
     }
-
     /**
-     * 第一次登录同步
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
+     * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
      */
@@ -933,7 +936,7 @@ public class TNPageTags extends TNChildViewBase implements
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -985,7 +988,7 @@ public class TNPageTags extends TNChildViewBase implements
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1007,7 +1010,7 @@ public class TNPageTags extends TNChildViewBase implements
 
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     *0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
@@ -1055,7 +1058,7 @@ public class TNPageTags extends TNChildViewBase implements
     }
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * （二.1）正常同步 第一个接口
      */
@@ -1068,8 +1071,8 @@ public class TNPageTags extends TNChildViewBase implements
     }
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
-     *
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     * <p>
      * (二.4)正常同步 pGetTagList
      */
 
@@ -1559,9 +1562,10 @@ public class TNPageTags extends TNChildViewBase implements
             pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
         } else {
             //
+            mSettings.firstLaunch = false;
             mSettings.savePref(false);
             //执行下个接口
-            syncGetFolder();
+            syncOldNote();
         }
     }
 
@@ -1649,7 +1653,7 @@ public class TNPageTags extends TNChildViewBase implements
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1696,7 +1700,7 @@ public class TNPageTags extends TNChildViewBase implements
         settings.savePref(false);
 
         //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-        pGetTagList();
+        syncGetFolder();
     }
 
     @Override

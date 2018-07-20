@@ -664,14 +664,28 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
     }
 
     /**
-     * 第一次登录同步
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
+     * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
         MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
+        //TODO 修改部分
         presenter.pGetFolder();
 
+        //cats.size()==0||main|catsFrag必执行，其他界面不执行
+
+//        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+//        MLog.d("sync---1-3-pGetFolder");
+//
+//        if(cats.size()==0){
+//            presener.pGetFolder();
+//        }else{
+//            //
+//            presener.pGetFolder();
+//        }
     }
 
     /**
@@ -751,7 +765,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -804,7 +818,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1394,9 +1408,10 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
         } else {
             //
+            mSettings.firstLaunch = false;
             mSettings.savePref(false);
             //执行下个接口
-            syncGetFolder();
+            syncOldNote();
         }
     }
 
@@ -1484,7 +1499,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
         } else {
             //执行下一个接口
-            syncOldNote();
+            pGetTagList();
         }
     }
 
@@ -1531,7 +1546,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
         settings.savePref(false);
 
         //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-        pGetTagList();
+        syncGetFolder();
     }
 
     @Override

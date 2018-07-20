@@ -1206,8 +1206,12 @@ public class TNPageCats extends TNChildViewBase implements
         presenter.tagAdd(position, arraySize, name);
     }
 
+    //-------正常登录同步的p调用-------
+
     /**
-     * 第一次登录同步
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     *
+     * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
      */
@@ -1295,7 +1299,7 @@ public class TNPageCats extends TNChildViewBase implements
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncOldNote1();
+            pGetTagList1();
         }
     }
 
@@ -1348,7 +1352,7 @@ public class TNPageCats extends TNChildViewBase implements
             }
         } else {
             //执行下一个接口
-            syncOldNote1();
+            pGetTagList1();
         }
     }
 
@@ -1372,7 +1376,7 @@ public class TNPageCats extends TNChildViewBase implements
 
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     *0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
@@ -1423,7 +1427,7 @@ public class TNPageCats extends TNChildViewBase implements
     }
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * （二.1）正常同步 第一个接口
      */
@@ -1437,7 +1441,7 @@ public class TNPageCats extends TNChildViewBase implements
     }
 
     /**
-     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * 只有 tagFrag和main使用，其他界面不使用
      * <p>
@@ -1952,9 +1956,10 @@ public class TNPageCats extends TNChildViewBase implements
                 pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
             } else {
                 //
+                mSettings.firstLaunch = false;
                 mSettings.savePref(false);
                 //执行下个接口
-                syncGetFolder();
+                syncOldNote1();
             }
         }
 
@@ -1962,15 +1967,6 @@ public class TNPageCats extends TNChildViewBase implements
         public void onSyncTagAddFailed(String msg, Exception e, int position, int arraySize) {
             MLog.e(msg);
 
-            //
-//        if (position + 1 < arraySize) {//同步该接口的列表数据
-//            //（有数组，循环调用）
-//            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
-//        } else {
-//            mSettings.savePref(false);
-//            //再调用正常的同步接口
-//            syncNormalLogData();
-//        }
         }
 
         //1-3
@@ -2042,7 +2038,7 @@ public class TNPageCats extends TNChildViewBase implements
                 }
             } else {
                 //执行下一个接口
-                syncOldNote1();
+                pGetTagList1();
             }
         }
 
@@ -2089,7 +2085,7 @@ public class TNPageCats extends TNChildViewBase implements
             settings.savePref(false);
 
             //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-            pGetTagList1();
+            syncGetFolder();
         }
 
         @Override
