@@ -837,7 +837,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
-            syncProfile();
+            //执行下一个接口
+            syncOldNote();
+
         }
     }
 
@@ -867,7 +869,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        MLog.d("sync---1-3-pTagAdd");
+        MLog.d("sync---1-3-pGetFolder");
         presener.pGetFolder();
     }
 
@@ -948,7 +950,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -1002,7 +1004,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
+
         }
     }
 
@@ -1024,17 +1027,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     //-------正常登录同步的p调用-------
 
-    /**
-     * Profile
-     * <p>
-     * （二.1）正常同步 第一个接口
-     */
-    private void syncProfile() {
-        MLog.d("sync---2-1-syncProfile");
-        presener.pProfile();
-    }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
      * syncOldDb
      * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
@@ -1057,11 +1052,12 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             } else {
                 //下个执行接口
-                pGetTagList();
+                syncProfile();
+
             }
         } else {
             //下个执行接口
-            pGetTagList();
+            syncProfile();
         }
     }
 
@@ -1087,8 +1083,24 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         presener.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
+    /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * Profile
+     * <p>
+     * （二.1）正常同步 第一个接口
+     */
+    private void syncProfile() {
+        mSettings.syncOldDb = true;
+        mSettings.savePref(false);
+
+        MLog.d("sync---2-1-syncProfile");
+        presener.pProfile();
+    }
+
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     *
      * GetTagList
      * <p>
      * (二.4)正常同步 pGetTagList
@@ -1821,7 +1833,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             }
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -1867,8 +1879,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         settings.isLogout = false;
         settings.firstLaunch = false;//在此处设置 false
         settings.savePref(false);
+
         //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-        syncOldNote();
+        pGetTagList();
     }
 
     @Override
@@ -1939,8 +1952,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             Vector<TNNoteAtt> oldNotesAtts = addOldNotes.get(position + 1).atts;
             pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
         } else {
+
             //执行下个接口
-            pGetTagList();
+            syncProfile();
         }
     }
 

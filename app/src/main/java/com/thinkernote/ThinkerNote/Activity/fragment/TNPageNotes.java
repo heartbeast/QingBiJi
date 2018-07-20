@@ -639,7 +639,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -751,7 +751,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -804,7 +804,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -825,15 +825,9 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
 
     //-------正常登录同步的p调用-------
 
-    /**
-     * （二.1）正常同步 第一个接口
-     */
-    private void syncProfile() {
-        MLog.d("frag同步--全部笔记--syncProfile 2-1");
-        presenter.pProfile();
-    }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
@@ -854,11 +848,11 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
                 }
             } else {
                 //下个执行接口
-                pGetTagList();
+                syncProfile();
             }
         } else {
             //下个执行接口
-            pGetTagList();
+            syncProfile();
         }
     }
 
@@ -882,21 +876,31 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
         presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
+    /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * （二.1）正常同步 第一个接口
+     */
+    private void syncProfile() {
+
+        MLog.d("frag同步--全部笔记--syncProfile 2-1");
+        presenter.pProfile();
+    }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * <p>
      * (二.4)正常同步 pGetTagList
      */
 
     private void pGetTagList() {
         Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
-        if(tags.size()==0){
+        if (tags.size() == 0) {
             MLog.d("frag同步--全部笔记--pGetTagList 2-4");
             presenter.pGetTagList();
-        }else{
+        } else {
             //执行下一个接口
             pAddNewNote();
         }
-
     }
 
 
@@ -1151,7 +1155,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
     private void pEditNotePic(int position) {
 
         MLog.d("frag同步--全部笔记--pEditNotePic 2-10-1");
-        if (cloudIds.size() > 0 && position < (cloudIds.size() )) {
+        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
             if (editNotes != null && editNotes.size() > 0) {
@@ -1343,7 +1347,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
             if (!trashNoteExit) {
                 pUpdataNote(position, noteId, is13);
-            }else{
+            } else {
                 pUpdataNote13(position + 1, is13);
             }
         } else {
@@ -1480,7 +1484,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             }
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote();
         }
     }
 
@@ -1525,8 +1529,9 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
         settings.isLogout = false;
         settings.firstLaunch = false;//在此处设置 false
         settings.savePref(false);
+
         //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-        syncOldNote();
+        pGetTagList();
     }
 
     @Override
@@ -1594,7 +1599,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
             pUploadOldNotePic(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
         } else {
             //执行下个接口
-            pGetTagList();
+            syncProfile();
         }
     }
 
@@ -1884,7 +1889,7 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
                         TNDb.beginTransaction();
                         try {
                             //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID,  new Object[]{note.noteId});
+                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
 
                             TNDb.setTransactionSuccessful();
                         } finally {

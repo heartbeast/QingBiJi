@@ -1266,7 +1266,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         TNNote note = TNDbUtils.getNoteByNoteId(noteId);
         TNDb.beginTransaction();
         try {
-            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH,2, 1, System.currentTimeMillis() / 1000, note.noteLocalId);
+            TNDb.getInstance().execSQL(TNSQLString.NOTE_SET_TRASH, 2, 1, System.currentTimeMillis() / 1000, note.noteLocalId);
             TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
             TNDb.setTransactionSuccessful();
@@ -2306,7 +2306,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             //同步第一个数据（有数组，循环调用）
             pFolderAdd(0, arrayFolderName.length, arrayFolderName[0]);
         } else {//如果正常启动，执行该处
-            syncProfile();
+            syncOldNote1();
         }
     }
 
@@ -2418,7 +2418,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             syncTNCat(0, cats.size());
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote1();
         }
     }
 
@@ -2471,7 +2471,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             }
         } else {
             //执行下一个接口
-            syncProfile();
+            syncOldNote1();
         }
     }
 
@@ -2492,15 +2492,10 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     //-------正常登录同步的p调用-------
 
-    /**
-     * （二.1）正常同步 第一个接口
-     */
-    private void syncProfile() {
-        MLog.d("NoteList同步---syncProfile 2-1");
-        presenter.pProfile();
-    }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
      * 接口个数 = addOldNotes.size * oldNotesAtts.size;
@@ -2521,11 +2516,11 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 }
             } else {
                 //下个执行接口
-                pGetTagList1();
+                syncProfile();
             }
         } else {
             //下个执行接口
-            pGetTagList1();
+            syncProfile();
         }
     }
 
@@ -2549,17 +2544,30 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         presenter.pOldNoteAdd(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
+    /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
+     * <p>
+     * （二.1）正常同步 第一个接口
+     */
+    private void syncProfile() {
+        mSettings.syncOldDb = true;
+        mSettings.savePref(false);
+
+        MLog.d("NoteList同步---syncProfile 2-1");
+        presenter.pProfile();
+    }
 
     /**
+     * 0720改：先执行syncOldNote--->syncProfile()--pGetTagList()
      * (二.4)正常同步 pGetTagList
      */
 
     private void pGetTagList1() {
         Vector<TNTag> tags = TNDbUtils.getTagList(mSettings.userId);
-        if(tags.size()==0){
+        if (tags.size() == 0) {
             MLog.d("NoteList同步---pGetTagList1 2-4");
             presenter.pGetTagList();
-        }else{
+        } else {
             //执行下一个接口
             pAddNewNote1();
         }
@@ -3244,7 +3252,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 }
             } else {
                 //执行下一个接口
-                syncProfile();
+                syncOldNote1();
             }
         }
 
@@ -3290,7 +3298,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
             settings.firstLaunch = false;//在此处设置 false
             settings.savePref(false);
             //执行下个接口（该处是 第一次登录的最后一个同步接口，下一个正常登录的同步接口）
-            syncOldNote1();
+            pGetTagList1();
         }
 
         @Override
@@ -3358,7 +3366,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 pUploadOldNotePic1(0, oldNotesAtts.size(), position + 1, arraySize, addOldNotes.get(position + 1).atts.get(0));
             } else {
                 //执行下个接口
-                pGetTagList1();
+                syncProfile();
             }
         }
 
