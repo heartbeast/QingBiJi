@@ -856,7 +856,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     /**
      * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
-     *
+     * <p>
      * 第一次登录同步
      * <p>
      * （一.2）更新 tag
@@ -871,7 +871,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
 
     /**
      * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
-     *
+     * <p>
      * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
@@ -913,16 +913,22 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 if (startPos < allFolderItemBeans.size() - 1) {
                     //从1层从第一个数据开始
                     if (isAdd) {
+                        MLog.d("1-4", "从1层从第一个数据开始 true");
                         syncGetFoldersByFolderId(0, allFolderItemBeans);
                     } else {
+                        MLog.d("1-4", "从1层从第一个数据开始 false");
+
                         syncGetFoldersByFolderId(startPos, allFolderItemBeans);
                     }
-
                 } else {
+                    //执行上一层的循环
+                    MLog.d("1-4", "执行上一层的循环");
                     if (mapList.size() == 1) {
                         //执行下一个接口
+                        MLog.d("1-4", "执行上一层的循环--syncTNCat");
                         syncTNCat();
                     } else {
+                        MLog.d("1-4", "执行上一层的循环--syncGetFoldersByFolderId");
                         //执行上一层的新循环
                         mapList.remove(mapList.size() - 1);
                         syncGetFoldersByFolderId(0, false);
@@ -930,10 +936,14 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             } else {
                 //执行上一层的循环
+                MLog.d("1-4", "执行上一层的循环");
                 if (mapList.size() == 1) {
                     //执行下一个接口
+                    MLog.d("1-4", "执行上一层的循环--syncTNCat");
                     syncTNCat();
                 } else {
+                    MLog.d("1-4", "执行上一层的循环--syncGetFoldersByFolderId");
+                    //执行上一层的新循环
                     mapList.remove(mapList.size() - 1);
                     syncGetFoldersByFolderId(0, false);
                 }
@@ -945,7 +955,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     }
 
     /**
-     * 具体执行GetFoldersByFolderId的步骤 p层调用
+     * 执行GetFoldersByFolderId的具体步骤 p层调用
      */
 
     private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
@@ -1785,9 +1795,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-3
     @Override
     public void onSyncGetFolderSuccess(Object obj) {
-        MLog.d("sync----1-3-->Success");
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
+        MLog.d("sync----1-3-->Success" + "allFolderBean:" + allFolderBean.toString() + "--allFolderItemBeans:" + allFolderItemBeans.size());
         mapList.add(allFolderItemBeans);
         //更新数据库
         insertDBCatsSQL(allFolderBean, -1);
@@ -1804,14 +1814,15 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     //1-4
     @Override
     public void onSyncGetFoldersByFolderIdSuccess(Object obj, long catID, int startPos, List<AllFolderItemBean> beans) {
-        MLog.d("sync----1-4-->Success");
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
+        MLog.d("sync----1-4-->Success" + allFolderBean.toString() + "--allFolderItemBeans:" + allFolderItemBeans.size());
         //判断是否有返回值
         if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 0) {
             //执行下个position循环
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
+            MLog.d("1-4", "allFolderBean=" + allFolderBean.toString() + "--allFolderItemBeans：" + allFolderItemBeans.size());
             mapList.add(allFolderItemBeans);
             insertDBCatsSQL(allFolderBean, catID);
             //执行新循环

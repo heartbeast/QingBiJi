@@ -37,4 +37,13 @@ public class AllFolderBean implements Serializable {
     public void setFolders(List<AllFolderItemBean> folders) {
         this.folders = folders;
     }
+
+    @Override
+    public String toString() {
+        return "AllFolderBean{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", folders=" + folders +
+                '}';
+    }
 }

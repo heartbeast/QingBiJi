@@ -62,4 +62,16 @@ public class AllFolderItemBean implements Serializable {
     public void setCount(int count) {
         this.count = count;
     }
+
+    @Override
+    public String toString() {
+        return "AllFolderItemBean{" +
+                "name='" + name + '\'' +
+                ", create_at='" + create_at + '\'' +
+                ", update_at='" + update_at + '\'' +
+                ", count=" + count +
+                ", folder_count=" + folder_count +
+                ", id=" + id +
+                '}';
+    }
 }
