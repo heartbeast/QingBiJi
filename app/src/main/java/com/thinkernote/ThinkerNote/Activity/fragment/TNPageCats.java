@@ -1219,6 +1219,18 @@ public class TNPageCats extends TNChildViewBase implements
 
         MLog.d("frag同步--syncGetFolder 1-3");
         presenter.pGetFolder();
+
+        //cats.size()==0||main|catsFrag必执行，其他界面不执行
+
+//        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+//        MLog.d("sync---1-3-pGetFolder");
+//
+//        if(cats.size()==0){
+//            presener.pGetFolder();
+//        }else{
+//            //
+//            presener.pGetFolder();
+//        }
     }
 
     /**

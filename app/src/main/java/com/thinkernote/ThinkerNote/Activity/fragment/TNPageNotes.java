@@ -671,21 +671,17 @@ public class TNPageNotes extends TNChildViewBase implements OnItemLongClickListe
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
-        //TODO 修改部分
-        presenter.pGetFolder();
-
         //cats.size()==0||main|catsFrag必执行，其他界面不执行
+        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+        MLog.d("sync---1-3-pGetFolder");
 
-//        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
-//        MLog.d("sync---1-3-pGetFolder");
-//
-//        if(cats.size()==0){
-//            presener.pGetFolder();
-//        }else{
-//            //
-//            presener.pGetFolder();
-//        }
+        if(cats.size()==0){
+            MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
+            presenter.pGetFolder();
+        }else{
+            //执行下一个接口
+            pGetTagList();
+        }
     }
 
     /**

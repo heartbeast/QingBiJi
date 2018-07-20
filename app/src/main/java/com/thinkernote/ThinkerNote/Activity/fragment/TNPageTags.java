@@ -859,7 +859,17 @@ public class TNPageTags extends TNChildViewBase implements
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        presenter.pGetFolder();
+        //cats.size()==0||main|catsFrag必执行，其他界面不执行
+        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+        MLog.d("sync---1-3-pGetFolder");
+
+        if(cats.size()==0){
+            MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
+            presenter.pGetFolder();
+        }else{
+            //执行下一个接口
+            pGetTagList();
+        }
     }
 
     /**

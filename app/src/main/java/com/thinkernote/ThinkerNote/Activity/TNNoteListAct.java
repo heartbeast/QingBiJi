@@ -2338,8 +2338,15 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      * （一.3）更新 GetFolder
      */
     private void syncGetFolder() {
-        MLog.d("NoteList同步---syncGetFolder 1-3");
-        presenter.pGetFolder();
+        //cats.size()==0||main|catsFrag必执行，其他界面不执行
+        Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
+        if(cats.size()==0){
+            MLog.d("NoteList同步---syncGetFolder 1-3");
+            presenter.pGetFolder();
+        }else{
+            //执行下一个接口
+            pGetTagList1();
+        }
     }
 
     /**
