@@ -209,7 +209,7 @@ public class SynchronizeDataModuleImpl implements ISynchronizeDataModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("FolderAdd 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID,name, catPos, flag);
                         }
 
                         @Override
@@ -220,7 +220,7 @@ public class SynchronizeDataModuleImpl implements ISynchronizeDataModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID,name,catPos, flag);
                             }
                         }
 
@@ -240,7 +240,7 @@ public class SynchronizeDataModuleImpl implements ISynchronizeDataModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("upgrade 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, name,catPos, flag);
                         }
 
                         @Override
@@ -251,7 +251,7 @@ public class SynchronizeDataModuleImpl implements ISynchronizeDataModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID,name, catPos, flag);
                             }
                         }
 

@@ -388,8 +388,8 @@ public class NoteListPresenterImpl implements INoteListPresenter, OnNoteListList
         }
 
         @Override
-        public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag) {
-            onDataView.onSyncFirstFolderAddFailed(msg, e, workPos, workSize, catID, catPos, flag);
+        public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, String name,int catPos, int flag) {
+            onDataView.onSyncFirstFolderAddFailed(msg, e, workPos, workSize, catID,name, catPos, flag);
         }
 
 

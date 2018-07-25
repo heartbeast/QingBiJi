@@ -939,15 +939,22 @@ public class TNPageTags extends TNChildViewBase implements
      * 接口个数 = 3*cats.size*groupXXX.size;
      */
     private void syncTNCat() {
-        //同步TNCat
-        cats = TNDbUtils.getAllCatList(mSettings.userId);
-        if (cats.size() > 0) {
-            //先执行最外层的数据
-            syncTNCat(0, cats.size());
-        } else {
+        MLog.d("sync---1-5-syncTNCat");
+        if(mSettings.firstLaunch){
+            //同步TNCat
+            cats = TNDbUtils.getAllCatList(mSettings.userId);
+            if (cats.size() > 0) {
+                //先执行最外层的数据
+                syncTNCat(0, cats.size());
+            } else {
+                //执行下一个接口
+                pGetTagList();
+            }
+        }else{
             //执行下一个接口
             pGetTagList();
         }
+
     }
 
     /**
@@ -1661,25 +1668,29 @@ public class TNPageTags extends TNChildViewBase implements
     //1-5
     @Override
     public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        MLog.d("sync----1-5-->Success");
         if (catPos < cats.size() - 1) {
             if (flag == 1) {//groupWorks
                 if (workPos < workSize - 1) {
                     pFirstFolderAdd(workPos + 1, groupWorks.length, catID, name, catPos, 1);//继续执行第1个
-                } else {//groupWorks执行完，执行groupLife
-                    pFirstFolderAdd(0, groupLife.length, catID, name, catPos, 2);//执行第2个
+                } else {//执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }
             } else if (flag == 2) {//groupLife
                 if (workPos < workSize - 1) {
                     pFirstFolderAdd(workPos + 1, groupLife.length, catID, name, catPos, 2);//继续执行第2个
-                } else {//groupLife执行完，执行groupFun
-                    pFirstFolderAdd(0, groupFun.length, catID, name, catPos, 3);//执行第3个
+                } else {//执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }
             } else if (flag == 3) {//groupFun
                 if (workPos < workSize - 1) {
                     pFirstFolderAdd(workPos + 1, groupFun.length, catID, name, catPos, 3);//继续执行第3个
-                } else {//groupFun执行完，执行下个TNCat
+                } else {//执行下个TNCat
                     syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }
+            } else {
+                //执行下一个接口
+                pGetTagList();
             }
         } else {
             //执行下一个接口
@@ -1688,10 +1699,36 @@ public class TNPageTags extends TNChildViewBase implements
     }
 
     @Override
-    public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag) {
+    public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, String name, int catPos, int flag) {
         MLog.e(msg);
+        if (catPos < cats.size() - 1) {
+            if (flag == 1) {//groupWorks
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupWorks.length, catID, name, catPos, 1);//继续执行第1个
+                }else {//执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
+                }
+            } else if (flag == 2) {//groupLife
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupLife.length, catID, name, catPos, 2);//继续执行第2个
+                } else {//执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
+                }
+            } else if (flag == 3) {//groupFun
+                if (workPos < workSize - 1) {
+                    pFirstFolderAdd(workPos + 1, groupFun.length, catID, name, catPos, 3);//继续执行第3个
+                } else {//执行下个TNCat
+                    syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
+                }
+            } else {
+                //执行下一个接口
+                pGetTagList();
+            }
+        } else {
+            //执行下一个接口
+            pGetTagList();
+        }
     }
-
 
     //----接口结果回调  正常同步---
     //2-1

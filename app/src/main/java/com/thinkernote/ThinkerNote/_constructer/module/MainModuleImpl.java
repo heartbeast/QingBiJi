@@ -150,7 +150,7 @@ public class MainModuleImpl implements IMainModule {
 
         if (file.exists()) {
             file.delete();
-        }else{
+        } else {
             //创建新文件
             try {
                 file.getParentFile().mkdirs();
@@ -343,7 +343,7 @@ public class MainModuleImpl implements IMainModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("FolderAdd 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, name, catPos, flag);
                         }
 
                         @Override
@@ -354,7 +354,9 @@ public class MainModuleImpl implements IMainModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                //文件已存在
+                                MLog.e(bean.getMessage());
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, name, catPos, flag);
                             }
                         }
 
@@ -374,7 +376,7 @@ public class MainModuleImpl implements IMainModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("upgrade 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, name,catPos, flag);
                         }
 
                         @Override
@@ -385,7 +387,8 @@ public class MainModuleImpl implements IMainModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                MLog.e(bean.getMessage());
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, name,catPos, flag);
                             }
                         }
 
@@ -451,7 +454,7 @@ public class MainModuleImpl implements IMainModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -588,7 +591,7 @@ public class MainModuleImpl implements IMainModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -721,7 +724,7 @@ public class MainModuleImpl implements IMainModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -957,7 +960,7 @@ public class MainModuleImpl implements IMainModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):

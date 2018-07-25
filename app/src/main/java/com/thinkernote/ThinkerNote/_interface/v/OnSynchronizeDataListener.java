@@ -35,7 +35,7 @@ public interface OnSynchronizeDataListener {
     //5
     void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag);
 
-    void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag);
+    void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, String name, int catPos, int flag);
 
 
     //正常同步2

@@ -187,7 +187,7 @@ public class NoteListModuleImpl implements INoteListModule {
 //        aAction.runChildAction(TNActionType.TNHttpDownloadAtt, ("attachment/" + att.attId), att.attId, path);
 
         //url绝对路径
-        String url = URLUtils.API_BASE_URL + "attachment/" + att.attId+"?session_token="+TNSettings.getInstance().token;
+        String url = URLUtils.API_BASE_URL + "attachment/" + att.attId + "?session_token=" + TNSettings.getInstance().token;
         MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
                 .downloadFile(url)//接口方法
                 .subscribeOn(Schedulers.io())
@@ -238,7 +238,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         if (file.exists()) {
             file.delete();
-        }else{
+        } else {
             //创建新文件
             try {
                 file.getParentFile().mkdirs();
@@ -433,7 +433,7 @@ public class NoteListModuleImpl implements INoteListModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("FolderAdd 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, name,catPos, flag);
                         }
 
                         @Override
@@ -444,7 +444,7 @@ public class NoteListModuleImpl implements INoteListModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, name, catPos, flag);
                             }
                         }
 
@@ -464,7 +464,7 @@ public class NoteListModuleImpl implements INoteListModule {
                         @Override
                         public void onError(Throwable e) {
                             MLog.e("upgrade 异常onError:" + e.toString());
-                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, catPos, flag);
+                            listener.onSyncFirstFolderAddFailed("异常", new Exception("接口异常！"), workPos, workSize, catID, name, catPos, flag);
                         }
 
                         @Override
@@ -475,7 +475,7 @@ public class NoteListModuleImpl implements INoteListModule {
                             if (bean.getCode() == 0) {
                                 listener.onSyncFirstFolderAddSuccess(bean, workPos, workSize, catID, name, catPos, flag);
                             } else {
-                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, catPos, flag);
+                                listener.onSyncFirstFolderAddFailed(bean.getMessage(), null, workPos, workSize, catID, name, catPos, flag);
                             }
                         }
 
@@ -540,7 +540,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -676,7 +676,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -808,7 +808,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -1046,7 +1046,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -1220,7 +1220,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -1350,7 +1350,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):
@@ -1588,7 +1588,7 @@ public class NoteListModuleImpl implements INoteListModule {
 
         //单个文件上传
         File file = new File(filePath);
-        RequestBody requestFile = RequestBodyUtil.getRequest(filePath,file);
+        RequestBody requestFile = RequestBodyUtil.getRequest(filePath, file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         //拼接url(本app后台特殊嗜好，蛋疼):

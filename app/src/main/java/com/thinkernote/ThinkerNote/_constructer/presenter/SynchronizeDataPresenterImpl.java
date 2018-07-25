@@ -65,8 +65,8 @@ public class SynchronizeDataPresenterImpl implements ISynchronizeDataPresenter, 
 
     //5
     @Override
-    public void pFirstFolderAdd(int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        module.mFirstFolderAdd(this, workPos, workSize, catID, name,catPos, flag);
+    public void pFirstFolderAdd(int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        module.mFirstFolderAdd(this, workPos, workSize, catID, name, catPos, flag);
     }
 
 
@@ -229,13 +229,13 @@ public class SynchronizeDataPresenterImpl implements ISynchronizeDataPresenter, 
 
     //5 TNCat
     @Override
-    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID,String name, int catPos, int flag) {
-        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID,name, catPos, flag);
+    public void onSyncFirstFolderAddSuccess(Object obj, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        onView.onSyncFirstFolderAddSuccess(obj, workPos, workSize, catID, name, catPos, flag);
     }
 
     @Override
-    public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, int catPos, int flag) {
-        onView.onSyncFirstFolderAddFailed(msg, e, workPos, workSize, catID, catPos, flag);
+    public void onSyncFirstFolderAddFailed(String msg, Exception e, int workPos, int workSize, long catID, String name, int catPos, int flag) {
+        onView.onSyncFirstFolderAddFailed(msg, e, workPos, workSize, catID, name, catPos, flag);
     }
 
 
