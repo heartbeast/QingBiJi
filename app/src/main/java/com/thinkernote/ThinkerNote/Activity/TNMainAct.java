@@ -469,6 +469,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNSettings settings = TNSettings.getInstance();
         CatDbHelper.clearCatsByParentId(pCatId);
         List<AllFolderItemBean> beans = allFolderBean.getFolders();
+
         for (int i = 0; i < beans.size(); i++) {
             AllFolderItemBean bean = beans.get(i);
 
@@ -878,7 +879,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void syncGetFolder() {
 
-        //TODO 修改部分
         presener.pGetFolder();
 
         //cats.size()==0||main|catsFrag必执行，其他界面不执行
@@ -904,31 +904,25 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      * @param isAdd 如果mapList.add之后立即执行该方法，为true
      */
     private void syncGetFoldersByFolderId(int startPos, boolean isAdd) {
-        MLog.d("sync---1-4-syncGetFoldersByFolderId");
         if (mapList.size() > 0 && mapList.size() <= 5) {
-            //有1---5，for循环层层内嵌,从最内层（size最大处）开始执行
+            //有1---5，for循环层层内嵌,从最内层（mapList.size最大处）开始执行
             List<AllFolderItemBean> allFolderItemBeans = mapList.get(mapList.size() - 1);
 
             if (allFolderItemBeans.size() > 0) {
                 if (startPos < allFolderItemBeans.size() - 1) {
-                    //从1层从第一个数据开始
+                    //从1层的第一个数据开始
                     if (isAdd) {
-                        MLog.d("1-4", "从1层从第一个数据开始 true");
                         syncGetFoldersByFolderId(0, allFolderItemBeans);
                     } else {
-                        MLog.d("1-4", "从1层从第一个数据开始 false");
 
                         syncGetFoldersByFolderId(startPos, allFolderItemBeans);
                     }
                 } else {
                     //执行上一层的循环
-                    MLog.d("1-4", "执行上一层的循环");
                     if (mapList.size() == 1) {
                         //执行下一个接口
-                        MLog.d("1-4", "执行上一层的循环--syncTNCat");
                         syncTNCat();
                     } else {
-                        MLog.d("1-4", "执行上一层的循环--syncGetFoldersByFolderId");
                         //执行上一层的新循环
                         mapList.remove(mapList.size() - 1);
                         syncGetFoldersByFolderId(0, false);
@@ -936,13 +930,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 }
             } else {
                 //执行上一层的循环
-                MLog.d("1-4", "执行上一层的循环");
                 if (mapList.size() == 1) {
                     //执行下一个接口
-                    MLog.d("1-4", "执行上一层的循环--syncTNCat");
                     syncTNCat();
                 } else {
-                    MLog.d("1-4", "执行上一层的循环--syncGetFoldersByFolderId");
                     //执行上一层的新循环
                     mapList.remove(mapList.size() - 1);
                     syncGetFoldersByFolderId(0, false);
@@ -961,8 +952,10 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     private void syncGetFoldersByFolderId(int startPos, List<AllFolderItemBean> beans) {
         MLog.d("sync---1-4-syncGetFoldersByFolderId--syncGetFoldersByFolderId");
         if (beans.get(startPos).getFolder_count() == 0) {//没有数据就跳过
+            MLog.d("sync---1-4-syncGetFoldersByFolderId--下一个position");
             syncGetFoldersByFolderId(startPos + 1, false);
         } else {
+            MLog.d("sync---1-4-syncGetFoldersByFolderId--调用当前position接口");
             presener.pGetFoldersByFolderId(beans.get(startPos).getId(), startPos, beans);
         }
     }
@@ -1780,16 +1773,6 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     @Override
     public void onSyncTagAddFailed(String msg, Exception e, int position, int arraySize) {
         MLog.e(msg);
-
-        //
-//        if (position + 1 < arraySize) {//同步该接口的列表数据
-//            //（有数组，循环调用）
-//            pTagAdd(position + 1, arraySize, arrayTagName[position + 1]);
-//        } else {
-//            mSettings.savePref(false);
-//            //再调用正常的同步接口
-//            syncNormalLogData();
-//        }
     }
 
     //1-3
@@ -1816,14 +1799,32 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
     public void onSyncGetFoldersByFolderIdSuccess(Object obj, long catID, int startPos, List<AllFolderItemBean> beans) {
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
-        MLog.d("sync----1-4-->Success" + allFolderBean.toString() + "--allFolderItemBeans:" + allFolderItemBeans.size());
+        //
+        MLog.d("sync----1-4-->Success" + "--allFolderItemBeans:" + allFolderItemBeans.size());
         //判断是否有返回值
-        if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 0) {
-            //执行下个position循环
-            syncGetFoldersByFolderId(startPos + 1, false);
+        if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 1) {
+            if (allFolderItemBeans.size() == 1) {
+                //需要这么写 勿改
+                AllFolderItemBean itemBean = allFolderItemBeans.get(0);
+                if (itemBean.getCount() == 0) {
+                    //执行下个position循环
+                    syncGetFoldersByFolderId(startPos + 1, false);
+                } else {
+                    //1-4新增循环
+                    mapList.add(allFolderItemBeans);
+                    //更新数据库
+                    insertDBCatsSQL(allFolderBean, catID);
+                    //执行新循环
+                    syncGetFoldersByFolderId(0, true);
+                }
+            } else {
+                //执行下个position循环
+                syncGetFoldersByFolderId(startPos + 1, false);
+            }
         } else {
-            MLog.d("1-4", "allFolderBean=" + allFolderBean.toString() + "--allFolderItemBeans：" + allFolderItemBeans.size());
+            //1-4新增循环
             mapList.add(allFolderItemBeans);
+            //更新数据库
             insertDBCatsSQL(allFolderBean, catID);
             //执行新循环
             syncGetFoldersByFolderId(0, true);

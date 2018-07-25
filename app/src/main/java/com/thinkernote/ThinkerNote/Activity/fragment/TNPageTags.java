@@ -1619,12 +1619,32 @@ public class TNPageTags extends TNChildViewBase implements
 
         AllFolderBean allFolderBean = (AllFolderBean) obj;
         List<AllFolderItemBean> allFolderItemBeans = allFolderBean.getFolders();
+        //
+        MLog.d("sync----1-4-->Success" + "--allFolderItemBeans:" + allFolderItemBeans.size());
         //判断是否有返回值
-        if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 0) {
-            //执行下个position循环
-            syncGetFoldersByFolderId(startPos + 1, false);
+        if (allFolderBean == null || allFolderItemBeans == null || allFolderItemBeans.size() <= 1) {
+            if (allFolderItemBeans.size() == 1) {
+                //需要这么写 勿改
+                AllFolderItemBean itemBean = allFolderItemBeans.get(0);
+                if (itemBean.getCount() == 0) {
+                    //执行下个position循环
+                    syncGetFoldersByFolderId(startPos + 1, false);
+                } else {
+                    //1-4新增循环
+                    mapList.add(allFolderItemBeans);
+                    //更新数据库
+                    insertDBCatsSQL(allFolderBean, catID);
+                    //执行新循环
+                    syncGetFoldersByFolderId(0, true);
+                }
+            } else {
+                //执行下个position循环
+                syncGetFoldersByFolderId(startPos + 1, false);
+            }
         } else {
+            //1-4新增循环
             mapList.add(allFolderItemBeans);
+            //更新数据库
             insertDBCatsSQL(allFolderBean, catID);
             //执行新循环
             syncGetFoldersByFolderId(0, true);
