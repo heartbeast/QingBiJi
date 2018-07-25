@@ -28,7 +28,7 @@
 
 不用包3:OAuth2 网络框架太老，不可用（已删除，httpclient类封装）
 
-4.若完全放弃就框架，要删除的jar包：
+4.完全放弃旧框架，要删除的jar包：
 
 org.apache.http.legacy.jar
 
@@ -36,6 +36,6 @@ org.apache.http.legacy.jar
 
 6数据库比较乱，本次未修改，但是需要优化成一个数据库---sjy 0713
 
-7.百度地图开元账号：行客记事/Qunbiji2015 (目前没有定位正确)
+7.百度地图开源账号：行客记事/Qunbiji2015 (目前没有定位正确)
 
 8.android4.2以后，任何为JS暴露的接口，都需要加@JavascriptInterface
