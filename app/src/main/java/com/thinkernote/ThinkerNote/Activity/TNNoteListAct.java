@@ -80,7 +80,6 @@ import java.util.concurrent.Executors;
  * <p>
  * //1 allNote, 2 cat, 3 recycle, 4 tag, 5 serch, 7 个人公开, 8  他人公开
  * 5--搜索结果 展示界面
- * TODO
  * 说明：
  */
 public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemLongClickListener,
@@ -1855,8 +1854,6 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
 
     private void syncEdit() {
-        //TODO
-//        TNAction.runActionAsync(TNActionType.SynchronizeEdit);
 
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
 
@@ -1954,7 +1951,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pDelete2(int position) {
 
-        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+        if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete2(deleteNotes.get(position).noteId, position);
             } else {
@@ -2019,7 +2016,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
 
     private void pRealDelete2(int position) {
 
-        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+        if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
                 pDeleteReadNotesSql2(deleteRealNotes.get(position).noteLocalId, position);
@@ -2340,10 +2337,10 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     private void syncGetFolder() {
         //cats.size()==0||main|catsFrag必执行，其他界面不执行
         Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
-        if(cats.size()==0){
+        if (cats.size() == 0) {
             MLog.d("NoteList同步---syncGetFolder 1-3");
             presenter.pGetFolder();
-        }else{
+        } else {
             //执行下一个接口
             pGetTagList1();
         }
@@ -2420,7 +2417,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void syncTNCat() {
         MLog.d("sync---1-5-syncTNCat");
-        if(mSettings.firstLaunch){
+        if (mSettings.firstLaunch) {
             //同步TNCat
             cats = TNDbUtils.getAllCatList(mSettings.userId);
             if (cats.size() > 0) {
@@ -2430,12 +2427,13 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 //执行下一个接口
                 pGetTagList1();
             }
-        }else{
+        } else {
             //执行下一个接口
             pGetTagList1();
         }
 
     }
+
     /**
      * （一.5）更新 postion的TNCat数据
      *
@@ -2698,7 +2696,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
      */
     private void pDelete1(int position) {
         MLog.d("NoteList同步---pDelete1 2-8");
-        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+        if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete1(deleteNotes.get(position).noteId, position);
             } else {
@@ -2766,7 +2764,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
     private void pRealDelete1(int position) {
 
         MLog.d("NoteList同步---pRealDelete1 2-9");
-        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+        if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
                 pDeleteReadNotesSql1(deleteRealNotes.get(position).noteLocalId, position);
@@ -3302,7 +3300,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
                 if (flag == 1) {//groupWorks
                     if (workPos < workSize - 1) {
                         pFirstFolderAdd(workPos + 1, groupWorks.length, catID, name, catPos, 1);//继续执行第1个
-                    }else {//执行下个TNCat
+                    } else {//执行下个TNCat
                         syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                     }
                 } else if (flag == 2) {//groupLife

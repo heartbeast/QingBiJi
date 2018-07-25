@@ -843,7 +843,7 @@ public class TNPageTags extends TNChildViewBase implements
 
     /**
      * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
-     *
+     * <p>
      * 第一次登录同步
      * <p>
      * （一.2）更新 tag
@@ -851,9 +851,10 @@ public class TNPageTags extends TNChildViewBase implements
     private void pTagAdd(int position, int arraySize, String name) {
         presenter.tagAdd(position, arraySize, name);
     }
+
     /**
      * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
-     *
+     * <p>
      * 1.3---1.5是GetAllFolders所有步骤
      * <p>
      * （一.3）更新 GetFolder
@@ -863,10 +864,10 @@ public class TNPageTags extends TNChildViewBase implements
         Vector<TNCat> cats = TNDbUtils.getAllCatList(mSettings.userId);
         MLog.d("sync---1-3-pGetFolder");
 
-        if(cats.size()==0){
+        if (cats.size() == 0) {
             MLog.d("frag同步--全部笔记--syncGetFolder 1-3");
             presenter.pGetFolder();
-        }else{
+        } else {
             //执行下一个接口
             pGetTagList();
         }
@@ -940,7 +941,7 @@ public class TNPageTags extends TNChildViewBase implements
      */
     private void syncTNCat() {
         MLog.d("sync---1-5-syncTNCat");
-        if(mSettings.firstLaunch){
+        if (mSettings.firstLaunch) {
             //同步TNCat
             cats = TNDbUtils.getAllCatList(mSettings.userId);
             if (cats.size() > 0) {
@@ -950,7 +951,7 @@ public class TNPageTags extends TNChildViewBase implements
                 //执行下一个接口
                 pGetTagList();
             }
-        }else{
+        } else {
             //执行下一个接口
             pGetTagList();
         }
@@ -1027,7 +1028,7 @@ public class TNPageTags extends TNChildViewBase implements
 
 
     /**
-     *0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
+     * 0720改：先执行syncOldNote--->syncProfile()--syncGetFolder()--pGetTagList()
      * <p>
      * （二。2+二。3）正常登录的数据同步（非第一次登录的同步）
      * 执行顺序：同步老数据(先上传图片接口，再OldNote接口)，没有老数据就同步用户信息接口
@@ -1208,7 +1209,7 @@ public class TNPageTags extends TNChildViewBase implements
      */
     private void pDelete(int position) {
 
-        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+        if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
             } else {
@@ -1273,7 +1274,7 @@ public class TNPageTags extends TNChildViewBase implements
 
     private void pRealDelete(int position) {
 
-        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+        if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
                 pDeleteReadNotesSql(deleteRealNotes.get(position).noteLocalId, position);
@@ -1705,7 +1706,7 @@ public class TNPageTags extends TNChildViewBase implements
             if (flag == 1) {//groupWorks
                 if (workPos < workSize - 1) {
                     pFirstFolderAdd(workPos + 1, groupWorks.length, catID, name, catPos, 1);//继续执行第1个
-                }else {//执行下个TNCat
+                } else {//执行下个TNCat
                     syncTNCat(catPos + 1, cats.size());//执行for的外层TNCat的下一个
                 }
             } else if (flag == 2) {//groupLife

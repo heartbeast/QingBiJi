@@ -1223,7 +1223,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         }
 
         int catId = -1;
-        //TODO getFolder_id可以为负值么
+
         if (bean.getFolder_id() > 0) {
             catId = bean.getFolder_id();
         }
@@ -1425,7 +1425,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     //==================================syncCats p层调用=======================================
 
     /**
-     * (二.5+二.6)正常同步 pAddNewNote
+     * (二.5+二.6)正常同步 添加新笔记 pAddNewNote
      * 说明：同(二.2+二.3)的执行顺序，先处理notepos的图片，处理完就上传notepos的文本，然后再处理notepos+1的图片，如此循环
      * 接口个数：addNewNotes.size * addNewNotes.size
      */
@@ -1495,7 +1495,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 }
             }
         } else {
-
             //执行下一个接口
             deleteNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 6);
             pDelete(0);
