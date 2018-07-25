@@ -1081,13 +1081,14 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 } else {
                     //获取note
                     mNote = (TNNote) msg.obj;
-                    MLog.d("saveNote", "打印保存内容：" + mNote.toString());
+
                     if (TNActionUtils.isSynchronizing()) {
                         finish();
                         return;
                     }
                     TNUtilsUi.showNotification(this, R.string.alert_NoteView_Synchronizing, false);
-
+                    //
+                    MLog.d("saveNote", "打印保存内容：" + mNote.toString());
                     for (TNNoteAtt att : mNote.atts) {
                         MLog.e("遍历打印存储信息TNNoteAtt:" + att.toString());
                     }
@@ -1204,6 +1205,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
                     // save att/(文件 图片)的保存
                     TNNote note2 = attLocalSave(note);
+
                     if (note2 == null) {
                         //如果null,则存储空间不足
                         msg.obj = note2;
@@ -1246,7 +1248,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         try {
 
             if (exsitAtts.size() != 0) {//有图
-                MLog.d("saveNote", "save attr", "exsitAtts.size()=" + exsitAtts.size());
+                MLog.d("saveNote", "save attr", "exsitAtts.size()=" + exsitAtts.size() + "--有图");
 
                 //循环判断是否与本地同步，新增没有就删除本地
                 for (int k = 0; k < exsitAtts.size(); k++) {
@@ -1263,7 +1265,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     }
                 }
                 //循环判断是否与新增同步，本地没有就插入数据
-                exsitAtts = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
                 for (int k = 0; k < newAtts.size(); k++) {
                     TNNoteAtt att = newAtts.get(k);
                     if (att.attLocalId == -1) {
@@ -1278,7 +1279,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                                 att.attId,
                                 att.width,
                                 att.height});
-
+                        MLog.d("saveNote", "attLocalSave--attLocalId=" + attLocalId);
                         // copy file to path
                         String tPath = TNUtilsAtt.getAttPath(attLocalId, att.type);
                         //结束 save attr 直接返回
@@ -1295,9 +1296,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         note.atts.get(k).attLocalId = attLocalId;
                     }
                 }
-            } else {
+            } else {//无图
 
-                MLog.d("saveNote", "save attr", "exsitAtts.size()=0");
+                MLog.d("saveNote", "save attr", "exsitAtts.size()=0--无图");
                 for (int i = 0; i < note.atts.size(); i++) {
                     TNNoteAtt att = note.atts.get(i);
                     // insert
@@ -1319,7 +1320,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
             //如果笔记的第一个附件是图片，则设置笔记的缩略图
             Vector<TNNoteAtt> noteAttrs = TNDbUtils.getAttrsByNoteLocalId(note.noteLocalId);
-            if (noteAttrs.size() > 0) {
+            if (noteAttrs.size() > 0) {//有图
                 MLog.d("saveNote", "save attr 第一个附件是图片");
                 TNNoteAtt temp = noteAttrs.get(0);
                 if (temp.type > 10000 && temp.type < 20000) {
@@ -1645,16 +1646,17 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
 
     private void pAddNewNote() {
-        MLog.d("同步edit--pAddNewNote");
         addNewNotes = TNDbUtils.getNoteListBySyncState(TNSettings.getInstance().userId, 3);
-
+        MLog.e("同步edit--pAddNewNote---addNewNotes.size()=" + addNewNotes.size());
         if (addNewNotes.size() > 0) {
             //先 上传数组的第一个
             TNNote tnNote = addNewNotes.get(0);
             Vector<TNNoteAtt> newNotesAtts = tnNote.atts;
             if (newNotesAtts.size() > 0) {//有图，先上传图片
+                MLog.d("同步edit--pAddNewNote--有图，先上传图片");
                 pNewNotePic(0, newNotesAtts.size(), 0, addNewNotes.size(), newNotesAtts.get(0));
-            } else {//如果没有图片，就执行OldNote
+            } else {//没有图片，就执行Note
+                MLog.d("同步edit--pAddNewNote--无图，就上传Note");
                 pNewNote(0, addNewNotes.size(), addNewNotes.get(0), false, addNewNotes.get(0).content);
             }
         } else {
@@ -1670,7 +1672,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pNewNotePic(int picPos, int picArrySize, int notePos,
                              int noteArrySize, TNNoteAtt tnNoteAtt) {
-        MLog.d("同步edit--pNewNotePic 2-5");
+        MLog.e("同步edit--pNewNotePic 2-5--上传图片");
         presener.pNewNotePic(picPos, picArrySize, notePos, noteArrySize, tnNoteAtt);
     }
 
@@ -1678,10 +1680,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * (二.6)正常同步 第2个执行的接口 循环调用
      * 和（二.5组成双层for循环，该处是最外层for执行）
      */
-
-    private void pNewNote(int position, int arraySize, TNNote tnNoteAtt,
-                          boolean isNewDb, String content) {
-        MLog.d("同步edit--pNewNote 2-6");
+    private void pNewNote(int position, int arraySize, TNNote tnNoteAtt, boolean isNewDb, String content) {
+        MLog.d("同步edit--pNewNote 2-6--content=" + content);
         presener.pNewNote(position, arraySize, tnNoteAtt, isNewDb, content);
     }
 
@@ -1695,7 +1695,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position 标记，表示recoveryNotes的开始位置，非recoveryNotesAtts位置
      */
     private void recoveryNote(int position) {
-        MLog.d("同步edit--recoveryNote 2-7");
+        MLog.e("同步edit--recoveryNote 2-7--recoveryNotes.size()=" + recoveryNotes.size());
         if (position < recoveryNotes.size() && position >= 0) {
             if (recoveryNotes.get(position).noteId != -1) {
                 //循环执行
@@ -1751,7 +1751,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * @param position
      */
     private void pDelete(int position) {
-        MLog.d("同步edit--pDelete 2-8");
+        MLog.e("同步edit--pDelete 2-8---deleteNotes.size()=" + deleteNotes.size());
         if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
@@ -1817,7 +1817,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     private boolean isRealDelete2 = false;
 
     private void pRealDelete(int position) {
-        MLog.d("同步edit--pRealDelete 2-9");
+        MLog.e("同步edit--pRealDelete 2-9--deleteRealNotes.size()=" + deleteRealNotes.size());
         if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
@@ -2113,28 +2113,29 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     //2-5
     @Override
-    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos,
-                                        int noteArrySize, TNNoteAtt tnNoteAtt) {
+    public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
 
         String content = addNewNotes.get(notePos).content;
         OldNotePicBean newPicbean = (OldNotePicBean) obj;
         //更新图片 数据库
         upDataAttIdSQL(newPicbean.getId(), tnNoteAtt);
+        //
+        String digest = newPicbean.getMd5();
+        long attId = newPicbean.getId();
+        //更新 content
+        String s1 = String.format("<tn-media hash=\"%s\" />", digest);
+        String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
+        content = content.replaceAll(s1, s2);
+        //暂时保存content
+        addNewNotes.get(notePos).content = content;
 
-        if (notePos < noteArrySize - 1) {
+        if (notePos < noteArrySize) {
             if (picPos < picArrySize - 1) {
                 //继续上传下张图
                 Vector<TNNoteAtt> newNotesAtts = addNewNotes.get(notePos).atts;
                 pNewNotePic(picPos + 1, picArrySize, notePos, noteArrySize, newNotesAtts.get(picPos + 1));
-            } else {//所有图片上传完成，就开始上传文本
-                String digest = newPicbean.getMd5();
-                long attId = newPicbean.getId();
-                //更新 content
-                String s1 = String.format("<tn-media hash=\"%s\" />", digest);
-                String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
-                content = content.replaceAll(s1, s2);
-
-                //
+            } else {
+                //所有图片上传完成，就开始上传文本
                 TNNote note = addNewNotes.get(notePos);
                 if (note.catId == -1) {
                     note.catId = TNSettings.getInstance().defaultCatId;
@@ -2142,7 +2143,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 pNewNote(notePos, noteArrySize, note, false, content);
             }
         } else {
-
             //所有图片上传完成，就开始上传newPos的文本
             TNNote note = addNewNotes.get(notePos);
             if (note.catId == -1) {
@@ -2153,8 +2153,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     @Override
-    public void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry,
-                                       int notePos, int noteArry) {
+    public void onSyncNewNotePicFailed(String msg, Exception e, int picPos, int picArry, int notePos, int noteArry) {
         MLog.e(msg);
     }
 

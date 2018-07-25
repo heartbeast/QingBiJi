@@ -1973,25 +1973,28 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     @Override
     public void onSyncNewNotePicSuccess(Object obj, int picPos, int picArrySize, int notePos, int noteArrySize, TNNoteAtt tnNoteAtt) {
         MLog.d("sync----2-5-->Success");
+
         String content = addNewNotes.get(notePos).content;
         OldNotePicBean newPicbean = (OldNotePicBean) obj;
         //更新图片 数据库
         upDataAttIdSQL(newPicbean.getId(), tnNoteAtt);
+        //
+        String digest = newPicbean.getMd5();
+        long attId = newPicbean.getId();
+        //更新 content
+        String s1 = String.format("<tn-media hash=\"%s\" />", digest);
+        String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
+        content = content.replaceAll(s1, s2);
+        //暂时保存content
+        addNewNotes.get(notePos).content = content;
 
-        if (notePos < noteArrySize - 1) {
+        if (notePos < noteArrySize) {
             if (picPos < picArrySize - 1) {
                 //继续上传下张图
                 Vector<TNNoteAtt> newNotesAtts = addNewNotes.get(notePos).atts;
                 pNewNotePic(picPos + 1, picArrySize, notePos, noteArrySize, newNotesAtts.get(picPos + 1));
-            } else {//所有图片上传完成，就开始上传文本
-                String digest = newPicbean.getMd5();
-                long attId = newPicbean.getId();
-                //更新 content
-                String s1 = String.format("<tn-media hash=\"%s\" />", digest);
-                String s2 = String.format("<tn-media hash=\"%s\" att-id=\"%s\" />", digest, attId);
-                content = content.replaceAll(s1, s2);
-
-                //
+            } else {
+                //所有图片上传完成，就开始上传文本
                 TNNote note = addNewNotes.get(notePos);
                 if (note.catId == -1) {
                     note.catId = TNSettings.getInstance().defaultCatId;
@@ -1999,7 +2002,6 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                 pNewNote(notePos, noteArrySize, note, false, content);
             }
         } else {
-
             //所有图片上传完成，就开始上传newPos的文本
             TNNote note = addNewNotes.get(notePos);
             if (note.catId == -1) {
