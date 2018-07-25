@@ -1535,7 +1535,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
     private void pDelete(int position) {
         MLog.d("sync---2-8-pDelete");
 
-        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+        if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
             } else {
@@ -1601,7 +1601,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
 
     private void pRealDelete(int position) {
         MLog.d("sync---2-9-pRealDelete");
-        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+        if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
                 pDeleteReadNotesSql(deleteRealNotes.get(position).noteLocalId, position);

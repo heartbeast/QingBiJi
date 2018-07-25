@@ -1752,7 +1752,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
     private void pDelete(int position) {
         MLog.d("同步edit--pDelete 2-8");
-        if (deleteNotes.size() > 0 && position < (deleteNotes.size() - 1)) {
+        if (deleteNotes.size() > 0 && position < deleteNotes.size()) {
             if (deleteNotes.get(position).noteId != -1) {
                 pNoteDelete(deleteNotes.get(position).noteId, position);
             } else {
@@ -1818,7 +1818,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
 
     private void pRealDelete(int position) {
         MLog.d("同步edit--pRealDelete 2-9");
-        if (deleteRealNotes.size() > 0 && position < (deleteRealNotes.size() - 1)) {
+        if (deleteRealNotes.size() > 0 && position < deleteRealNotes.size()) {
             if (deleteRealNotes.get(position).noteId == -1) {
                 //
                 pDeleteReadNotesSql(deleteRealNotes.get(position).noteLocalId, position);
@@ -1982,7 +1982,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     note.content = note.content.replaceAll(s3, s4);
 
                     //执行下一个attsPos位置的数据
-                    MLog.e("saveAtt", "pEditNotePic--执行下一个attsPos位置的数据--pEditNotePic"+ "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
+                    MLog.e("saveAtt", "pEditNotePic--执行下一个attsPos位置的数据--pEditNotePic" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
                     pEditNotePic(cloudsPos, attsPos + 1, note);
                 } else {
                     MLog.e("saveAtt", "pEditNotePic--同步上传att图片" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
