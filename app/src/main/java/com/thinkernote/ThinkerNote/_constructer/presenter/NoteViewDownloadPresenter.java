@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * 非mvp框架内容，原框架下载文件的类
+ * TODO 该类 有问题，下载一直出问题
  * 说明：下载的文件 是TNNote.atts,是list样式，for循环每一个atts的item数据
  */
 public class NoteViewDownloadPresenter implements OnNoteViewDownloadListener {
