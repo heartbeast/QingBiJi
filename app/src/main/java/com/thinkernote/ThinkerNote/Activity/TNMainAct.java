@@ -1507,7 +1507,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
         TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
 
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size()) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {

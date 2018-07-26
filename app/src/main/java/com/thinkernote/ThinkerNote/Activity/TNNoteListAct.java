@@ -2167,7 +2167,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size() - 1)) {
 
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size() ) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
@@ -2896,7 +2896,7 @@ public class TNNoteListAct extends TNActBase implements OnClickListener, OnItemL
         MLog.d("NoteList同步---pEditNotePic1 2-10-1");
         TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size() ) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {

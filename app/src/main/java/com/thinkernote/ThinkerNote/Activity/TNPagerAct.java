@@ -1685,7 +1685,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
                         if (editNotes.get(j).lastUpdate > lastUpdate) {
                             //上传图片，之后上传文本
                             TNNote note = EditNotePicBefore(editNotes.get(j));//上传图片，处理content参数
-                            pEditNotePic(position, 0,note);
+                            pEditNotePic(position, 0, note);
                         } else {
                             updataEditNotesState(position, editNotes.get(j).noteLocalId);
                         }
@@ -1755,7 +1755,7 @@ public class TNPagerAct extends TNActBase implements OnScreenSwitchListener, OnC
         TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
 
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size()) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
