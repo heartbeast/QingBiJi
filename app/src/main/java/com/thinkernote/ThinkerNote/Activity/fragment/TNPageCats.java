@@ -906,7 +906,7 @@ public class TNPageCats extends TNChildViewBase implements
      *
      * @param noteId
      */
-    private void updataEditNotesLastTime1(final int position, final long noteId) {
+    private void updataEditNotesState(final int position, final long noteId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -914,7 +914,9 @@ public class TNPageCats extends TNChildViewBase implements
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, noteId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE,
+                            1,
+                            noteId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1746,7 +1748,8 @@ public class TNPageCats extends TNChildViewBase implements
                         //上传图片，之后上传文本
                         pEditNotePic1(position, 0, editNotes.get(j));
                     } else {
-                        updataEditNotesLastTime1(position, editNotes.get(j).noteLocalId);
+                        updataEditNotesState(position, editNotes.get(j).noteLocalId);
+
                     }
                 }
                 if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {

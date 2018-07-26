@@ -1393,11 +1393,11 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     /**
-     * 2-11-1 更新日记时间
+     * 2-10-1 更新日记状态-->1
      *
      * @param noteId
      */
-    private void updataEditNotesLastTime(final int position, final long noteId) {
+    private void updataEditNotesState(final int position, final long noteId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -1405,7 +1405,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, noteId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE,
+                            1,
+                            noteId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1908,8 +1910,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                             //上传图片，之后上传文本
                             pEditNotePic(position, 0, editNotes.get(j));
                         } else {
-                            //TODO bug
-                            updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                            MLog.e("同步edit--pEditNotePic 2-10-1----另一个手机编辑本笔记---更改状态-->1");
+                            updataEditNotesState(position, editNotes.get(j).noteLocalId);
                         }
                     }
 

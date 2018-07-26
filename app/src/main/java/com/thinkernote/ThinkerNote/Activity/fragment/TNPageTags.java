@@ -602,11 +602,11 @@ public class TNPageTags extends TNChildViewBase implements
     }
 
     /**
-     * 2-11-1 更新日记时间
+     * 2-10-1 更新日记时间
      *
      * @param noteId
      */
-    private void updataEditNotesLastTime(final int position, final long noteId) {
+    private void updataEditNotesState(final int position, final long noteId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -614,7 +614,9 @@ public class TNPageTags extends TNChildViewBase implements
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, noteId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE,
+                            1,
+                            noteId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1361,7 +1363,7 @@ public class TNPageTags extends TNChildViewBase implements
                             //上传图片，之后上传文本
                             pEditNotePic(position, 0, editNotes.get(j));
                         } else {
-                            updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                            updataEditNotesState(position, editNotes.get(j).noteLocalId);
                         }
                     }
                     if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {

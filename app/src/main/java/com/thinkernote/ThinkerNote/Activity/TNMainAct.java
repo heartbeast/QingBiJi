@@ -558,7 +558,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      *
      * @param noteId
      */
-    private void updataEditNotesLastTime(final int position, final long noteId) {
+    private void updataEditNotesState(final int position, final long noteId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -566,7 +566,9 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                 TNDb.beginTransaction();
                 try {
                     //
-                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE, noteId);
+                    TNDb.getInstance().execSQL(TNSQLString.NOTE_UPDATE_SYNCSTATE,
+                            1,
+                            noteId);
                     TNDb.setTransactionSuccessful();
                 } finally {
                     TNDb.endTransaction();
@@ -1436,7 +1438,7 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                             //上传图片，之后上传文本
                             pEditNotePic(position, 0, editNotes.get(j));
                         } else {
-                            updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
+                            updataEditNotesState(position, editNotes.get(j).noteLocalId);
                         }
                     }
                     if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
