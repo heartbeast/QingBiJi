@@ -1435,7 +1435,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 try {
                     //
                     TNDb.getInstance().execSQL(TNSQLString.NOTE_SHORT_CONTENT, shortContent, note.noteId);
-
                     //
                     TNDb.getInstance().execSQL(TNSQLString.CAT_UPDATE_LASTUPDATETIME, System.currentTimeMillis() / 1000, note.catId);
 
@@ -1908,7 +1907,8 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         if (editNotes.get(j).lastUpdate > lastUpdate) {
                             MLog.e("同步edit--pEditNotePic 2-10-1----发现要上传的编辑笔记：" + editNotes.get(j).toString());
                             //上传图片，之后上传文本
-                            pEditNotePic(position, 0, editNotes.get(j));
+                            TNNote note = EditNotePicBefore(editNotes.get(j));//上传图片，处理content参数
+                            pEditNotePic(position, 0, note);
                         } else {
                             MLog.e("同步edit--pEditNotePic 2-10-1----另一个手机编辑本笔记---更改状态-->1");
                             updataEditNotesState(position, editNotes.get(j).noteLocalId);
@@ -1933,48 +1933,58 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     /**
+     * 对note的content进行处理,供(二.10)-1的pEditNotePic()使用
+     *
+     * @param tnNote
+     * @return
+     */
+    private TNNote EditNotePicBefore(TNNote tnNote) {
+        TNNote note = tnNote;
+        String shortContent = TNUtils.getBriefContent(note.content);
+        String content = note.content;
+        ArrayList list = new ArrayList();
+        int index1 = content.indexOf("<tn-media");
+        int index2 = content.indexOf("</tn-media>");
+        while (index1 >= 0 && index2 > 0) {
+            String temp = content.substring(index1, index2 + 11);
+            list.add(temp);
+            content = content.replaceAll(temp, "");
+            index1 = content.indexOf("<tn-media");
+            index2 = content.indexOf("</tn-media>");
+        }
+        for (int i = 0; i < list.size(); i++) {
+            String temp = (String) list.get(i);
+            boolean isExit = false;
+            for (TNNoteAtt att : note.atts) {
+                String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
+                if (temp.equals(temp2)) {
+                    isExit = true;
+                }
+            }
+            if (!isExit) {
+                note.content = note.content.replaceAll(temp, "");
+            }
+        }
+        return note;
+    }
+
+    /**
      * (二.10)-1
      * 图片上传
      *
      * @param cloudsPos cloudIds数据的其实操作位置
-     * @param tnNote
+     * @param note      EditNotePicBefore(note)方法已经处理了content参数，可以直接用
      */
-    private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
+    private void pEditNotePic(int cloudsPos, int attsPos, TNNote note) {
 
-        MLog.d("同步edit--pEditNotePic 2-10-1");
+        MLog.d("同步edit--pEditNotePic 2-10-1---note:" + note.toString());
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
-            TNNote note = tnNote;
-            String shortContent = TNUtils.getBriefContent(note.content);
-            String content = note.content;
-            ArrayList list = new ArrayList();
-            int index1 = content.indexOf("<tn-media");
-            int index2 = content.indexOf("</tn-media>");
-            while (index1 >= 0 && index2 > 0) {
-                String temp = content.substring(index1, index2 + 11);
-                list.add(temp);
-                content = content.replaceAll(temp, "");
-                index1 = content.indexOf("<tn-media");
-                index2 = content.indexOf("</tn-media>");
-            }
-            for (int i = 0; i < list.size(); i++) {
-                String temp = (String) list.get(i);
-                boolean isExit = false;
-                for (TNNoteAtt att : note.atts) {
-                    String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
-                    if (temp.equals(temp2)) {
-                        isExit = true;
-                    }
-                }
-                if (!isExit) {
-                    note.content = note.content.replaceAll(temp, "");
-                }
-            }
             /**
-             * TODO bug
-             * 上传attsPos的图片
+             * 上传attsPos的图片：
+             * 有本地图片，则content直接拼接，没有就调用接口
              *
              */
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size()) {
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);
                 if (!TextUtils.isEmpty(att.path) && att.attId != -1) {
@@ -1986,10 +1996,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                     note.content = note.content.replaceAll(s3, s4);
 
                     //执行下一个attsPos位置的数据
-                    MLog.e("saveAtt", "pEditNotePic--执行下一个attsPos位置的数据--pEditNotePic" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
+                    MLog.e("saveAtt", "pEditNotePic--执行下一个attsPos位置的数据--pEditNotePic" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos + "--note" + note.toString());
                     pEditNotePic(cloudsPos, attsPos + 1, note);
                 } else {
-                    MLog.e("saveAtt", "pEditNotePic--同步上传att图片" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos);
+                    MLog.e("saveAtt", "pEditNotePic--同步上传att图片" + "cloudsPos=" + cloudsPos + "--attsPos=" + attsPos + "--note" + note.toString());
                     //接口，上传图片
                     presener.pEditNotePic(cloudsPos, attsPos, note);
                 }
@@ -2060,7 +2070,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     }
 
     /**
-     * (二.11)-2/(二.13) 更新云端的笔记
+     * (二.11)-2/ 更新云端的笔记
      * <p>
      * p层
      */
