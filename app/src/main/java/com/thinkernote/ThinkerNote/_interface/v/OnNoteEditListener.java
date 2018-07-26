@@ -71,9 +71,4 @@ public interface OnNoteEditListener {
     void onSyncpGetNoteByNoteIdFailed(String msg, Exception e);
 
 
-    //2-12
-    void onSyncpGetAllTrashNoteIdsSuccess(Object obj);
-
-    void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e);
-
 }

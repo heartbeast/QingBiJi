@@ -30,5 +30,4 @@ public interface INoteEditModule {
 
     void mGetNoteByNoteId(OnNoteEditListener listener, int position, long id, boolean is12);
 
-    void mGetAllTrashNoteIds(OnNoteEditListener listener);
 }

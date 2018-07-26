@@ -133,11 +133,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     Vector<TNNote> deleteRealNotes;//(2-9)正常同步，第9个调用数据
     Vector<TNNote> allNotes;//(2-10)正常同步，第10个调用数据
     Vector<TNNote> editNotes;//(2-11)正常同步，第11个调用数据
-    Vector<TNNote> trashNotes;//(2-12)正常同步，第12个调用数据
     //接口返回数据
     private List<List<AllFolderItemBean>> mapList = new ArrayList<>();//递归调用使用的数据集合，size最大是5；//后台需求
     private List<AllNotesIdsBean.NoteIdItemBean> cloudIds;//2-10接口返回
-    List<AllNotesIdsBean.NoteIdItemBean> trashNoteArr;//(2-12)接口返回，，第13个调用数据
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1893,7 +1891,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      */
 
     private void pEditNotePic(int position) {
-        MLog.d("同步edit--pEditNotePic 2-10-1");
+        MLog.e("同步edit--pEditNotePic 2-10-1----editNotes：" + editNotes.size());
         if (cloudIds.size() > 0 && position < (cloudIds.size())) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
@@ -1906,12 +1904,16 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                 for (int j = 0; j < editNotes.size(); j++) {
                     if (id == editNotes.get(j).noteId) {
                         if (editNotes.get(j).lastUpdate > lastUpdate) {
+                            MLog.e("同步edit--pEditNotePic 2-10-1----发现要上传的编辑笔记：" + editNotes.get(j).toString());
                             //上传图片，之后上传文本
                             pEditNotePic(position, 0, editNotes.get(j));
                         } else {
+                            //TODO bug
                             updataEditNotesLastTime(position, editNotes.get(j).noteLocalId);
                         }
                     }
+
+                    //方便跳出循环，执行下一个接口
                     if ((j == (editNotes.size() - 1)) && id != editNotes.get(j).noteId) {
                         //执行下一个position
                         pEditNotePic(position + 1);
@@ -2048,10 +2050,9 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
             }
 
         } else {
-            //下一个接口
-            //同步回收站的笔记
-            trashNotes = TNDbUtils.getNoteListByTrash(mSettings.userId, TNConst.CREATETIME);
-            pTrashNotes();
+            MLog.d("同步edit2-13--endSynchronize");
+            //同步所有接口完成，结束同步
+            endSynchronize();
 
         }
     }
@@ -2064,48 +2065,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     private void pUpdataNote(int position, long noteId, boolean is13) {
         MLog.d("同步edit--pUpdataNote ");
         presener.pGetNoteByNoteId(position, noteId, is13);
-    }
-
-    /**
-     * (二.12) 同步回收站的笔记
-     */
-    private void pTrashNotes() {
-
-        MLog.d("同步edit--pTrashNotes 2-12");
-        presener.pGetAllTrashNoteIds();
-    }
-
-    /**
-     * (二.13) 更新云端的笔记
-     * <p>
-     * 该接口同(二.11)-2
-     *
-     * @param position
-     * @param is13
-     */
-    private void pUpdataNote13(int position, boolean is13) {
-        MLog.d("同步edit--pUpdataNote13 2-13");
-        if (trashNoteArr.size() > 0 && (position < trashNoteArr.size() - 1) && position >= 0) {
-            AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(position);
-            long noteId = bean.getId();
-            boolean trashNoteExit = false;
-            for (TNNote trashNote : trashNotes) {
-                if (trashNote.noteId == noteId) {
-                    trashNoteExit = true;
-                    break;
-                }
-            }
-            if (!trashNoteExit) {
-                pUpdataNote(position, noteId, is13);
-            } else {
-                //下一个接口
-                pUpdataNote13(position + 1, is13);
-            }
-        } else {
-            MLog.d("同步edit2-13--endSynchronize");
-            //同步所有接口完成，结束同步
-            endSynchronize();
-        }
     }
 
     //=============================================接口结果回调(成对的success+failed)======================================================
@@ -2333,7 +2292,7 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
         for (int i = 0; i < allNotes.size(); i++) {
             boolean isExit = false;
             final TNNote note = allNotes.get(i);
-            MLog.d("saveNote", "onSyncAllNotesIdSuccess--cloudIds数据=" + cloudIds.size() + "个---allNotes.size()" + allNotes.size() + "个---TNNote内容：" + note.toString());
+            MLog.d("saveNote", "onSyncAllNotesIdSuccess--cloudIds数据=" + cloudIds.size() + "个---本地笔记allNotes：" + allNotes.size() + "个---TNNote内容：" + note.toString());
             //查询本地是否存在
             for (int j = 0; j < cloudIds.size(); j++) {
                 if (note.noteId == cloudIds.get(j).getId()) {
@@ -2353,7 +2312,6 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
                         try {
                             //
                             TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{note.noteId});
-
                             TNDb.setTransactionSuccessful();
                         } finally {
                             TNDb.endTransaction();
@@ -2414,60 +2372,13 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
     @Override
     public void onSyncpGetNoteByNoteIdSuccess(Object obj, int position, boolean is13) {
         updateNote((GetNoteByNoteIdBean) obj);
-        if (is13) {
-            pUpdataNote13(position + 1, is13);
-        } else {
-            //执行一个position或下一个接口
-            pUpdataNote(position + 1, false);
-        }
+        //执行一个position或下一个接口
+        pUpdataNote(position + 1, false);
 
     }
 
     @Override
     public void onSyncpGetNoteByNoteIdFailed(String msg, Exception e) {
-        MLog.e(msg);
-    }
-
-    //2-12 说明：
-    @Override
-    public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
-        trashNoteArr = (List<AllNotesIdsBean.NoteIdItemBean>) obj;
-        ExecutorService executorService = Executors.newCachedThreadPool();//开启线程池
-        for (final TNNote trashNote : trashNotes) {
-            boolean trashNoteExit = false;
-            for (int i = 0; i < trashNoteArr.size(); i++) {
-                AllNotesIdsBean.NoteIdItemBean bean = trashNoteArr.get(i);
-                long noteId = bean.getId();
-                if (trashNote.noteId == noteId) {
-                    trashNoteExit = true;
-                    break;
-                }
-            }
-            if (!trashNoteExit) {
-
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        TNDb.beginTransaction();
-                        try {
-                            //
-                            TNDb.getInstance().deleteSQL(TNSQLString.NOTE_DELETE_BY_NOTEID, new Object[]{trashNote.noteId + ""});
-                            TNDb.setTransactionSuccessful();
-                        } finally {
-                            TNDb.endTransaction();
-                        }
-                    }
-                });
-            }
-        }
-        //执行下一个接口
-        pUpdataNote13(0, true);
-
-    }
-
-    @Override
-    public void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e) {
-        mProgressDialog.hide();
         MLog.e(msg);
     }
 

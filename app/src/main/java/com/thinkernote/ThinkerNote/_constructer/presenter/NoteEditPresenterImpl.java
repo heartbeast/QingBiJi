@@ -102,11 +102,6 @@ public class NoteEditPresenterImpl implements INoteEditPresenter, OnNoteEditList
         module.mGetNoteByNoteId(this, position, noteId, is12);
     }
 
-    @Override
-    public void pGetAllTrashNoteIds() {
-        module.mGetAllTrashNoteIds(this);
-    }
-
     //==========================接口结果回调==============================
 
     //2-5
@@ -244,16 +239,4 @@ public class NoteEditPresenterImpl implements INoteEditPresenter, OnNoteEditList
     public void onSyncpGetNoteByNoteIdFailed(String msg, Exception e) {
         onView.onSyncpGetNoteByNoteIdFailed(msg, e);
     }
-
-    //2-12
-    @Override
-    public void onSyncpGetAllTrashNoteIdsSuccess(Object obj) {
-        onView.onSyncpGetAllTrashNoteIdsSuccess(obj);
-    }
-
-    @Override
-    public void onSyncpGetAllTrashNoteIdsFailed(String msg, Exception e) {
-        onView.onSyncpGetAllTrashNoteIdsFailed(msg, e);
-    }
-
 }

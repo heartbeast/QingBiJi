@@ -30,6 +30,5 @@ public interface INoteEditPresenter {
 
     void pGetNoteByNoteId(int position, long noteId, boolean is12);
 
-    void pGetAllTrashNoteIds();
 
 }

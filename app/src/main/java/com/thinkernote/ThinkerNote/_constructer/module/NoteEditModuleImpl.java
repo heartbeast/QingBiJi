@@ -543,40 +543,4 @@ public class NoteEditModuleImpl implements INoteEditModule {
                 });
     }
 
-    //2-12
-    @Override
-    public void mGetAllTrashNoteIds(final OnNoteEditListener listener) {
-        TNSettings settings = TNSettings.getInstance();
-        MyHttpService.Builder.getHttpServer()//固定样式，可自定义其他网络
-                .GetTrashNoteIds(settings.token)
-                .subscribeOn(Schedulers.io())//固定样式
-                .unsubscribeOn(Schedulers.io())//固定样式
-                .observeOn(AndroidSchedulers.mainThread())//固定样式
-                .subscribe(new Observer<AllNotesIdsBean>() {//固定样式，可自定义其他处理
-                    @Override
-                    public void onCompleted() {
-                        MLog.d(TAG, "mGetAllTrashNoteIds--onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MLog.e("mGetAllTrashNoteIds 异常onError:" + e.toString());
-                        listener.onSyncpGetAllTrashNoteIdsFailed("异常", new Exception("接口异常！"));
-                    }
-
-                    @Override
-                    public void onNext(AllNotesIdsBean bean) {
-                        MLog.d(TAG, "mGetAllTrashNoteIds-onNext");
-
-                        //处理返回结果
-                        if (bean.getCode() == 0) {
-                            listener.onSyncpGetAllTrashNoteIdsSuccess(bean.getNote_ids());
-                        } else {
-                            listener.onSyncpGetAllTrashNoteIdsFailed(bean.getMessage(), null);
-                        }
-                    }
-
-                });
-    }
-
 }
