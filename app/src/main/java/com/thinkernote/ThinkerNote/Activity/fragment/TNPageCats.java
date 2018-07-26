@@ -1733,7 +1733,7 @@ public class TNPageCats extends TNChildViewBase implements
     private void pEditNotePic1(int position) {
         MLog.d("frag同步--pEditNotePic1（position） 2-10-1");
 
-        if (cloudIds.size() > 0 && position < (cloudIds.size())) {
+        if (cloudIds.size() > 0 && position < cloudIds.size()) {
             long id = cloudIds.get(position).getId();
             int lastUpdate = cloudIds.get(position).getUpdate_at();
 
@@ -1746,7 +1746,8 @@ public class TNPageCats extends TNChildViewBase implements
                 if (id == editNotes.get(j).noteId) {
                     if (editNotes.get(j).lastUpdate > lastUpdate) {
                         //上传图片，之后上传文本
-                        pEditNotePic1(position, 0, editNotes.get(j));
+                        TNNote note = EditNotePicBefore(editNotes.get(j));//上传图片，处理content参数
+                        pEditNotePic1(position, 0, note);
                     } else {
                         updataEditNotesState(position, editNotes.get(j).noteLocalId);
 
@@ -1765,6 +1766,42 @@ public class TNPageCats extends TNChildViewBase implements
     }
 
     /**
+     * 对note的content进行处理,供(二.10)-1的pEditNotePic()使用
+     *
+     * @param tnNote
+     * @return
+     */
+    private TNNote EditNotePicBefore(TNNote tnNote) {
+        TNNote note = tnNote;
+        String shortContent = TNUtils.getBriefContent(note.content);
+        String content = note.content;
+        ArrayList list = new ArrayList();
+        int index1 = content.indexOf("<tn-media");
+        int index2 = content.indexOf("</tn-media>");
+        while (index1 >= 0 && index2 > 0) {
+            String temp = content.substring(index1, index2 + 11);
+            list.add(temp);
+            content = content.replaceAll(temp, "");
+            index1 = content.indexOf("<tn-media");
+            index2 = content.indexOf("</tn-media>");
+        }
+        for (int i = 0; i < list.size(); i++) {
+            String temp = (String) list.get(i);
+            boolean isExit = false;
+            for (TNNoteAtt att : note.atts) {
+                String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
+                if (temp.equals(temp2)) {
+                    isExit = true;
+                }
+            }
+            if (!isExit) {
+                note.content = note.content.replaceAll(temp, "");
+            }
+        }
+        return note;
+    }
+
+    /**
      * (二.10)-1
      * 图片上传
      *
@@ -1773,35 +1810,9 @@ public class TNPageCats extends TNChildViewBase implements
      */
     private void pEditNotePic1(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("frag同步--pEditNotePic1（cloudsPos，attsPos，tnNote） 2-10-1");
+        TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
-            TNNote note = tnNote;
-            String shortContent = TNUtils.getBriefContent(note.content);
-            String content = note.content;
-            ArrayList list = new ArrayList();
-            int index1 = content.indexOf("<tn-media");
-            int index2 = content.indexOf("</tn-media>");
-            while (index1 >= 0 && index2 > 0) {
-                String temp = content.substring(index1, index2 + 11);
-                list.add(temp);
-                content = content.replaceAll(temp, "");
-                index1 = content.indexOf("<tn-media");
-                index2 = content.indexOf("</tn-media>");
-            }
-            for (int i = 0; i < list.size(); i++) {
-                String temp = (String) list.get(i);
-                boolean isExit = false;
-                for (TNNoteAtt att : note.atts) {
-                    String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
-                    if (temp.equals(temp2)) {
-                        isExit = true;
-                    }
-                }
-                if (!isExit) {
-                    note.content = note.content.replaceAll(temp, "");
-                }
-            }
-
-            if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
+            if (note.atts.size() > 0 && attsPos < note.atts.size()) {
                 MLog.d("2-10-1 上传图片");
                 //上传attsPos的图片
                 TNNoteAtt att = note.atts.get(attsPos);

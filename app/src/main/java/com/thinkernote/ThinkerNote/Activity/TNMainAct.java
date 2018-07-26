@@ -1436,7 +1436,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
                     if (id == editNotes.get(j).noteId) {
                         if (editNotes.get(j).lastUpdate > lastUpdate) {
                             //上传图片，之后上传文本
-                            pEditNotePic(position, 0, editNotes.get(j));
+                            TNNote note = EditNotePicBefore(editNotes.get(j));//上传图片，处理content参数
+                            pEditNotePic(position, 0, note);
                         } else {
                             updataEditNotesState(position, editNotes.get(j).noteLocalId);
                         }
@@ -1457,7 +1458,41 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
             pUpdataNote(0, false);
         }
     }
-
+    /**
+     * 对note的content进行处理,供(二.10)-1的pEditNotePic()使用
+     *
+     * @param tnNote
+     * @return
+     */
+    private TNNote EditNotePicBefore(TNNote tnNote) {
+        TNNote note = tnNote;
+        String shortContent = TNUtils.getBriefContent(note.content);
+        String content = note.content;
+        ArrayList list = new ArrayList();
+        int index1 = content.indexOf("<tn-media");
+        int index2 = content.indexOf("</tn-media>");
+        while (index1 >= 0 && index2 > 0) {
+            String temp = content.substring(index1, index2 + 11);
+            list.add(temp);
+            content = content.replaceAll(temp, "");
+            index1 = content.indexOf("<tn-media");
+            index2 = content.indexOf("</tn-media>");
+        }
+        for (int i = 0; i < list.size(); i++) {
+            String temp = (String) list.get(i);
+            boolean isExit = false;
+            for (TNNoteAtt att : note.atts) {
+                String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
+                if (temp.equals(temp2)) {
+                    isExit = true;
+                }
+            }
+            if (!isExit) {
+                note.content = note.content.replaceAll(temp, "");
+            }
+        }
+        return note;
+    }
     /**
      * editNotes
      * <p>
@@ -1469,33 +1504,8 @@ public class TNMainAct extends TNActBase implements OnClickListener, OnMainListe
      */
     private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnNote) {
         MLog.d("sync---2-10-1-pEditNotePic");
+        TNNote note = tnNote;
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
-            TNNote note = tnNote;
-            String shortContent = TNUtils.getBriefContent(note.content);
-            String content = note.content;
-            ArrayList list = new ArrayList();
-            int index1 = content.indexOf("<tn-media");
-            int index2 = content.indexOf("</tn-media>");
-            while (index1 >= 0 && index2 > 0) {
-                String temp = content.substring(index1, index2 + 11);
-                list.add(temp);
-                content = content.replaceAll(temp, "");
-                index1 = content.indexOf("<tn-media");
-                index2 = content.indexOf("</tn-media>");
-            }
-            for (int i = 0; i < list.size(); i++) {
-                String temp = (String) list.get(i);
-                boolean isExit = false;
-                for (TNNoteAtt att : note.atts) {
-                    String temp2 = String.format("<tn-media hash=\"%s\"></tn-media>", att.digest);
-                    if (temp.equals(temp2)) {
-                        isExit = true;
-                    }
-                }
-                if (!isExit) {
-                    note.content = note.content.replaceAll(temp, "");
-                }
-            }
 
             if (note.atts.size() > 0 && attsPos < (note.atts.size() - 1)) {
                 //上传attsPos的图片

@@ -1973,10 +1973,10 @@ public class TNNoteEditAct extends TNActBase implements OnClickListener,
      * 图片上传
      *
      * @param cloudsPos cloudIds数据的其实操作位置
-     * @param note      EditNotePicBefore(note)方法已经处理了content参数，可以直接用
+     * @param tnnote      EditNotePicBefore(note)方法已经处理了content参数，可以直接用
      */
-    private void pEditNotePic(int cloudsPos, int attsPos, TNNote note) {
-
+    private void pEditNotePic(int cloudsPos, int attsPos, TNNote tnnote) {
+        TNNote note = tnnote;
         MLog.d("同步edit--pEditNotePic 2-10-1---note:" + note.toString());
         if (cloudIds.size() > 0 && cloudsPos < (cloudIds.size())) {
             /**
