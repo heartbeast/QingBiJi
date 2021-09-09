@@ -15,9 +15,7 @@ import com.thinkernote.ThinkerNote.Utils.MLog;
 import com.thinkernote.ThinkerNote.http.HttpUtils;
 import com.thinkernote.ThinkerNote.http.third.WeichatHttpUtils;
 
-/**
- * sjy 0607
- */
+
 public class TNApplication extends Application {
     private static final String TAG = "TNApplication";
     private static TNApplication application;
@@ -37,10 +35,10 @@ public class TNApplication extends Application {
         MLog.init(true, "SJY");
 
         //新网络框架 初始化
-        HttpUtils.getInstance().init(this, MLog.DEBUG);
+//         HttpUtils.getInstance().init(this, MLog.DEBUG);
 
         //微信初始化网络
-        WeichatHttpUtils.getInstance().init(this, MLog.DEBUG);
+//         WeichatHttpUtils.getInstance().init(this, MLog.DEBUG);
     }
 
     // private methods
@@ -59,9 +57,6 @@ public class TNApplication extends Application {
         //地图定位 新版
         LocationService.getInstance();
         watchAppSwitch();
-        // 设置此接口后，音频文件和识别结果文件保存在/sdcard/msc/record/目录下
-        //com.iflytek.resource.MscSetting.setLogSaved(true);
-
     }
 
     public void DbReportError(TNAction aAction) {
