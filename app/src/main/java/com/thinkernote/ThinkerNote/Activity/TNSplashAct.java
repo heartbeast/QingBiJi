@@ -182,26 +182,11 @@ public class TNSplashAct extends TNActBase implements OnSplashListener {
 
             @Override
             public void run() {
-                if (settings.isLogin()) {
-                    //如果user表被异常清空
-                    TNUser user = TNDbUtils.getUser(settings.userId);
-                    if (user == null) {
-                        startActivity(TNLoginAct.class, extraBundle);
-                    } else {
-                        startActivity(TNMainAct.class, extraBundle);
-                    }
-                    finish();
-                } else if ((settings.expertTime != 0) && (settings.expertTime * 1000 - System.currentTimeMillis() < 0)) {
-                    passWord = settings.password;//回调中需要使用
-                    login(settings.loginname, passWord);
-
-                } else {
-                    startActivity(TNLoginAct.class, extraBundle);
-                    finish();
-                }
+                startActivity(TNMainAct.class, extraBundle);
+                finish();
                 isRunning = false;
             }
-        }, 2000);
+        }, 200);
     }
 
     @Override
